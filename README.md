@@ -1,2 +1,2 @@
-# PINAPL
-PINAPL Is Not A Projet Long
+# PinaPL
+PinaPL is not a Projet Long
