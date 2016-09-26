@@ -1,6 +1,9 @@
 # PinaPL
 PinaPL is not a Projet Long
 
-## Utilisation du git pour coder
+## GIT Usage Guide
+Do not forget to configure and update your .gitignore so as to keep the repositories clean.
 
-Pour que tout le monde puisse utiliser son éditeur favori ET pour que le dépot ne soit pas polluer, il est nécessaire que chacun garde un .gitignore à jour.
+## Code conventions
+Naming: variableName
+        ClassName
