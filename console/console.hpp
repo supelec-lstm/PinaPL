@@ -9,8 +9,10 @@ class Console {
     Console();
 
     void greeting();
-    void interactive();
     void goodbye();
+
+    void interactive();
+    void listFolderContent();
 };
 
 #endif
