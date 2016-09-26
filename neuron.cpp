@@ -2,32 +2,12 @@
 
 #include "neuron.h"
 
-Neuron::Neuron(int in, int out, ActivationFunction activationFunction, CompositionFunction compositionFunction)
+Neuron::Neuron(int in, double compositionFunction(double[], int), double activationFunction(double))
 {
     inputCount = in;
-    outputCount = out;
     weight = new double[in];
-    switch(activationFunction)
-    {
-    case SIG:
-        activation = &activationSigmoid;
-        break;
-    case HEA:
-        activation = &activationHeavyside;
-        break;
-    case ARCT:
-        activation = &activationArctan;
-        break;
-    }
-    switch(compositionFunction)
-    {
-    case SUM:
-        composition = &compositionSum;
-        break;
-    case DIST:
-        composition = &compositionDist;
-        break;
-    }
+    activation = activationFunction;
+    composition = compositionFunction;
 }
 
 double Neuron::compute(double x[])
@@ -66,12 +46,17 @@ double Neuron::activationSigmoid(double x)
 
 double Neuron::activationHeavyside(double x)
 {
-
+    if(x < 0){
+        return 0;
+    }
+    else{
+        return 1;
+    }
 }
 
 double Neuron::activationArctan(double x)
 {
-
+    return arctan(x);
 }
 
 double Neuron::compositionSum(double x[], int n)
