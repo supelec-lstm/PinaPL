@@ -12,6 +12,8 @@ class Neuron
 
     Neuron(int in, int out, ActivationFunction activationFunction, CompositionFunction compositionFunction);
     double compute(double x[]);
+    void setWeight(double x[]);
+    void initWeight();
 
     private:
 
