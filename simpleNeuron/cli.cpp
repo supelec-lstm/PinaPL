@@ -1,17 +1,12 @@
-//
-//  cli.cpp
-//  PinaPL
-//
-
 #include <iostream>
 #include <map>
 
 #include "cli.hpp"
 
-
 using namespace std;
 
-Cli::Cli() {
+Cli::Cli()
+{
 
 }
 
@@ -41,11 +36,13 @@ void Cli::interactive() {
 
 	while (interactiveEnabled) {
 		// Prompt
-		cout << ">> ";
+		cout << ">>";
 		cin >> userInput;
+		cout << endl;
 
 		// Interpretation
-		switch(commands[userInput]) {
+		switch(commands[userInput])
+        {
             case TEST:
             	cout << "test" << endl;
             	break;

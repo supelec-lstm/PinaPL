@@ -1,16 +1,11 @@
-//
-//  neuron.hpp
-//  PinaPL
-//
-
-#ifndef DEF_NEURON
-#define DEF_NEURON
+#ifndef DEF_NEURONE
+#define DEF_NEURONE
 
 class Neuron
 {
     public:
 
-    Neuron(unsigned long in, double compositionFunction(double[], unsigned long), double activationFunction(double));
+    Neuron(int in, double compositionFunction(double[], int), double activationFunction(double));
     double compute(double x[]);
     void setWeight(double x[]);
     void initWeight();
@@ -19,16 +14,16 @@ class Neuron
     static double activationHeavyside(double x);
     static double activationArctan(double x);
 
-    static double compositionSum(double x[], unsigned long n);
-    static double compositionDist(double x[], unsigned long n);
+    static double compositionSum(double x[], int n);
+    static double compositionDist(double x[], int n);
 
     private:
 
-    long inputCount;
-    double *weight;
-    double (*composition) (double[], unsigned long);
+    int inputCount;
+    double* weight;
+    double (*composition) (double[], int);
     double (*activation) (double);
 };
 
 
-#endif // DEF_NEURON
+#endif
