@@ -4,7 +4,7 @@
 //
 
 #include <iostream>
-#include "neuron.h"
+#include "neuron.hpp"
 
 using namespace std;
 
