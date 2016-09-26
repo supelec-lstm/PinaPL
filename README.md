@@ -1,2 +1,4 @@
-# PINAPL
-PINAPL Is Not A Projet Long
+# PinaPL
+PinaPL Is Not A Projet Long
+
+## Neuron implementation
