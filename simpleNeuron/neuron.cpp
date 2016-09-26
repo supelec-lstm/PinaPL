@@ -71,5 +71,5 @@ double Neuron::compositionSum(double x[], int n)
 
 double Neuron::compositionDist(double x[], int n)
 {
-
+    return 0;
 }
