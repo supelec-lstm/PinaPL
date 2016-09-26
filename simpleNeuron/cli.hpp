@@ -1,5 +1,11 @@
+//
+//  cli.hpp
+//  PinaPL
+//
+
 #ifndef DEF_CLI
 #define DEF_CLI
+
 
 enum Command {DEFAULT, EXIT, TEST};
 
@@ -13,4 +19,4 @@ class Cli {
     void goodbye();
 };
 
-#endif
+#endif // DEF_CLI
