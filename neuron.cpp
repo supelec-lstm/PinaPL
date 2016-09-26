@@ -10,7 +10,7 @@ Neuron::Neuron(int in, int out, ActivationFunction activationFunction, Compositi
     switch(activationFunction)
     {
     case SIG:
-        activation = &activationSignal;
+        activation = &activationSigmoid;
         break;
     case HEA:
         activation = &activationHeavyside;
@@ -58,7 +58,7 @@ void Neuron::initWeight()
     }
 }
 
-double Neuron::activationSignal(double x)
+double Neuron::activationSigmoid(double x)
 {
     double a = 1+exp(-x);
     return (1/a);
