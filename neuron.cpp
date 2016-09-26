@@ -1,6 +1,6 @@
 #include <math.h>
 
-#include "neurone.h"
+#include "neuron.h"
 
 Neuron::Neuron(int in, int out, ActivationFunction activationFunction, CompositionFunction compositionFunction)
 {
@@ -19,10 +19,10 @@ Neuron::Neuron(int in, int out, ActivationFunction activationFunction, Compositi
         activation = &activationArctan;
         break;
     }
-    switch(compostionFunction)
+    switch(compositionFunction)
     {
     case SUM:
-        composition = &compostionSum;
+        composition = &compositionSum;
         break;
     case DIST:
         composition = &compositionDist;
@@ -32,18 +32,18 @@ Neuron::Neuron(int in, int out, ActivationFunction activationFunction, Compositi
 
 double Neuron::compute(double x[])
 {
-    double y[nbin];
+    double y[inputCount];
 
-    for(int i = 0; i < nbin; i++)
+    for(int i = 0; i < inputCount; i++)
     {
         y[i] = x[i] * weight[i];
     }
-    return activation(composition(y, nbin));
+    return activation(composition(y, inputCount));
 }
 
 void Neuron::setWeight(double x[])
 {
-    for(int i = 0; i < nbin; i++)
+    for(int i = 0; i < inputCount; i++)
     {
         weight[i] = x[i];
     }
@@ -51,8 +51,8 @@ void Neuron::setWeight(double x[])
 
 void Neuron::initWeight()
 {
-    a = 1/((double)nbin);
-    for(int i = 0; i < nbin; i++)
+    double a = 1/((double)inputCount);
+    for(int i = 0; i < inputCount; i++)
     {
         weight[i] = a;
     }
@@ -64,17 +64,17 @@ double Neuron::activationSigmoid(double x)
     return (1/a);
 }
 
-double Neurone::activationHeavyside(double x)
+double Neuron::activationHeavyside(double x)
 {
 
 }
 
-double Neurone::activationArctan(double x)
+double Neuron::activationArctan(double x)
 {
 
 }
 
-double Neurone::compositionSum(double x[], int n)
+double Neuron::compositionSum(double x[], int n)
 {
     double sum = 0;
     for(int i = 0; i < n; i++)
@@ -84,7 +84,7 @@ double Neurone::compositionSum(double x[], int n)
     return sum;
 }
 
-double Neurone::compositionDist(double x[], int n)
+double Neuron::compositionDist(double x[], int n)
 {
 
 }
