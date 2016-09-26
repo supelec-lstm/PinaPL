@@ -21,7 +21,7 @@ class Neuron
     double (*composition) (double[], int);
     double (*activation) (double);
 
-    static double activationSignal(double x);
+    static double activationSigmoid(double x);
     static double activationHeavyside(double x);
     static double activationArctan(double x);
 
