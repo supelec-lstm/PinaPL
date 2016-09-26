@@ -1,6 +1,6 @@
 #include <math.h>
 
-#include "neuron.h"
+#include "neuron.hpp"
 
 Neuron::Neuron(int in, int out, ActivationFunction activationFunction, CompositionFunction compositionFunction)
 {
