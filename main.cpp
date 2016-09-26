@@ -4,12 +4,12 @@
 //
 
 #include <iostream>
-#include "neurone.h"
+#include "neuron.h"
 
 using namespace std;
 
 int main(int argc, const char * argv[]) {
-	Neurone n =
+	Neuron n =
 	std::cout << func(2);
     return 0;
 }
