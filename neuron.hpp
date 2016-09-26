@@ -1,8 +1,6 @@
 #ifndef DEF_NEURONE
 #define DEF_NEURONE
 
-#include <string>
-
 enum ActivationFunction {SIG, HEA, ARCT};
 enum CompositionFunction {SUM, DIST};
 
@@ -33,4 +31,3 @@ class Neuron
 
 
 #endif
-
