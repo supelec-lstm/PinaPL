@@ -1,6 +1,6 @@
 #include <math.h>
 
-#include "neuron.h"
+#include "neuron.hpp"
 
 Neuron::Neuron(int in, double compositionFunction(double[], int), double activationFunction(double))
 {
@@ -56,7 +56,7 @@ double Neuron::activationHeavyside(double x)
 
 double Neuron::activationArctan(double x)
 {
-    return arctan(x);
+    return atan(x);
 }
 
 double Neuron::compositionSum(double x[], int n)
