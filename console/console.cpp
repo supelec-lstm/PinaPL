@@ -1,6 +1,6 @@
 #include <iostream>
 #include <map>
-#include <dirent>
+#include <dirent.h>
 
 #include "console.hpp"
 
@@ -38,7 +38,7 @@ void Console::listFolderContent() {
     } else {
      /* could not open directory */
      perror ("");
-     return EXIT_FAILURE;
+     return;
     }
 
 }
