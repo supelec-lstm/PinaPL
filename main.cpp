@@ -6,14 +6,10 @@
 #include <iostream>
 #include "neurone.h"
 
-int test(int x)
-{
-    return 2*x;
-}
+using namespace std;
 
 int main(int argc, const char * argv[]) {
-	int (*func)(int);
-	func = &test;
+	Neurone n =
 	std::cout << func(2);
     return 0;
 }
