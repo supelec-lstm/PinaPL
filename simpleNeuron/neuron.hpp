@@ -6,27 +6,28 @@
 #ifndef DEF_NEURON
 #define DEF_NEURON
 
-class Neuron {
+class Neuron
+{
+    public:
+
+    Neuron(unsigned long in, double compositionFunction(double[], unsigned long), double activationFunction(double));
+    double compute(double x[]);
+    void setWeight(double x[]);
+    void initWeight();
+
+    static double activationSigmoid(double x);
+    static double activationHeavyside(double x);
+    static double activationArctan(double x);
+
+    static double compositionSum(double x[], unsigned long n);
+    static double compositionDist(double x[], unsigned long n);
+
+    private:
+
+    long inputCount;
+    double *weight;
     double (*composition) (double[], unsigned long);
     double (*activation) (double);
-    long inputCount;
-    double *inputs;
-    double *weights;
-    double output;
-
-public:
-    Neuron(unsigned long count, double compositionFunction(double[], unsigned long), double activationFunction(double));
-
-    double* getInputs();
-    void setInputs(double* someInputs, unsigned long count);
-
-    double* getWeights();
-    void setWeights(double x[]);
-    void setBalancedWeights();
-    void setRandomWeights(double min, double max);
-    
-    double getOutput();
-    void calculateOutuput();
 };
 
 

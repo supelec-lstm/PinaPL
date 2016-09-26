@@ -3,73 +3,65 @@
 //  PinaPL
 //
 
-#include <random>
+#include <math.h>
 
 #include "neuron.hpp"
 
 
-#pragma mark Initialization
-
-Neuron::Neuron(unsigned long count, double compositionFunction(double[], unsigned long), double activationFunction(double)) {
+Neuron::Neuron(unsigned long in, double compositionFunction(double[], unsigned long), double activationFunction(double)) {
+    inputCount = in;
+    weight = new double[in];
     activation = activationFunction;
     composition = compositionFunction;
-
-    inputCount = count;
-    inputs = new double[inputCount];
-    weights = new double[inputCount];
-    output = 0;
 }
 
-#pragma mark - Inputs
+double Neuron::compute(double x[]) {
+    double y[inputCount];
 
-double* Neuron::getInputs() {
-    return inputs;
+    for(unsigned long i = 0; i < inputCount; i++) {
+        y[i] = x[i] * weight[i];
+    }
+    return activation(composition(y, inputCount));
 }
 
-void Neuron::setInputs(double *someInputs, unsigned long count) {
-    inputCount = count;
-    inputs = someInputs;
-// Should we reset weights here?
-}
-
-#pragma mark Weights
-
-double* Neuron::getWeights() {
-    return weights;
-}
-
-void Neuron::setWeights(double x[]) {
-    for (unsigned long i = 0; i < inputCount; i++) {
-        weights[i] = x[i];
+void Neuron::setWeight(double x[]) {
+    for(unsigned long i = 0; i < inputCount; i++) {
+        weight[i] = x[i];
     }
 }
 
-void Neuron::setBalancedWeights() {
+void Neuron::initWeight() {
     double a = 1 / ((double)inputCount);
     for (unsigned long i = 0; i < inputCount; i++) {
-        weights[i] = a;
+        weight[i] = a;
     }
 }
 
-void Neuron::setRandomWeights(double min, double max) {
-    for (unsigned long i = 0; i < inputCount; i++) {
-        weights[i] = (((double)rand()) / (RAND_MAX + 1.0) - min) * fabs(max - min);
+double Neuron::activationSigmoid(double x) {
+    double a = 1 + exp(-x);
+    return (1 / a);
+}
+
+double Neuron::activationHeavyside(double x) {
+    if (x < 0) {
+        return 0;
+    } else {
+        return 1;
     }
 }
 
-#pragma mark Output
-
-double Neuron::getOutput() {
-    return output;
+double Neuron::activationArctan(double x) {
+    return atan(x);
 }
 
-void Neuron::calculateOutuput() {
-    double weightedInputs[inputCount];
-    
-    for (unsigned long i = 0; i < inputCount; i++) {
-        weightedInputs[i] = inputs[i] * weights[i];
+double Neuron::compositionSum(double x[], unsigned long n) {
+    double sum = 0;
+    for (unsigned long i = 0; i < n; i++) {
+        sum += x[i];
     }
-    
-    output = activation(composition(weightedInputs, inputCount));
+    return sum;
 }
 
+double Neuron::compositionDist(double x[], unsigned long n) {
+    return 0;
+}
