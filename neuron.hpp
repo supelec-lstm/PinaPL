@@ -1,8 +1,6 @@
 #ifndef DEF_NEURONE
 #define DEF_NEURONE
 
-#include <string>
-
 class Neuron
 {
     public:
@@ -29,4 +27,3 @@ class Neuron
 
 
 #endif
-
