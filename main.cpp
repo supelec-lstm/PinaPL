@@ -6,7 +6,7 @@
 #include <iostream>
 #include <map>
 #include "simpleNeuron/neuron.hpp"
-//#include "console.hpp"
+#include "console/console.hpp"
 
 using namespace std;
 
