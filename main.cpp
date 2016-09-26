@@ -5,21 +5,21 @@
 
 #include <iostream>
 #include <map>
-#include "neuron.hpp"
-#include "cli.hpp"
+#include "simpleNeuron/neuron.hpp"
+#include "console.hpp"
 
 using namespace std;
 
 int main(int argc, const char * argv[]) {
 
-// CLI instantiation
-Cli cli;
+// console instantiation
+Console console;
 // greeting
-cli.greeting();
+console.greeting();
 // interactive
-cli.interactive();
+console.interactive();
 // goodbye
-cli.goodbye();
+console.goodbye();
 
 return 0;
 }
