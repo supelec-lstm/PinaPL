@@ -1,11 +1,16 @@
+//
+//  console.hpp
+//  PinaPL
+//
+
 #ifndef DEF_CLI
 #define DEF_CLI
 
 enum Command {DEFAULT, EXIT, LIST};
 
 class Console {
-    private:
-    public:
+private:
+public:
     Console();
 
     void greeting();
@@ -15,4 +20,4 @@ class Console {
     bool listFolderContent();
 };
 
-#endif
+#endif // DEF_CLI

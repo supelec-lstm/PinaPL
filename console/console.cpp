@@ -1,14 +1,18 @@
+//
+//  console.cpp
+//  PinaPL
+//
+
 #include <iostream>
 #include <map>
-
 #include <dirent.h>
 
 #include "console.hpp"
 
+
 using namespace std;
 
-Console::Console()
-{
+Console::Console() {
 
 }
 
@@ -30,11 +34,11 @@ bool Console::listFolderContent() {
     struct dirent *ent;
     if ((directory = opendir ("./savedNetworks")) != NULL) {
         // print all the files and directories within ./
-        while ((ent = readdir (directory)) != NULL) {
+        while ((ent = readdir(directory)) != NULL) {
             cout << ent->d_name << endl;
         }
-    closedir (directory);
-    return true;
+        closedir(directory);
+        return true;
     } else {
         // could not open directory
         return false;
@@ -42,7 +46,6 @@ bool Console::listFolderContent() {
 }
 
 void Console::interactive() {
-
 	bool interactiveEnabled = true;
 	string userInput = "";
 
@@ -54,9 +57,8 @@ void Console::interactive() {
 
 	while (interactiveEnabled) {
 		// Prompt
-		cout << ">>";
+		cout << ">> ";
 		cin >> userInput;
-		cout << endl;
 
 		// Interpretation
 		switch(commands[userInput])

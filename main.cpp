@@ -1,19 +1,20 @@
 //
 //  main.cpp
-//  PINAPL
+//  PinaPL
 //
 
 #include <iostream>
 #include <map>
 #include <typeinfo>
+
 #include "simpleNeuron/neuron.hpp"
 #include "console/console.hpp"
+
 
 using namespace std;
 
 int main(int argc, const char * argv[]) {
-
-// console instantiation
-
-return 0;
+    // console instantiation
+    
+    return 0;
 }

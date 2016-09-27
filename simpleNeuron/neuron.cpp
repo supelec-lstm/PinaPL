@@ -1,116 +1,121 @@
+//
+//  neuron.cpp
+//  PinaPL
+//
+
 #include <math.h>
+#include <random>
 
 #include "neuron.hpp"
 
-//Definition
 
-Neuron::Neuron(){}
-
-Neuron::Neuron(unsigned long in, double compositionFunction(double[], unsigned long), double activationFunction(double)){
-
-    inputCount = in;
-    weight = new double[in];
-    input = new double[in];
-    activation = activationFunction;
-    composition = compositionFunction;
-    initWeight();
+Neuron::Neuron() {
+    inputCount = 1;
+    weight = new double[inputCount];
+    input = new double[inputCount];
+    
+    setBalancedWeight();
     reset();
 }
 
-void Neuron::reset(){
+Neuron::Neuron(unsigned long count, double compositionFunction(double[], unsigned long), double activationFunction(double)) {
+    activation = activationFunction;
+    composition = compositionFunction;
+    
+    inputCount = count;
+    weight = new double[inputCount];
+    input = new double[inputCount];
 
-    for(int i = 0; i < inputCount; i++){
+    setBalancedWeight();
+    reset();
+}
+
+void Neuron::reset() {
+    for (unsigned int i = 0; i < inputCount; i++) {
         input[i] = 0;
     }
     output = 0;
 }
 
-void Neuron::compute(){
+// Weights
 
-    double y[inputCount];
-
-    for(unsigned long i = 0; i < inputCount; i++)
-    {
-        y[i] = input[i] * weight[i];
-    }
-    output = activation(composition(y, inputCount));
-}
-
-//Weight
-
-void Neuron::setWeight(const double x[]){
-
-    for(unsigned long i = 0; i < inputCount; i++)
-    {
-        weight[i] = x[i];
-    }
-}
-
-double* Neuron::getWeight() const{
-
+double* Neuron::getWeight() const {
     return weight;
 }
 
-void Neuron::initWeight(){
-
-    double a = 1/((double)inputCount);
-    for(unsigned long i = 0; i < inputCount; i++)
-    {
-        weight[i] = a;
+void Neuron::setWeight(const double newWeight[]) {
+    for (unsigned long i = 0; i < inputCount; i++) {
+        weight[i] = newWeight[i];
     }
 }
 
-//Input-Output
-
-void Neuron::setInput(const double x[]){
-
-    for(unsigned long i = 0; i < inputCount; i++)
-    {
-        input[i] = x[i];
+void Neuron::setBalancedWeight() {
+    double balancedWeight = 1 / ((double)inputCount);
+    for (unsigned long i = 0; i < inputCount; i++) {
+        weight[i] = balancedWeight;
     }
 }
 
-double Neuron::getOutput() const{
+void Neuron::setRandomWeight(double min, double max) {
+    for (unsigned long i = 0; i < inputCount; i++) {
+        weight[i] = (((double)rand()) / (RAND_MAX + 1.0) - min) * fabs(max - min);
+    }
+}
 
+// Inputs & Output
+
+double* Neuron::getInput() const {
+    return input;
+}
+
+void Neuron::setInput(const double newInput[]) {
+    for (unsigned long i = 0; i < inputCount; i++) {
+        input[i] = newInput[i];
+    }
+}
+
+double Neuron::getOutput() const {
     return output;
 }
 
-//Fonction d'activation
-
-double Neuron::activationSigmoid(double x){
-
-    double a = 1+exp(-x);
-    return (1/a);
+void Neuron::calculateOutput() {
+    double weightedInputs[inputCount];
+    
+    for (unsigned long i = 0; i < inputCount; i++) {
+        weightedInputs[i] = input[i] * weight[i];
+    }
+    output = activation(composition(weightedInputs, inputCount));
 }
 
-double Neuron::activationHeavyside(double x){
+// Activation functions
 
-    if(x < 0){
+double Neuron::activationSigmoid(double x) {
+    double a = 1 + exp(-x);
+    return (1 / a);
+}
+
+double Neuron::activationHeavyside(double x) {
+    if (x < 0) {
         return 0;
-    }
-    else{
+    } else {
         return 1;
     }
 }
 
-double Neuron::activationArctan(double x){
-
+double Neuron::activationArctan(double x) {
     return atan(x);
 }
 
-//Fonction de composition
+// Composition functions
 
-double Neuron::compositionSum(double x[], unsigned long n){
-
+double Neuron::compositionSum(double x[], unsigned long n) {
     double sum = 0;
-    for(unsigned long i = 0; i < n; i++)
-    {
+    for (unsigned long i = 0; i < n; i++) {
         sum += x[i];
     }
     return sum;
 }
 
-double Neuron::compositionDist(double x[], unsigned long n){
-
+double Neuron::compositionDist(double x[], unsigned long n) {
     return 0;
 }

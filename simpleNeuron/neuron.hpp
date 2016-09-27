@@ -1,38 +1,43 @@
-#ifndef DEF_NEURONE
-#define DEF_NEURONE
+//
+//  neuron.hpp
+//  PinaPL
+//
 
-class Neuron{
+#ifndef DEF_NEURON
+#define DEF_NEURON
 
-    public:
-
-    Neuron();
-    Neuron(unsigned long in, double compositionFunction(double[], unsigned long), double activationFunction(double));
-    void compute();
-    void reset();
-
-    void setWeight(const double x[]);
-    double* getWeight() const;
-    void initWeight();
-
-    void setInput(const double x[]);
-    double getOutput() const;
-
-    static double activationSigmoid(double x);
-    static double activationHeavyside(double x);
-    static double activationArctan(double x);
-
-    static double compositionSum(double x[], unsigned long n);
-    static double compositionDist(double x[], unsigned long n);
-
-    private:
-
+class Neuron {
     unsigned long inputCount;
     double* weight;
     double* input;
     double output;
     double (*composition) (double[], unsigned long);
     double (*activation) (double);
+
+public:
+    Neuron();
+    Neuron(unsigned long count, double compositionFunction(double[], unsigned long), double activationFunction(double));
+    void reset();
+
+    double* getWeight() const;
+    void setWeight(const double newWeight[]);
+    void setBalancedWeight();
+    void setRandomWeight(double min, double max);
+
+    double* getInput() const;
+    void setInput(const double newInput[]);
+    
+    double getOutput() const;
+    void calculateOutput();
+
+    // Math functions
+    static double activationSigmoid(double x);
+    static double activationHeavyside(double x);
+    static double activationArctan(double x);
+
+    static double compositionSum(double x[], unsigned long n);
+    static double compositionDist(double x[], unsigned long n);
 };
 
 
-#endif
+#endif // DEF_NEURON
