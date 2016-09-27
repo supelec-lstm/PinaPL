@@ -1,5 +1,6 @@
 #include <iostream>
 #include <map>
+
 #include <dirent.h>
 
 #include "console.hpp"
@@ -24,23 +25,20 @@ void Console::goodbye() {
 	return;
 }
 
-void Console::listFolderContent() {
-    // lists content of folder networkStorage
-
-    DIR *dir;
+bool Console::listFolderContent() {
+    DIR *directory;
     struct dirent *ent;
-    if ((dir = opendir ("./")) != NULL) {
-      /* print all the files and directories within directory */
-      while ((ent = readdir (dir)) != NULL) {
-       printf ("%s\n", ent->d_name);
-     }
-     closedir (dir);
+    if ((directory = opendir ("./savedNetworks")) != NULL) {
+        // print all the files and directories within ./
+        while ((ent = readdir (directory)) != NULL) {
+            cout << ent->d_name << endl;
+        }
+    closedir (directory);
+    return true;
     } else {
-     /* could not open directory */
-     perror ("");
-     return;
+        // could not open directory
+        return false;
     }
-
 }
 
 void Console::interactive() {
@@ -51,7 +49,7 @@ void Console::interactive() {
 	map<string,Command> commands = {
 		{"exit", EXIT},
 		{"quit", EXIT},
-		{"test", TEST}
+		{"list", LIST}
 	};
 
 	while (interactiveEnabled) {
@@ -63,8 +61,8 @@ void Console::interactive() {
 		// Interpretation
 		switch(commands[userInput])
         {
-            case TEST:
-            	cout << "test" << endl;
+            case LIST:
+            	listFolderContent();
             	break;
    			case EXIT:
 	           	interactiveEnabled = false;
