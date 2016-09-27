@@ -1,7 +1,7 @@
 #ifndef DEF_CLI
 #define DEF_CLI
 
-enum Command {DEFAULT, EXIT, TEST};
+enum Command {DEFAULT, EXIT, LIST};
 
 class Console {
     private:
@@ -9,8 +9,10 @@ class Console {
     Console();
 
     void greeting();
-    void interactive();
     void goodbye();
+
+    void interactive();
+    bool listFolderContent();
 };
 
 #endif
