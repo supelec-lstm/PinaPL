@@ -5,16 +5,17 @@ class Neuron{
 
     public:
 
+    Neuron();
     Neuron(unsigned long in, double compositionFunction(double[], unsigned long), double activationFunction(double));
     void compute();
     void reset();
 
     void setWeight(const double x[]);
-    const double* getWeight();
+    double* getWeight() const;
     void initWeight();
 
     void setInput(const double x[]);
-    const double getOutput();
+    double getOutput() const;
 
     static double activationSigmoid(double x);
     static double activationHeavyside(double x);

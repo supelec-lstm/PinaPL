@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <map>
+#include <typeinfo>
 #include "simpleNeuron/neuron.hpp"
 #include "console/console.hpp"
 

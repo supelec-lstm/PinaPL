@@ -4,6 +4,8 @@
 
 //Definition
 
+Neuron::Neuron(){}
+
 Neuron::Neuron(unsigned long in, double compositionFunction(double[], unsigned long), double activationFunction(double)){
 
     inputCount = in;
@@ -44,7 +46,7 @@ void Neuron::setWeight(const double x[]){
     }
 }
 
-const double* Neuron::getWeight(){
+double* Neuron::getWeight() const{
 
     return weight;
 }
@@ -68,7 +70,7 @@ void Neuron::setInput(const double x[]){
     }
 }
 
-const double Neuron::getOutput(){
+double Neuron::getOutput() const{
 
     return output;
 }
