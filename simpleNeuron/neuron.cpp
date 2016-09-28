@@ -13,7 +13,7 @@ Neuron::Neuron() {
     inputCount = 1;
     weight = new double[inputCount];
     input = new double[inputCount];
-    
+
     setBalancedWeight();
     reset();
 }
@@ -21,7 +21,7 @@ Neuron::Neuron() {
 Neuron::Neuron(unsigned long count, double compositionFunction(double[], unsigned long), double activationFunction(double)) {
     activation = activationFunction;
     composition = compositionFunction;
-    
+
     inputCount = count;
     weight = new double[inputCount];
     input = new double[inputCount];
@@ -35,6 +35,13 @@ void Neuron::reset() {
         input[i] = 0;
     }
     output = 0;
+}
+
+// Number of entries
+
+unsigned long Neuron::getInputCount() const{
+
+    return inputCount;
 }
 
 // Weights
@@ -80,7 +87,7 @@ double Neuron::getOutput() const {
 
 void Neuron::calculateOutput() {
     double weightedInputs[inputCount];
-    
+
     for (unsigned long i = 0; i < inputCount; i++) {
         weightedInputs[i] = input[i] * weight[i];
     }
@@ -104,6 +111,10 @@ double Neuron::activationHeavyside(double x) {
 
 double Neuron::activationArctan(double x) {
     return atan(x);
+}
+
+double Neuron::activationLinear(double x) {
+    return x;
 }
 
 // Composition functions
