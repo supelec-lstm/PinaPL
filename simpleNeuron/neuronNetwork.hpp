@@ -38,7 +38,7 @@ class NeuronNetwork{
 
     void plugInputIntoNeuron();
     void calculeNeurons();
-    void getDifference();
+    double leastSquareError(double x[], double y[], unsigned long n);
 };
 
 

@@ -18,6 +18,6 @@
 using namespace std;
 
 int main(int argc, const char * argv[]) {
-    // console instantiation
+
     return 0;
 }

@@ -65,7 +65,7 @@ void Neuron::setBalancedWeight() {
 
 void Neuron::setRandomWeight(double min, double max) {
     for (unsigned long i = 0; i < inputCount; i++) {
-        weight[i] = (((double)rand()) / (RAND_MAX + 1.0) - min) * fabs(max - min);
+        weight[i] = (double)rand()*(max - min) + min;
     }
 }
 

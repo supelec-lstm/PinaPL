@@ -4,6 +4,8 @@
 #include "neuron.hpp"
 #include "neuronNetwork.hpp"
 
+#define MAX_DIFFERENCE_OUTPUT 1
+
 using namespace std;
 
 // Initialisation
@@ -64,16 +66,79 @@ void NeuronNetwork::setInput(double* data){
 
     reset();
     for(unsigned long i = 0; i < inputCount; i++){
-        double x[1];
-        x[0] = data[i];
-        neurons[inputNeurons[i]].setInput(x);
+        input[i] = data[i];
     }
 }
 
 void NeuronNetwork::calculate(){
 
-    double y[neuronsCount];
+    // initialisation
+
+    double outputAfter[neuronsCount];
     for(unsigned long i = 0; i < neuronsCount; i++){
-        y[i] = neurons[inputNeurons[i]].getOutput();
+        outputAfter[i] = neurons[i].getOutput();
     }
+
+    // boucle principale
+
+    do {
+        for(unsigned long i = 0; i < neuronsCount; i++){
+            output[i] = outputAfter[i];
+        }
+        plugInputIntoNeuron();
+        calculeNeurons();
+        for(unsigned long i = 0; i < neuronsCount; i++){
+            outputAfter[i] = neurons[i].getOutput();
+        }
+    }while(leastSquareError(output, outputAfter, neuronsCount) < MAX_DIFFERENCE_OUTPUT);
+
+    // résutat
+
+    for(unsigned long i = 0; i < neuronsCount; i++){
+        output[i] = outputAfter[i];
+    }
+}
+
+void NeuronNetwork::plugInputIntoNeuron(){
+
+    unsigned long length;
+    unsigned long k;
+    for(unsigned long j = 0; j < outputCount; j++){
+        k = 0;
+        length = neurons[j].getInputCount();
+        double x[length];
+        for(unsigned long i = 0; i < outputCount; i++){
+            if(relation[i][j]){
+                x[k] = output[i];
+                k++;
+            }
+        }
+        neurons[j].setInput(x);
+    }
+}
+
+void NeuronNetwork::calculeNeurons(){
+
+    for(unsigned long i = 0; i < neuronsCount; i++){
+        neurons[i].calculateOutput();
+    }
+}
+
+double* NeuronNetwork::getOutput(){
+
+    double result[outputCount];
+    for(unsigned long i = 0; i < outputCount; i++){
+        result[i] = output[outputNeurons[i]];
+    }
+    return result;
+}
+
+double NeuronNetwork::leastSquareError(double x[], double y[], unsigned long n){
+
+    double result = 0;
+    for(unsigned long i = 0; i < n; i++){
+        double d = x[i] - y[i];
+        result += d*d;
+    }
+    return result;
 }
