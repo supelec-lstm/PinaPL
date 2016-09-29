@@ -5,8 +5,12 @@
 
 #include <math.h>
 #include <random>
+#include <string>
+#include <iostream>
 
 #include "neuron.hpp"
+
+using namespace std;
 
 
 Neuron::Neuron() {

@@ -15,7 +15,7 @@ class NeuronNetwork{
     void setRelation(bool** tab);
     void setInputNeurons(unsigned long* tab);
     void setOutputNeurons(unsigned long* tab);
-    void setNeurons(Neuron* tab);
+    void setNeurons(Neuron* tab[]);
 
     void setInput(double* data);
     void calculate();
@@ -29,9 +29,9 @@ class NeuronNetwork{
     unsigned long inputCount;
     unsigned long outputCount;
     unsigned long neuronsCount;
-    Neuron *neurons;
-    unsigned long* inputNeurons;
-    unsigned long* outputNeurons;
+    Neuron **neurons;
+    unsigned long *inputNeurons;
+    unsigned long *outputNeurons;
     bool** relation;
     double* output;
     double* input;

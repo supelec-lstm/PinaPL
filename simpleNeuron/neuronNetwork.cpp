@@ -1,10 +1,11 @@
 #include <string>
+#include <iostream>
 #include <stdlib.h>
 
 #include "neuron.hpp"
 #include "neuronNetwork.hpp"
 
-#define MAX_DIFFERENCE_OUTPUT 1
+#define MAX_DIFFERENCE_OUTPUT 0.001
 
 using namespace std;
 
@@ -28,7 +29,7 @@ NeuronNetwork::NeuronNetwork(string givenName, string givenDate, unsigned long n
 
     inputNeurons = new unsigned long[nbin];
     outputNeurons = new unsigned long[nbout];
-    neurons = new Neuron[ntot]();
+    neurons = (Neuron**)malloc(ntot*sizeof(Neuron*));
 }
 
 void NeuronNetwork::reset(){
@@ -36,7 +37,7 @@ void NeuronNetwork::reset(){
     input = new double[inputCount];
     output = new double[neuronsCount];
     for(unsigned long i; i < neuronsCount; i++){
-        neurons[i].reset();
+        neurons[i]->reset();
     }
 }
 
@@ -55,7 +56,7 @@ void NeuronNetwork::setOutputNeurons(unsigned long* tab){
     outputNeurons = tab;
 }
 
-void NeuronNetwork::setNeurons(Neuron* tab){
+void NeuronNetwork::setNeurons(Neuron* tab[]){
 
     neurons = tab;
 }
@@ -76,7 +77,7 @@ void NeuronNetwork::calculate(){
 
     double outputAfter[neuronsCount];
     for(unsigned long i = 0; i < neuronsCount; i++){
-        outputAfter[i] = neurons[i].getOutput();
+        outputAfter[i] = neurons[i]->getOutput();
     }
 
     // boucle principale
@@ -88,9 +89,9 @@ void NeuronNetwork::calculate(){
         plugInputIntoNeuron();
         calculeNeurons();
         for(unsigned long i = 0; i < neuronsCount; i++){
-            outputAfter[i] = neurons[i].getOutput();
+            outputAfter[i] = neurons[i]->getOutput();
         }
-    }while(leastSquareError(output, outputAfter, neuronsCount) < MAX_DIFFERENCE_OUTPUT);
+    }while(leastSquareError(output, outputAfter, neuronsCount) >= MAX_DIFFERENCE_OUTPUT);
 
     // résutat
 
@@ -103,24 +104,31 @@ void NeuronNetwork::plugInputIntoNeuron(){
 
     unsigned long length;
     unsigned long k;
-    for(unsigned long j = 0; j < outputCount; j++){
+    for(unsigned long j = 0; j < inputCount; j++){
+        double x[1];
+        x[0] = input[j];
+        neurons[inputNeurons[j]]->setInput(x);
+    }
+    for(unsigned long j = 0; j < neuronsCount; j++){
         k = 0;
-        length = neurons[j].getInputCount();
+        length = neurons[j]->getInputCount();
         double x[length];
-        for(unsigned long i = 0; i < outputCount; i++){
+        for(unsigned long i = 0; i < neuronsCount; i++){
             if(relation[i][j]){
                 x[k] = output[i];
                 k++;
             }
         }
-        neurons[j].setInput(x);
+        if(k == length){
+            neurons[j]->setInput(x);
+        }
     }
 }
 
 void NeuronNetwork::calculeNeurons(){
 
     for(unsigned long i = 0; i < neuronsCount; i++){
-        neurons[i].calculateOutput();
+        neurons[i]->calculateOutput();
     }
 }
 
