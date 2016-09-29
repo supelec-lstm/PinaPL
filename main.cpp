@@ -12,7 +12,7 @@
 #include <random>
 
 #include "simpleNeuron/neuron.hpp"
-#include "simpleNeuron/neuronNetwork.hpp"
+#include "neuronNetwork/neuronNetwork.hpp"
 #include "console/console.hpp"
 
 

@@ -1,45 +1,45 @@
-//
-//  neuronNetwork.hpp
-//  PinaPL
-//
+#ifndef DEF_NETWORK
+#define DEF_NETWORK
 
-#ifndef DEF_NEURONNETWORK
-#define DEF_NEURONNETWORK
-
-#include <vector>
+#include <string>
 
 #include "../simpleNeuron/neuron.hpp"
 
+class NeuronNetwork{
 
-using namespace std;
+    public:
 
-enum NeuronType : unsigned long {
-    NeuronTypeInternal = 0,
-    NeuronTypeInput = 1 << 0,
-    NeuronTypeOutput = 1 << 1,
+    NeuronNetwork(std::string name, std::string date, unsigned long nbin, unsigned long nbout, unsigned long ntot);
+    void reset();
+
+    void setRelation(bool** tab);
+    void setInputNeurons(unsigned long* tab);
+    void setOutputNeurons(unsigned long* tab);
+    void setNeurons(Neuron* tab[]);
+
+    void setInput(double* data);
+    void calculate();
+    double* getOutput();
+
+    private:
+
+    std::string name;
+    std::string date;
+
+    unsigned long inputCount;
+    unsigned long outputCount;
+    unsigned long neuronsCount;
+    Neuron **neurons;
+    unsigned long *inputNeurons;
+    unsigned long *outputNeurons;
+    bool** relation;
+    double* output;
+    double* input;
+
+    void plugInputIntoNeuron();
+    void calculeNeurons();
+    double leastSquareError(double x[], double y[], unsigned long n);
 };
 
-class NeuronNetwork {
-    vector<Neuron> neurons;
-    vector<vector<unsigned long>> connections;
-    
-    vector<unsigned long> inputNeurons;
-    vector<double> inputValues;
-    
-public:
-    NeuronNetwork();
-    
-    unsigned long addNeuron(Neuron neuron, NeuronType type);
-    void changeNeuronType(unsigned long neuronIndex, NeuronType newType);
-    void addConnection(unsigned long from, unsigned long to);
-    void disconnectNeuron(unsigned long neuronIndex);
-    
-    vector<Neuron> getNeurons() const;
-    vector<vector<unsigned long>> getConnections() const;
-    void setNeurons(vector<Neuron> newNeurons);
-    void setConnections(vector<vector<unsigned long>> newConnections);
-    
-    void compute();
-};
 
-#endif // DEF_NEURONNETWORK
+#endif

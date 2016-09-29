@@ -1,54 +1,152 @@
-//
-//  neuronNetwork.cpp
-//  PinaPL
-//
+#include <string>
+#include <iostream>
+#include <stdlib.h>
 
+#include "../simpleNeuron/neuron.hpp"
 #include "neuronNetwork.hpp"
 
+#define MAX_DIFFERENCE_OUTPUT 0.001
 
-NeuronNetwork::NeuronNetwork() {
-    neurons = vector<Neuron>();
-    connections = vector<vector<unsigned long>>();
+using namespace std;
+
+// Initialisation
+
+NeuronNetwork::NeuronNetwork(string givenName, string givenDate, unsigned long nbin, unsigned long nbout, unsigned long ntot){
+
+    name = givenName;
+    date = givenDate;
+    inputCount = nbin;
+    outputCount = nbout;
+    neuronsCount = ntot;
+
+    input = new double[nbin];
+    output = new double[ntot];
+
+    relation = (bool**)malloc(ntot*sizeof(bool*)); //#magic trick for 2-dimensional array
+    for(unsigned long i = 0; i < ntot; i++){
+        relation[i] = new bool[ntot];
+    }
+
+    inputNeurons = new unsigned long[nbin];
+    outputNeurons = new unsigned long[nbout];
+    neurons = (Neuron**)malloc(ntot*sizeof(Neuron*));
 }
 
-// Building the network
+void NeuronNetwork::reset(){
 
-unsigned long NeuronNetwork::addNeuron(Neuron neuron, NeuronType type) {
-#warning type is not implemented yet
-    neurons.push_back(neuron);
-    connections.push_back(vector<unsigned long>());
-    return neurons.size();
+    input = new double[inputCount];
+    output = new double[neuronsCount];
+    for(unsigned long i; i < neuronsCount; i++){
+        neurons[i]->reset();
+    }
 }
 
-void NeuronNetwork::addConnection(unsigned long from, unsigned long to) {
-    connections.at(from).push_back(to);
+void NeuronNetwork::setRelation(bool** tab){
+
+    relation = tab;
 }
 
-void NeuronNetwork::disconnectNeuron(unsigned long neuronIndex) {
-    connections.at(neuronIndex) = vector<unsigned long>();
+void NeuronNetwork::setInputNeurons(unsigned long* tab){
+
+    inputNeurons = tab;
 }
 
-// Getters and Setters
+void NeuronNetwork::setOutputNeurons(unsigned long* tab){
 
-vector<Neuron> NeuronNetwork::getNeurons() const {
-    return neurons;
+    outputNeurons = tab;
 }
 
-vector<vector<unsigned long>> NeuronNetwork::getConnections() const {
-    return connections;
+void NeuronNetwork::setNeurons(Neuron* tab[]){
+
+    neurons = tab;
 }
 
-void NeuronNetwork::setNeurons(vector<Neuron> newNeurons) {
-    neurons = vector<Neuron>(newNeurons);
-    connections = vector<vector<unsigned long>>(newNeurons.size(), vector<unsigned long>());
+// Calcul
+
+void NeuronNetwork::setInput(double* data){
+
+    reset();
+    for(unsigned long i = 0; i < inputCount; i++){
+        input[i] = data[i];
+    }
 }
 
-void NeuronNetwork::setConnections(vector<vector<unsigned long>> newConnections) {
-    connections = vector<vector<unsigned long>>(newConnections);
+void NeuronNetwork::calculate(){
+
+    // initialisation
+
+    double outputAfter[neuronsCount];
+    for(unsigned long i = 0; i < neuronsCount; i++){
+        outputAfter[i] = neurons[i]->getOutput();
+    }
+
+    // boucle principale
+
+    do {
+        for(unsigned long i = 0; i < neuronsCount; i++){
+            output[i] = outputAfter[i];
+        }
+        plugInputIntoNeuron();
+        calculeNeurons();
+        for(unsigned long i = 0; i < neuronsCount; i++){
+            outputAfter[i] = neurons[i]->getOutput();
+        }
+    }while(leastSquareError(output, outputAfter, neuronsCount) >= MAX_DIFFERENCE_OUTPUT);
+
+    // résutat
+
+    for(unsigned long i = 0; i < neuronsCount; i++){
+        output[i] = outputAfter[i];
+    }
 }
 
-// Network flow
+void NeuronNetwork::plugInputIntoNeuron(){
 
-void NeuronNetwork::compute() {
-#warning not implemented
+    unsigned long length;
+    unsigned long k;
+    for(unsigned long j = 0; j < inputCount; j++){
+        double x[1];
+        x[0] = input[j];
+        neurons[inputNeurons[j]]->setInput(x);
+    }
+    for(unsigned long j = 0; j < neuronsCount; j++){
+        k = 0;
+        length = neurons[j]->getInputCount();
+        double x[length];
+        for(unsigned long i = 0; i < neuronsCount; i++){
+            if(relation[i][j]){
+                x[k] = output[i];
+                k++;
+            }
+        }
+        if(k == length){
+            neurons[j]->setInput(x);
+        }
+    }
+}
+
+void NeuronNetwork::calculeNeurons(){
+
+    for(unsigned long i = 0; i < neuronsCount; i++){
+        neurons[i]->calculateOutput();
+    }
+}
+
+double* NeuronNetwork::getOutput(){
+
+    double result[outputCount];
+    for(unsigned long i = 0; i < outputCount; i++){
+        result[i] = output[outputNeurons[i]];
+    }
+    return result;
+}
+
+double NeuronNetwork::leastSquareError(double x[], double y[], unsigned long n){
+
+    double result = 0;
+    for(unsigned long i = 0; i < n; i++){
+        double d = x[i] - y[i];
+        result += d*d;
+    }
+    return result;
 }
