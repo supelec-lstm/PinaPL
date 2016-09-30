@@ -41,13 +41,6 @@ void Neuron::reset() {
     output = 0;
 }
 
-// Number of entries
-
-unsigned long Neuron::getInputCount() const{
-
-    return inputCount;
-}
-
 // Weights
 
 double* Neuron::getWeight() const {
@@ -75,11 +68,17 @@ void Neuron::setRandomWeight(double min, double max) {
 
 // Inputs & Output
 
+unsigned long Neuron::getInputCount() const {
+    return inputCount;
+}
+
 double* Neuron::getInput() const {
     return input;
 }
 
-void Neuron::setInput(const double newInput[]) {
+void Neuron::setInput(const double newInput[], unsigned long count) {
+    inputCount = count;
+    input = new double[inputCount];
     for (unsigned long i = 0; i < inputCount; i++) {
         input[i] = newInput[i];
     }
