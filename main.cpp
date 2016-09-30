@@ -22,7 +22,13 @@ void test();
 
 int main(int argc, const char * argv[]) {
 
-    test();
+    Console console;
+
+    console.greeting();
+    console.interactive();
+    console.goodbye();
+
+    //test();
     return 0;
 }
 

@@ -4,16 +4,18 @@
 //
 
 #include <iostream>
+#include <fstream>
 #include <map>
 #include <dirent.h>
+#include <algorithm>
+#include <iterator>
+#include <sstream>
 
 #include "console.hpp"
-
 
 using namespace std;
 
 Console::Console() {
-
 }
 
 void Console::greeting() {
@@ -30,10 +32,12 @@ void Console::goodbye() {
 }
 
 bool Console::listFolderContent() {
+    // lists content of folder ./savedNetworks
+
     DIR *directory;
     struct dirent *ent;
     if ((directory = opendir ("./savedNetworks")) != NULL) {
-        // print all the files and directories within ./
+        // print all the files and directories within ./savedNetworks
         while ((ent = readdir(directory)) != NULL) {
             cout << ent->d_name << endl;
         }
@@ -41,38 +45,73 @@ bool Console::listFolderContent() {
         return true;
     } else {
         // could not open directory
+        cout << "Error : could not open directory ./savedNetworks" << endl;
         return false;
     }
 }
 
-void Console::interactive() {
-	bool interactiveEnabled = true;
-	string userInput = "";
+vector<string> Console::parseInput(string argRawInput) {
+    string sentence = argRawInput;
+    istringstream iss(sentence);
+    vector<string> tokens{istream_iterator<string>{iss}, istream_iterator<string>{}};
 
-	map<string,Command> commands = {
-		{"exit", EXIT},
-		{"quit", EXIT},
-		{"list", LIST}
-	};
+    return tokens;
+}
+
+void Console::interactive() {
+    // interactive method
+
+	bool interactiveEnabled = true;
+
+    string userRawInput = "";
 
 	while (interactiveEnabled) {
-		// Prompt
-		cout << ">> ";
-		cin >> userInput;
 
-		// Interpretation
-		switch(commands[userInput])
-        {
-            case LIST:
-            	listFolderContent();
-            	break;
-   			case EXIT:
-	           	interactiveEnabled = false;
-                break;
-            default:
-           	    cout << "command not recognized" << endl;
-           	    break;
+		cout << ">> ";
+		getline(cin, userRawInput);
+
+        vector<string> parsedInput = parseInput(userRawInput);
+
+        if (parsedInput[0] == "exit" || parsedInput[0] == "quit") {
+            goodbye();
+            return;
         }
+        commandExecution(parsedInput);
     }
     return;
+}
+
+void Console::scriptExecution(string scriptPath) {
+
+    string path = scriptPath;
+    ifstream input(path);
+    for (string line; getline(input, line);)
+    {
+        vector<string> parsedLine = parseInput(line);
+        commandExecution(parsedLine);
+    }
+    return;
+}
+
+
+void Console::commandExecution(vector<string> input) {
+
+
+    map<string,Command> commands = {
+        {"list", LIST},
+        {"script", SCRIPT}
+    };
+
+	switch(commands[input[0]])
+    {
+        case LIST:
+    	    listFolderContent();
+      	    break;
+        case SCRIPT:
+            scriptExecution(input[1]);
+            break;
+        default:
+            cout << "Error : invalid command" << endl;
+            break;
+    }
 }
