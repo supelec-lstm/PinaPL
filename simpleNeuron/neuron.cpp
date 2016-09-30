@@ -10,8 +10,8 @@
 
 #include "neuron.hpp"
 
-using namespace std;
 
+using namespace std;
 
 Neuron::Neuron() {
     inputCount = 1;
@@ -39,6 +39,12 @@ void Neuron::reset() {
         input[i] = 0;
     }
     output = 0;
+}
+
+void Neuron::setInputCount(unsigned long count) {
+    inputCount = count;
+    input = new double[inputCount];
+    weight = new double[inputCount];
 }
 
 // Weights
@@ -76,9 +82,7 @@ double* Neuron::getInput() const {
     return input;
 }
 
-void Neuron::setInput(const double newInput[], unsigned long count) {
-    inputCount = count;
-    input = new double[inputCount];
+void Neuron::setInput(const double newInput[]) {
     for (unsigned long i = 0; i < inputCount; i++) {
         input[i] = newInput[i];
     }

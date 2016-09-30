@@ -19,6 +19,8 @@ public:
     Neuron(unsigned long count, double compositionFunction(double[], unsigned long), double activationFunction(double));
     void reset();
 
+    void setInputCount(unsigned long count);
+    
     double* getWeight() const;
     void setWeight(const double newWeight[]);
     void setBalancedWeight();
@@ -26,7 +28,7 @@ public:
 
     unsigned long getInputCount() const;
     double* getInput() const;
-    void setInput(const double newInput[], unsigned long count);
+    void setInput(const double newInput[]);
 
     double getOutput() const;
     void calculateOutput();
