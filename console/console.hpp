@@ -17,7 +17,7 @@ public:
 
     void greeting();
     void goodbye();
-    std::vector<std::string> parseInput(std::string rawInput);
+    std::vector<std::string> parseCommandString(std::string rawInput);
     bool listFolderContent();
     void scriptExecution(std::string scriptPath);
     void commandExecution(std::vector<std::string> input);

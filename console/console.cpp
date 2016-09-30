@@ -50,35 +50,13 @@ bool Console::listFolderContent() {
     }
 }
 
-vector<string> Console::parseInput(string argRawInput) {
-    string sentence = argRawInput;
-    istringstream iss(sentence);
-    vector<string> tokens{istream_iterator<string>{iss}, istream_iterator<string>{}};
+vector<string> Console::parseCommandString(string rawInput) {
+    // parses a command string, outputs a vector of commands/arguments
 
-    return tokens;
-}
+    istringstream iss(rawInput);
+    vector<string> commands{istream_iterator<string>{iss}, istream_iterator<string>{}};
 
-void Console::interactive() {
-    // interactive method
-
-	bool interactiveEnabled = true;
-
-    string userRawInput = "";
-
-	while (interactiveEnabled) {
-
-		cout << ">> ";
-		getline(cin, userRawInput);
-
-        vector<string> parsedInput = parseInput(userRawInput);
-
-        if (parsedInput[0] == "exit" || parsedInput[0] == "quit") {
-            goodbye();
-            return;
-        }
-        commandExecution(parsedInput);
-    }
-    return;
+    return commands;
 }
 
 void Console::scriptExecution(string scriptPath) {
@@ -87,31 +65,52 @@ void Console::scriptExecution(string scriptPath) {
     ifstream input(path);
     for (string line; getline(input, line);)
     {
-        vector<string> parsedLine = parseInput(line);
+        vector<string> parsedLine = parseCommandString(line);
         commandExecution(parsedLine);
     }
     return;
 }
 
 
-void Console::commandExecution(vector<string> input) {
-
+void Console::commandExecution(vector<string> parsedInput) {
 
     map<string,Command> commands = {
         {"list", LIST},
         {"script", SCRIPT}
     };
 
-	switch(commands[input[0]])
+	switch(commands[parsedInput[0]])
     {
         case LIST:
     	    listFolderContent();
       	    break;
         case SCRIPT:
-            scriptExecution(input[1]);
+            scriptExecution(parsedInput[1]);
             break;
         default:
             cout << "Error : invalid command" << endl;
             break;
     }
+}
+
+void Console::interactive() {
+    // interactive method
+
+	bool interactiveEnabled = true;
+    string rawInput;
+
+	while (interactiveEnabled) {
+		cout << ">> ";
+		getline(cin, rawInput);
+
+        vector<string> parsedInput = parseCommandString(rawInput);
+
+        if (parsedInput[0] == "exit" || parsedInput[0] == "quit") {
+            goodbye();
+            return;
+        }
+
+        commandExecution(parsedInput);
+    }
+    return;
 }
