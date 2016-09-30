@@ -53,8 +53,7 @@ void test(){
     output[1] = 4;
 
     // relations
-
-    bool** relation = (bool**)malloc(5*sizeof(bool*)); //#magic trick for 2-dimensional array
+    bool **relation = static_cast<bool**>(malloc(5 * sizeof(bool*)));
     for(unsigned long i = 0; i < 5; i++){
         relation[i] = new bool[5];
     }

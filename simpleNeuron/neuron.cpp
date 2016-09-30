@@ -61,7 +61,7 @@ void Neuron::setWeight(const double newWeight[]) {
 }
 
 void Neuron::setBalancedWeight() {
-    double balancedWeight = 1 / ((double)inputCount);
+    double balancedWeight = 1 / static_cast<double>(inputCount);
     for (unsigned long i = 0; i < inputCount; i++) {
         weight[i] = balancedWeight;
     }
@@ -69,7 +69,7 @@ void Neuron::setBalancedWeight() {
 
 void Neuron::setRandomWeight(double min, double max) {
     for (unsigned long i = 0; i < inputCount; i++) {
-        weight[i] = (double)rand()*(max - min) + min;
+        weight[i] = static_cast<double>(rand())*(max - min) + min;
     }
 }
 
@@ -90,7 +90,7 @@ double Neuron::getOutput() const {
 }
 
 void Neuron::calculateOutput() {
-    double weightedInputs[inputCount];
+    double *weightedInputs = new double[inputCount];
 
     for (unsigned long i = 0; i < inputCount; i++) {
         weightedInputs[i] = input[i] * weight[i];
