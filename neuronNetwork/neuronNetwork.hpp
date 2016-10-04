@@ -7,6 +7,7 @@
 #define DEF_NETWORK
 
 #include <string>
+#include <vector>
 
 #include "../simpleNeuron/neuron.hpp"
 
@@ -49,6 +50,8 @@ public:
 
     void setInput(std::vector<double> data);
     void calculate();
+
+    std::vector<double> computeGradient(std::vector<double> expectedOutput);
 
 private:
     void plugInputIntoNeuron();

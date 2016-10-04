@@ -16,8 +16,8 @@ using namespace std;
 
 Neuron::Neuron() {
     inputCount = 1;
-    weight = new vector<double>(inputCount);
-    input = new vector<double>(inputCount);
+    weight = vector<double>(inputCount);
+    input = vector<double>(inputCount);
 
     setBalancedWeight();
     reset();
@@ -28,8 +28,8 @@ Neuron::Neuron(unsigned long count, CompositionFunction compositionFunction, Act
     composition = compositionFunction;
 
     inputCount = count;
-    weight = new vector<double>(inputCount);
-    input = new vector<double>(inputCount);
+    weight = vector<double>(inputCount);
+    input = vector<double>(inputCount);
 
     setBalancedWeight();
     reset();
@@ -61,8 +61,8 @@ string Neuron::description() {
 
 void Neuron::setInputCount(unsigned long count) {
     inputCount = count;
-    input = new double[inputCount];
-    weight = new double[inputCount];
+    input = vector<double>(inputCount);
+    weight = vector<double>(inputCount);
 }
 
 // Weights
@@ -111,7 +111,7 @@ double Neuron::getOutput() const {
 }
 
 void Neuron::calculateOutput() {
-    vector<double> weightedInputs = new vector<double>(inputCount);
+    vector<double> weightedInputs = vector<double>(inputCount);
 
     for (unsigned long i = 0; i < inputCount; i++) {
         weightedInputs[i] = input[i] * weight[i];

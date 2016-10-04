@@ -11,7 +11,7 @@
 #include "neuronNetwork.hpp"
 
 #define MAX_DIFFERENCE_OUTPUT 0.001
-
+#define MAX_DIFFERENCE_ERROR 0.001
 
 using namespace std;
 
@@ -24,24 +24,24 @@ NeuronNetwork::NeuronNetwork(string givenName, string givenDate, unsigned long n
     outputCount = nbout;
     neuronsCount = ntot;
 
-    input = new vector<double>(nbin);
-    output = new vector<double>(ntot);
+    input = vector<double>(nbin);
+    output = vector<double>(ntot);
 
     // 2-dimensional array allocation
-    relation = new vector<vector<bool>>(ntot)
+    relation = vector<vector<bool>>(ntot);
     for(unsigned long i = 0; i < ntot; i++){
         vector<bool> v(ntot);
         relation[i] = v;
     }
 
-    inputNeurons = new vector<unsigned long>(nbin);
-    outputNeurons = new vector<unsigned long>(nbout);
-    neurons = new vector<Neuron*>(ntot);
+    inputNeurons = vector<unsigned long>(nbin);
+    outputNeurons = vector<unsigned long>(nbout);
+    neurons = vector<Neuron*>(ntot);
 }
 
 void NeuronNetwork::reset() {
-    input = new vector<double>(inputCount);
-    output = new vector<double>(neuronsCount);
+    input = vector<double>(inputCount);
+    output = vector<double>(neuronsCount);
     for (unsigned long i = 0; i < neuronsCount; i++) {
         neurons[i]->reset();
     }
@@ -81,7 +81,7 @@ string NeuronNetwork::description() {
     return str.str();
 }
 
-void NeuronNetwork::setRelation(vector<vector<double>> tab) {
+void NeuronNetwork::setRelation(vector<vector<bool>> tab) {
     relation = tab;
 }
 
@@ -135,7 +135,7 @@ void NeuronNetwork::plugInputIntoNeuron() {
     unsigned long length;
     unsigned long k;
     for (unsigned long j = 0; j < inputCount; j++) {
-        double x[1];
+        vector<double> x(1);
         x[0] = input[j];
         neurons[inputNeurons[j]]->setInput(x);
     }
@@ -193,7 +193,7 @@ vector<unsigned long> NeuronNetwork::getOutputNeurons() {
     return outputNeurons;
 }
 
-vecctor<vector<bool>> NeuronNetwork::getRelation() {
+vector<vector<bool>> NeuronNetwork::getRelation() {
     return relation;
 }
 
@@ -202,14 +202,14 @@ vector<double> NeuronNetwork::getInput() {
 }
 
 vector<double> NeuronNetwork::getOutput() {
-    double *result = new double[outputCount];
+    vector<double> result(outputCount);
     for (unsigned long i = 0; i < outputCount; i++) {
         result[i] = output[outputNeurons[i]];
     }
     return result;
 }
 
-double NeuronNetwork::leastSquareError(double x[], double y[], unsigned long n) {
+double NeuronNetwork::leastSquareError(vector<double> x, vector<double> y, unsigned long n) {
     double result = 0;
     for (unsigned long i = 0; i < n; i++) {
         double d = x[i] - y[i];
@@ -217,3 +217,23 @@ double NeuronNetwork::leastSquareError(double x[], double y[], unsigned long n) 
     }
     return result;
 }
+
+/*vector<double> computeGradient(vector<double> expectedOutput){
+    vector<double> error(neuronsCount, 0);
+    vector<double> gradient(neuronsCount, 0);
+    vector<double> gradientBefore(neuronsCount, 0);
+    for(unsigned long i = 0; i < outputCount; i++){
+        error[outputNeurons[i]] = expectedOutput[i] - output[i];
+    }
+
+    do {
+        for (unsigned long i = 0; i < neuronsCount; i++) {
+            gradientBefore[i] = gradient[i];
+        }
+        plugInputIntoNeuron();
+        calculeNeurons();
+        for (unsigned long i = 0; i < neuronsCount; i++) {
+            outputAfter[i] = neurons[i]->getOutput();
+        }
+    } while(leastSquareError(output, outputAfter, neuronsCount) >= MAX_DIFFERENCE_ERROR);
+}*/
