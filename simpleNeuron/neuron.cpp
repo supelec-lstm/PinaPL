@@ -8,16 +8,16 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <vector>
 
 #include "neuron.hpp"
-
 
 using namespace std;
 
 Neuron::Neuron() {
     inputCount = 1;
-    weight = new double[inputCount];
-    input = new double[inputCount];
+    weight = new vector<double>(inputCount);
+    input = new vector<double>(inputCount);
 
     setBalancedWeight();
     reset();
@@ -28,8 +28,8 @@ Neuron::Neuron(unsigned long count, CompositionFunction compositionFunction, Act
     composition = compositionFunction;
 
     inputCount = count;
-    weight = new double[inputCount];
-    input = new double[inputCount];
+    weight = new vector<double>(inputCount);
+    input = new vector<double>(inputCount);
 
     setBalancedWeight();
     reset();
@@ -67,11 +67,11 @@ void Neuron::setInputCount(unsigned long count) {
 
 // Weights
 
-double* Neuron::getWeight() const {
+vector<double> Neuron::getWeight() const {
     return weight;
 }
 
-void Neuron::setWeight(const double newWeight[]) {
+void Neuron::setWeight(const vector<double> newWeight) {
     for (unsigned long i = 0; i < inputCount; i++) {
         weight[i] = newWeight[i];
     }
@@ -96,11 +96,11 @@ unsigned long Neuron::getInputCount() const {
     return inputCount;
 }
 
-double* Neuron::getInput() const {
+vector<double> Neuron::getInput() const {
     return input;
 }
 
-void Neuron::setInput(const double newInput[]) {
+void Neuron::setInput(const vector<double> newInput) {
     for (unsigned long i = 0; i < inputCount; i++) {
         input[i] = newInput[i];
     }
@@ -111,7 +111,7 @@ double Neuron::getOutput() const {
 }
 
 void Neuron::calculateOutput() {
-    double *weightedInputs = new double[inputCount];
+    vector<double> weightedInputs = new vector<double>(inputCount);
 
     for (unsigned long i = 0; i < inputCount; i++) {
         weightedInputs[i] = input[i] * weight[i];
@@ -144,7 +144,7 @@ double Neuron::activationLinear(double x) {
 
 // Composition functions
 
-double Neuron::compositionSum(double x[], unsigned long n) {
+double Neuron::compositionSum(vector<double> x, unsigned long n) {
     double sum = 0;
     for (unsigned long i = 0; i < n; i++) {
         sum += x[i];
@@ -152,6 +152,6 @@ double Neuron::compositionSum(double x[], unsigned long n) {
     return sum;
 }
 
-double Neuron::compositionDist(double x[], unsigned long n) {
+double Neuron::compositionDist(vector<double> x, unsigned long n) {
     return 0;
 }

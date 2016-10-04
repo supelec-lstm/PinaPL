@@ -3,17 +3,19 @@
 //  PinaPL
 //
 
+#include <vector>
+
 #ifndef DEF_NEURON
 #define DEF_NEURON
 
 
 typedef double (*ActivationFunction) (double);
-typedef double (*CompositionFunction) (double[], unsigned long);
+typedef double (*CompositionFunction) (std::vector<double>, unsigned long);
 
 class Neuron {
     unsigned long inputCount;
-    double* weight;
-    double* input;
+    std::vector<double> weight;
+    std::vector<double> input;
     double output;
     CompositionFunction composition;
     ActivationFunction activation;
@@ -26,14 +28,14 @@ public:
 
     void setInputCount(unsigned long count);
     
-    double* getWeight() const;
-    void setWeight(const double newWeight[]);
+    std::vector<double> getWeight() const;
+    void setWeight(const std::vector<double> newWeight);
     void setBalancedWeight();
     void setRandomWeight(double min, double max);
 
     unsigned long getInputCount() const;
-    double* getInput() const;
-    void setInput(const double newInput[]);
+    std::vector<double> getInput() const;
+    void setInput(const std::vector<double> newInput);
 
     double getOutput() const;
     void calculateOutput();
@@ -44,8 +46,8 @@ public:
     static double activationArctan(double x);
     static double activationLinear(double x);
 
-    static double compositionSum(double x[], unsigned long n);
-    static double compositionDist(double x[], unsigned long n);
+    static double compositionSum(std::vector<double> x, unsigned long n);
+    static double compositionDist(std::vector<double> x, unsigned long n);
 };
 
 

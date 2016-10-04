@@ -24,23 +24,24 @@ NeuronNetwork::NeuronNetwork(string givenName, string givenDate, unsigned long n
     outputCount = nbout;
     neuronsCount = ntot;
 
-    input = new double[nbin];
-    output = new double[ntot];
+    input = new vector<double>(nbin);
+    output = new vector<double>(ntot);
 
     // 2-dimensional array allocation
-    relation = static_cast<bool**>(malloc(ntot * sizeof(bool*)));
-    for (unsigned long i = 0; i < ntot; i++) {
-        relation[i] = new bool[ntot];
+    relation = new vector<vector<bool>>(ntot)
+    for(unsigned long i = 0; i < ntot; i++){
+        vector<bool> v(ntot);
+        relation[i] = v;
     }
 
-    inputNeurons = new unsigned long[nbin];
-    outputNeurons = new unsigned long[nbout];
-    neurons = static_cast<Neuron**>(malloc(ntot * sizeof(Neuron*)));
+    inputNeurons = new vector<unsigned long>(nbin);
+    outputNeurons = new vector<unsigned long>(nbout);
+    neurons = new vector<Neuron*>(ntot);
 }
 
 void NeuronNetwork::reset() {
-    input = new double[inputCount];
-    output = new double[neuronsCount];
+    input = new vector<double>(inputCount);
+    output = new vector<double>(neuronsCount);
     for (unsigned long i = 0; i < neuronsCount; i++) {
         neurons[i]->reset();
     }
@@ -80,25 +81,25 @@ string NeuronNetwork::description() {
     return str.str();
 }
 
-void NeuronNetwork::setRelation(bool** tab) {
+void NeuronNetwork::setRelation(vector<vector<double>> tab) {
     relation = tab;
 }
 
-void NeuronNetwork::setInputNeurons(unsigned long* tab) {
+void NeuronNetwork::setInputNeurons(vector<unsigned long> tab) {
     inputNeurons = tab;
 }
 
-void NeuronNetwork::setOutputNeurons(unsigned long* tab) {
+void NeuronNetwork::setOutputNeurons(vector<unsigned long> tab) {
     outputNeurons = tab;
 }
 
-void NeuronNetwork::setNeurons(Neuron **tab) {
+void NeuronNetwork::setNeurons(vector<Neuron*> tab) {
     neurons = tab;
 }
 
 // Computing
 
-void NeuronNetwork::setInput(double* data) {
+void NeuronNetwork::setInput(vector<double> data) {
     reset();
     for (unsigned long i = 0; i < inputCount; i++) {
         input[i] = data[i];
@@ -107,7 +108,7 @@ void NeuronNetwork::setInput(double* data) {
 
 void NeuronNetwork::calculate() {
     // Initialization
-    double *outputAfter = new double[neuronsCount];
+    vector<double> outputAfter(neuronsCount);
     for (unsigned long i = 0; i < neuronsCount; i++) {
         outputAfter[i] = neurons[i]->getOutput();
     }
@@ -128,7 +129,6 @@ void NeuronNetwork::calculate() {
     for (unsigned long i = 0; i < neuronsCount; i++) {
         output[i] = outputAfter[i];
     }
-    delete[] outputAfter;
 }
 
 void NeuronNetwork::plugInputIntoNeuron() {
@@ -142,7 +142,7 @@ void NeuronNetwork::plugInputIntoNeuron() {
     for (unsigned long j = 0; j < neuronsCount; j++) {
         k = 0;
         length = neurons[j]->getInputCount();
-        double *x = new double[length];
+        vector<double> x(length);
         for (unsigned long i = 0; i < neuronsCount; i++) {
             if (relation[i][j]) {
                 x[k] = output[i];
@@ -152,7 +152,6 @@ void NeuronNetwork::plugInputIntoNeuron() {
         if (k == length) {
             neurons[j]->setInput(x);
         }
-        delete[] x;
     }
 }
 
@@ -182,27 +181,27 @@ unsigned long NeuronNetwork::getNeuronsCount() {
     return neuronsCount;
 }
 
-Neuron** NeuronNetwork::getNeurons() {
+vector<Neuron*> NeuronNetwork::getNeurons() {
     return neurons;
 }
 
-unsigned long* NeuronNetwork::getInputNeurons() {
+vector<unsigned long> NeuronNetwork::getInputNeurons() {
     return inputNeurons;
 }
 
-unsigned long* NeuronNetwork::getOutputNeurons() {
+vector<unsigned long> NeuronNetwork::getOutputNeurons() {
     return outputNeurons;
 }
 
-bool** NeuronNetwork::getRelation() {
+vecctor<vector<bool>> NeuronNetwork::getRelation() {
     return relation;
 }
 
-double* NeuronNetwork::getInput() {
+vector<double> NeuronNetwork::getInput() {
     return input;
 }
 
-double* NeuronNetwork::getOutput() {
+vector<double> NeuronNetwork::getOutput() {
     double *result = new double[outputCount];
     for (unsigned long i = 0; i < outputCount; i++) {
         result[i] = output[outputNeurons[i]];

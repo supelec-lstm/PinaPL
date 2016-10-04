@@ -24,25 +24,9 @@ void test3();
 
 int main(int argc, const char * argv[]) {
 
-    vector<string> stringedArgv;
-
-    for (int i = 0; i < argc; i++) {
-        int length = strlen(argv[i]);
-        string argument;
-        argument.assign(argv[i], length);
-        stringedArgv.push_back(argument);
-    }
-
-    if (argc == 2 && stringedArgv[1] == "--interactive") {
-        Console console;
-        console.greeting();
-        console.interactive();
-        console.goodbye();
-    } else {
-        test();
-        test2();
-        test3();
-    }
+	if(NULL == 0){
+		cout << "lol";
+	}
     return 0;
 }
 
