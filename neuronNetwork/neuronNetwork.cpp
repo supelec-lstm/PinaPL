@@ -4,6 +4,7 @@
 //
 
 #include <string>
+#include <sstream>
 #include <iostream>
 #include <stdlib.h>
 
@@ -45,6 +46,40 @@ void NeuronNetwork::reset() {
     }
 }
 
+string NeuronNetwork::description() {
+    stringstream str;
+    str << "Name: " << name << endl;
+    str << "Date: " << date << endl;
+    str << "Number of neurons: " << neuronsCount << endl;
+    str << "  Neurons: {" << endl;
+    for (unsigned long i = 0; i < neuronsCount; i++) {
+        str << "    #" << i << " { " << neurons[i]->description() << endl;
+        str << "        Connected to: {";
+        for (unsigned long j = 0; j < neuronsCount; j++) {
+            if (relation[i][j])
+                str << "  " << j;
+        }
+        str << "  }" << endl;
+        str << "    }" << endl;
+    }
+    str <<  "}" << endl;
+    
+    str << "Number of input neurons: " << inputCount << endl;
+    str << "  Input neurons: {";
+    for (unsigned long i = 0; i < inputCount; i++) {
+        str << "  " << inputNeurons[i] << "(" << input[i] << ")";
+    }
+    str << "  }" <<  endl;
+    str << "Number of output neurons: " << outputCount << endl;
+    str << "  Output neurons: {";
+    for (unsigned long i = 0; i < outputCount; i++) {
+        str << "  " << outputNeurons[i] << "(" << output[outputNeurons[i]] << ")";
+    }
+    str << "  }" <<  endl;
+
+    return str.str();
+}
+
 void NeuronNetwork::setRelation(bool** tab) {
     relation = tab;
 }
@@ -57,7 +92,7 @@ void NeuronNetwork::setOutputNeurons(unsigned long* tab) {
     outputNeurons = tab;
 }
 
-void NeuronNetwork::setNeurons(Neuron* tab[]) {
+void NeuronNetwork::setNeurons(Neuron **tab) {
     neurons = tab;
 }
 
@@ -93,6 +128,7 @@ void NeuronNetwork::calculate() {
     for (unsigned long i = 0; i < neuronsCount; i++) {
         output[i] = outputAfter[i];
     }
+    delete[] outputAfter;
 }
 
 void NeuronNetwork::plugInputIntoNeuron() {
@@ -116,6 +152,7 @@ void NeuronNetwork::plugInputIntoNeuron() {
         if (k == length) {
             neurons[j]->setInput(x);
         }
+        delete[] x;
     }
 }
 
@@ -123,6 +160,46 @@ void NeuronNetwork::calculeNeurons() {
     for (unsigned long i = 0; i < neuronsCount; i++) {
         neurons[i]->calculateOutput();
     }
+}
+
+string NeuronNetwork::getName() {
+    return name;
+}
+
+string NeuronNetwork::getDate() {
+    return date;
+}
+
+unsigned long NeuronNetwork::getInputCount() {
+    return inputCount;
+}
+
+unsigned long NeuronNetwork::getOutputCount() {
+    return outputCount;
+}
+
+unsigned long NeuronNetwork::getNeuronsCount() {
+    return neuronsCount;
+}
+
+Neuron** NeuronNetwork::getNeurons() {
+    return neurons;
+}
+
+unsigned long* NeuronNetwork::getInputNeurons() {
+    return inputNeurons;
+}
+
+unsigned long* NeuronNetwork::getOutputNeurons() {
+    return outputNeurons;
+}
+
+bool** NeuronNetwork::getRelation() {
+    return relation;
+}
+
+double* NeuronNetwork::getInput() {
+    return input;
 }
 
 double* NeuronNetwork::getOutput() {

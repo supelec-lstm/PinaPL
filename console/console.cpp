@@ -60,8 +60,8 @@ vector<string> Console::parseCommandString(string rawInput) {
 }
 
 void Console::scriptExecution(string scriptPath) {
-
-    string path = scriptPath;
+    string scriptRoot = "scripts/";
+    string path = scriptRoot.append(scriptPath);
     ifstream input(path);
     for (string line; getline(input, line);)
     {

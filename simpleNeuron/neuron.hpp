@@ -6,18 +6,23 @@
 #ifndef DEF_NEURON
 #define DEF_NEURON
 
+
+typedef double (*ActivationFunction) (double);
+typedef double (*CompositionFunction) (double[], unsigned long);
+
 class Neuron {
     unsigned long inputCount;
     double* weight;
     double* input;
     double output;
-    double (*composition) (double[], unsigned long);
-    double (*activation) (double);
+    CompositionFunction composition;
+    ActivationFunction activation;
 
 public:
     Neuron();
-    Neuron(unsigned long count, double compositionFunction(double[], unsigned long), double activationFunction(double));
+    Neuron(unsigned long count, CompositionFunction compositionFunction, ActivationFunction activationFunction);
     void reset();
+    std::string description();
 
     void setInputCount(unsigned long count);
     

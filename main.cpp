@@ -3,36 +3,50 @@
 //  PinaPL
 //
 
-
-#define RAND_MAX 2
-
 #include <iostream>
 #include <map>
 #include <typeinfo>
 #include <random>
+#include <string.h>
 
 #include "simpleNeuron/neuron.hpp"
 #include "neuronNetwork/neuronNetwork.hpp"
+#include "neuronNetwork/neuronNetworkBuilder.hpp"
 #include "console/console.hpp"
 
 
 using namespace std;
 
 void test();
+void test2();
+void test3();
+
 
 int main(int argc, const char * argv[]) {
 
-    Console console;
+    vector<string> stringedArgv;
 
-    console.greeting();
-    console.interactive();
-    console.goodbye();
+    for (int i = 0; i < argc; i++) {
+        int length = strlen(argv[i]);
+        string argument;
+        argument.assign(argv[i], length);
+        stringedArgv.push_back(argument);
+    }
 
-    //test();
+    if (argc == 2 && stringedArgv[1] == "--interactive") {
+        Console console;
+        console.greeting();
+        console.interactive();
+        console.goodbye();
+    } else {
+        test();
+        test2();
+        test3();
+    }
     return 0;
 }
 
-void test(){
+void test() {
     // test
 
     // neurones
@@ -43,8 +57,8 @@ void test(){
     neurons[2] = new Neuron(2, Neuron::compositionSum, Neuron::activationSigmoid);
     neurons[3] = new Neuron(1, Neuron::compositionSum, Neuron::activationSigmoid);
     neurons[4] = new Neuron(1, Neuron::compositionSum, Neuron::activationSigmoid);
-
-    for(int i = 0; i < 5; i++){
+    
+    for (unsigned long i = 0; i < 5; i++) {
         neurons[i]->setBalancedWeight();
     }
 
@@ -60,11 +74,11 @@ void test(){
 
     // relations
     bool **relation = static_cast<bool**>(malloc(5 * sizeof(bool*)));
-    for(unsigned long i = 0; i < 5; i++){
+    for (unsigned long i = 0; i < 5; i++) {
         relation[i] = new bool[5];
     }
-    for(int i = 0; i < 5; i++){
-        for(int j = 0; j < 5; j++){
+    for (unsigned long i = 0; i < 5; i++) {
+        for (unsigned long j = 0; j < 5; j++) {
             relation[i][j] = false;
         }
     }
@@ -81,7 +95,7 @@ void test(){
 
     // definition du network
 
-    NeuronNetwork *network = new NeuronNetwork("test", "date", 2, 2, 5);
+    NeuronNetwork *network = new NeuronNetwork("Test", "2016-09-28", 2, 2, 5);
     network->setNeurons(neurons);
     network->setInputNeurons(input);
     network->setOutputNeurons(output);
@@ -92,7 +106,51 @@ void test(){
 
     network->setInput(x);
     network->calculate();
-    double* y = network->getOutput();
-    cout << y[0] << endl << y[1] << endl;
+//    double* y = network->getOutput();
+//    cout << y[0] << endl << y[1] << endl;
+    
+    cout << network->description() << endl << endl;
+}
 
+void test2() {
+    NeuronNetworkBuilder builder = NeuronNetworkBuilder();
+    builder.setName("Test");
+    builder.setDate("2016-09-28");
+    builder.setDefaultCompositionFunction(&Neuron::compositionSum);
+    builder.setDefaultActivationFunction(&Neuron::activationSigmoid);
+    
+    builder.addNeurons(2, &Neuron::compositionSum, &Neuron::activationLinear);
+    builder.addNeurons(3);
+    
+    builder.setPropertiesForNeuronRange(NeuronProportyInput, 0, 1);
+    builder.setPropertiesForNeuronRange(NeuronProportyOutput, 3, 4);
+    
+    builder.addOneConnectionToManyRange(0, 1, 2);
+    builder.addManyConnectionsToOneRange(2, 3, 4);
+    
+    double inputs[] = {0, 1};
+    NeuronNetwork network = builder.generateComputeNetwork(false);
+    network.setInput(inputs);
+    network.calculate();
+
+    cout << network.description();
+}
+
+void test3() {
+    NeuronNetworkBuilder builder = NeuronNetworkBuilder();
+    builder.setDefaultCompositionFunction(&Neuron::compositionSum);
+    builder.setDefaultActivationFunction(&Neuron::activationSigmoid);
+    builder.addNeurons(40);
+    builder.setPropertiesForNeuronRange(NeuronProportyInput, 0, 9);
+    builder.setPropertiesForNeuronRange(NeuronProportyOutput, 30, 39);
+    builder.addManyConnectionsToManyRange(0, 9, 10, 19);
+    builder.addManyConnectionsToManyRange(10, 19, 20, 29);
+    builder.addManyConnectionsToManyRange(20, 29, 30, 39);
+    
+    double inputs[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    NeuronNetwork network = builder.generateComputeNetwork(true, -0.1, 0.1);
+    network.setInput(inputs);
+    network.calculate();
+    
+    cout << network.description();
 }

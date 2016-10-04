@@ -6,6 +6,7 @@
 #include <math.h>
 #include <random>
 #include <string>
+#include <sstream>
 #include <iostream>
 
 #include "neuron.hpp"
@@ -22,7 +23,7 @@ Neuron::Neuron() {
     reset();
 }
 
-Neuron::Neuron(unsigned long count, double compositionFunction(double[], unsigned long), double activationFunction(double)) {
+Neuron::Neuron(unsigned long count, CompositionFunction compositionFunction, ActivationFunction activationFunction) {
     activation = activationFunction;
     composition = compositionFunction;
 
@@ -39,6 +40,23 @@ void Neuron::reset() {
         input[i] = 0;
     }
     output = 0;
+}
+
+string Neuron::description() {
+    stringstream str;
+    str << "Number of inputs: " << inputCount << endl;
+    str << "        Inputs: {";
+    for (unsigned long i = 0; i < inputCount; i++) {
+        str << "  " << input[i];
+    }
+    str << "  }" << endl;
+    str << "        Weigths: {";
+    for (unsigned long i = 0; i < inputCount; i++) {
+        str << "  " << weight[i];
+    }
+    str << "  }" << endl;
+    str << "        Output: " << output;
+    return str.str();
 }
 
 void Neuron::setInputCount(unsigned long count) {
@@ -68,7 +86,7 @@ void Neuron::setBalancedWeight() {
 
 void Neuron::setRandomWeight(double min, double max) {
     for (unsigned long i = 0; i < inputCount; i++) {
-        weight[i] = static_cast<double>(rand())*(max - min) + min;
+        weight[i] = static_cast<double>(rand()) / RAND_MAX * (max - min) + min;
     }
 }
 
