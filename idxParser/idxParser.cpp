@@ -6,8 +6,8 @@
 #include <iostream>
 #include <fstream>
 #include <ios>
-#include <sys/stat.h>
 #include <sstream>
+#include <zlib.h>
 
 #include "idxParser.hpp"
 
@@ -16,40 +16,26 @@ using namespace std;
 IdxParser::IdxParser() {
 }
 
+typedef struct gzFile_s *gzFile;
 
-void importLabelFile(string path) {
-
-    string filePath = path;
-
-    // get file size
-    struct stat results;
-
-    const char* pathChared = path.c_str();
-
-    if (stat(pathChared, &results) == 0) {
-    } else {
-        cout << "Error: cannot read file" << endl;
-    }
-
-    // results.st_size contains the file's byte size
-
-    // open the file
-    ifstream data;
-    data.open(filePath, ios::in | ios::binary);
-
-    // read the file
-    // read magic number
-    char magicNumber[3];
-    data.read(magicNumber, 3);
-
-    cout << magicNumber << endl;
-
-    return;
+gzFile IdxParser::importGzFile(string path) {
+    const char * pathChared = path.c_str();
+    gzFile file = gzopen(pathChared, "rb");
+    return file;
 }
 
-void testIdxParser() {
+void IdxParser::testIdxParser() {
+    // import an image file
+    gzFile file = importGzFile("idxParser/train-images-idx3-ubyte.gz");
+    // magic number
+    uint8_t magicNumber[4];
+    gzread(file, &magicNumber, sizeof(magicNumber));
+    cout << "magicNumber: " << int32_t(magicNumber[0] << 24 | magicNumber[1] << 16 | magicNumber[2] << 8 | magicNumber[3]) << endl;
+    // number of images
+    uint8_t imageCount[4];
+    gzread(file, &imageCount, sizeof(imageCount));
+    cout << "imageCount: " << int32_t(imageCount[0] << 24 | imageCount[1] << 16 | imageCount[2] << 8 | imageCount[3]) << endl;
 
-    importLabelFile("idxParser/train-images-idx3-ubyte.gz");
     return;
 }
 

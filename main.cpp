@@ -43,8 +43,8 @@ int main(int argc, const char * argv[]) {
     } else {
 //        test2();
 //        test3();
-//        IdxParser parser;
-//        parser.testIdxParser();
+        IdxParser parser;
+        parser.testIdxParser();
     }
     return 0;
 }

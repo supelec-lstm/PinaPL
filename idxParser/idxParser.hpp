@@ -7,12 +7,12 @@
 #define DEF_IDXPARSER
 
 #include<vector>
+#include <zlib.h>
 
 class IdxParser {
-private:
 public:
     IdxParser();
-    void importLabelFile(std::string path);
+    gzFile importGzFile(std::string path);
     void testIdxParser();
 };
 
