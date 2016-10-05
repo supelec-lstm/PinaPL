@@ -19,7 +19,7 @@ class NeuronNetwork {
     unsigned long inputCount;
     unsigned long outputCount;
     unsigned long neuronsCount;
-    std::vector<Neuron*> neurons;
+    std::vector<Neuron> neurons;
     std::vector<unsigned long> inputNeurons;
     std::vector<unsigned long> outputNeurons;
     std::vector<std::vector<bool>> relation;
@@ -37,7 +37,7 @@ public:
     unsigned long getInputCount();
     unsigned long getOutputCount();
     unsigned long getNeuronsCount();
-    std::vector<Neuron*> getNeurons();
+    std::vector<Neuron> getNeurons();
     std::vector<unsigned long> getInputNeurons();
     std::vector<unsigned long> getOutputNeurons();
     std::vector<std::vector<bool>> getRelation();
@@ -47,7 +47,7 @@ public:
     void setRelation(std::vector<std::vector<bool>> tab);
     void setInputNeurons(std::vector<unsigned long> tab);
     void setOutputNeurons(std::vector<unsigned long> tab);
-    void setNeurons(std::vector<Neuron*> tab);
+    void setNeurons(std::vector<Neuron> tab);
 
     void setInput(std::vector<double> data);
     void calculate();

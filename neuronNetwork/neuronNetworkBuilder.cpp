@@ -23,40 +23,34 @@ NeuronNetworkBuilder::NeuronNetworkBuilder() {
     strftime(buffer, 80, "%Y-%m-%d", timeinfo);
     date = string(buffer);
     
-    neurons = new vector<Neuron>;
-    properties = new vector<NeuronProperty>;
-    connections = new vector<vector<unsigned long>>;
-    
-    defaultCompositionFunction = NULL;
-    defaultActivationFunction = NULL;
+    neurons = vector<Neuron>();
+    properties = vector<NeuronProperty>();
+    connections = vector<vector<unsigned long>>();
 }
 
 NeuronNetworkBuilder::NeuronNetworkBuilder(NeuronNetwork network) {
     name = network.getName();
     date = network.getDate();
     
-    neurons = new vector<Neuron>;
-    properties = new vector<NeuronProperty>;
-    connections = new vector<vector<unsigned long>>;
-    
-    defaultCompositionFunction = NULL;
-    defaultActivationFunction = NULL;
+    neurons = vector<Neuron>();
+    properties = vector<NeuronProperty>();
+    connections = vector<vector<unsigned long>>();
 
     for (unsigned long i = 0; i < network.getNeuronsCount(); i++) {
-        neurons->push_back(*network.getNeurons()[i]);
-        properties->push_back(NeuronProportyNone);
-        connections->push_back(vector<unsigned long>());
+        neurons.push_back(network.getNeurons()[i]);
+        properties.push_back(NeuronProportyNone);
+        connections.push_back(vector<unsigned long>());
     }
     
     for (unsigned long i = 0; i < network.getInputCount(); i++)
-        properties->at(network.getInputNeurons()[i]) = static_cast<NeuronProperty>(properties->at(network.getInputNeurons()[i]) | NeuronProportyInput);
+        properties[network.getInputNeurons()[i]] = static_cast<NeuronProperty>(properties[network.getInputNeurons()[i]] | NeuronProportyInput);
     for (unsigned long i = 0; i < network.getOutputCount(); i++)
-        properties->at(network.getOutputNeurons()[i]) = static_cast<NeuronProperty>(properties->at(network.getOutputNeurons()[i]) | NeuronProportyOutput);
+        properties[network.getOutputNeurons()[i]]= static_cast<NeuronProperty>(properties[network.getOutputNeurons()[i]] | NeuronProportyOutput);
     
     for (unsigned long i = 0; i < network.getNeuronsCount(); i++) {
         for (unsigned long j = 0; j < network.getNeuronsCount(); j++) {
             if (network.getRelation()[i][j])
-                connections->at(i).push_back(j);
+                connections[i].push_back(j);
         }
     }
 }
@@ -65,53 +59,38 @@ NeuronNetwork NeuronNetworkBuilder::generateComputeNetwork(bool setRandomWeights
     vector<unsigned long> inputs = vector<unsigned long>();
     vector<unsigned long> outputs = vector<unsigned long>();
     
-    for (unsigned long i = 0; i < properties->size(); i++) {
-        if (properties->at(i) & NeuronProportyInput)
+    for (unsigned long i = 0; i < properties.size(); i++) {
+        if (properties[i] & NeuronProportyInput)
             inputs.push_back(i);
-        if (properties->at(i) & NeuronProportyOutput)
+        if (properties[i] & NeuronProportyOutput)
             outputs.push_back(i);
     }
     
-    unsigned long *inputTable = new unsigned long[inputs.size()];
-    for (unsigned long i = 0; i < inputs.size(); i++)
-        inputTable[i] = inputs.at(i);
-    
-    unsigned long *outputTable = new unsigned long[outputs.size()];
-    for (unsigned long i = 0; i < outputs.size(); i++)
-        outputTable[i] = outputs.at(i);
-    
-    bool **relation = static_cast<bool**>(malloc(neurons->size() * sizeof(bool*)));
-    unsigned long *inputCounts = new unsigned long[neurons->size()];
-    for (unsigned long i = 0; i < neurons->size(); i++)
-        inputCounts[i] = 0;
-
-    for (unsigned long i = 0; i < neurons->size(); i++) {
-        relation[i] = new bool[neurons->size()];
-        for (unsigned long j = 0; j < connections->at(i).size(); j++) {
-            relation[i][connections->at(i).at(j)] = true;
-            inputCounts[connections->at(i).at(j)]++;
+    vector<vector<bool>> relations = vector<vector<bool>>(neurons.size());
+    vector<unsigned long> inputCounts = vector<unsigned long>(neurons.size());
+    for (unsigned long i = 0; i < neurons.size(); i++) {
+        relations[i] = vector<bool>(neurons.size());
+        for (unsigned long j = 0; j < connections[i].size(); j++) {
+            relations[i][connections[i][j]] = true;
+            inputCounts[connections[i][j]]++;
         }
     }
 
-    Neuron **neuronTable = new Neuron*[neurons->size()];
-    for (unsigned long i = 0; i < neurons->size(); i++) {
+    for (unsigned long i = 0; i < neurons.size(); i++) {
         if (inputCounts[i] == 0)
             inputCounts[i] = 1;
-        neurons->at(i).setInputCount(inputCounts[i]);
+        neurons[i].setInputCount(inputCounts[i]);
         if (setRandomWeights)
-            neurons->at(i).setRandomWeight(min, max);
+            neurons[i].setRandomWeight(min, max);
         else
-            neurons->at(i).setBalancedWeight();
-        neuronTable[i] = &neurons->at(i);
+            neurons[i].setBalancedWeight();
     }
     
-    delete[] inputCounts;
-
-    NeuronNetwork network = NeuronNetwork(name, date, inputs.size(), outputs.size(), neurons->size());
-    network.setNeurons(neuronTable);
-    network.setRelation(relation);
-    network.setInputNeurons(inputTable);
-    network.setOutputNeurons(outputTable);
+    NeuronNetwork network = NeuronNetwork(name, date, inputs.size(), outputs.size(), neurons.size());
+    network.setNeurons(neurons);
+    network.setRelation(relations);
+    network.setInputNeurons(inputs);
+    network.setOutputNeurons(outputs);
     network.reset();
     
     return network;
@@ -121,58 +100,55 @@ NeuronNetwork NeuronNetworkBuilder::generateComputeNetwork(bool setRandomWeights
 
 unsigned long NeuronNetworkBuilder::addNeuron() {
     Neuron newNeuron;
-    if (defaultCompositionFunction && defaultActivationFunction)
-        newNeuron = Neuron(1, defaultCompositionFunction, defaultActivationFunction);
-    else
-        newNeuron = Neuron();
-    neurons->push_back(newNeuron);
-    properties->push_back(NeuronProportyNone);
-    connections->push_back(vector<unsigned long>());
-    return neurons->size() - 1;
+    newNeuron = Neuron(1, defaultCompositionFunction, defaultActivationFunction);
+    neurons.push_back(newNeuron);
+    properties.push_back(NeuronProportyNone);
+    connections.push_back(vector<unsigned long>());
+    return neurons.size() - 1;
 }
 
-unsigned long NeuronNetworkBuilder::addNeuron(CompositionFunction compositionFunction, ActivationFunction activationFunction) {
+unsigned long NeuronNetworkBuilder::addNeuron(compositionFunction compositionFunction, activationFunction activationFunction) {
     Neuron newNeuron = Neuron(1, compositionFunction, activationFunction);
-    neurons->push_back(newNeuron);
-    properties->push_back(NeuronProportyNone);
-    connections->push_back(vector<unsigned long>());
-    return neurons->size() - 1;
+    neurons.push_back(newNeuron);
+    properties.push_back(NeuronProportyNone);
+    connections.push_back(vector<unsigned long>());
+    return neurons.size() - 1;
 }
 
-unsigned long* NeuronNetworkBuilder::addNeurons(unsigned long count) {
-    unsigned long *indexes = new unsigned long[count];
+vector<unsigned long> NeuronNetworkBuilder::addNeurons(unsigned long count) {
+    vector<unsigned long> indexes =  vector<unsigned long>(count);
     for (unsigned long i = 0; i < count; i++) {
-        indexes[i] = this->addNeuron();
+        indexes[i] = addNeuron();
     }
     return indexes;
 }
 
-unsigned long* NeuronNetworkBuilder::addNeurons(unsigned long count, CompositionFunction compositionFunction, ActivationFunction activationFunction) {
-    unsigned long *indexes = new unsigned long[count];
+vector<unsigned long> NeuronNetworkBuilder::addNeurons(unsigned long count, compositionFunction compositionFunction, activationFunction activationFunction) {
+    vector<unsigned long> indexes = vector<unsigned long>(count);
     for (unsigned long i = 0; i < count; i++) {
-        indexes[i] = this->addNeuron(compositionFunction, activationFunction);
+        indexes[i] = addNeuron(compositionFunction, activationFunction);
     }
     return indexes;
 }
 
 void NeuronNetworkBuilder::removeNeuron(unsigned long index) {
-    neurons->erase(neurons->begin() + index);
-    properties->erase(properties->begin() + index);
-    connections->erase(connections->begin() + index);
+    neurons.erase(neurons.begin() + index);
+    properties.erase(properties.begin() + index);
+    connections.erase(connections.begin() + index);
     
-    for (unsigned long i = 0; i < connections->size(); i++) {
-        for (unsigned long j = 0; j < connections->at(i).size(); j++) {
-            if (connections->at(i).at(j) == index) {
-                connections->at(i).erase(connections->at(i).begin() + j);
+    for (unsigned long i = 0; i < connections.size(); i++) {
+        for (unsigned long j = 0; j < connections[i].size(); j++) {
+            if (connections[i][j] == index) {
+                connections[i].erase(connections[i].begin() + j);
                 j--;
-            } else if (connections->at(i).at(j) > index)
-                connections->at(i).at(j)--;
+            } else if (connections[i][j] > index)
+                connections[i][j]--;
         }
     }
 }
 
-void NeuronNetworkBuilder::removeNeurons(unsigned long* indexes, unsigned long count) {
-    for (unsigned long i = 0; i < count; i++) {
+void NeuronNetworkBuilder::removeNeurons(vector<unsigned long> indexes) {
+    for (unsigned long i = 0; i < indexes.size(); i++) {
         removeNeuron(indexes[i]);
     }
 }
@@ -184,11 +160,11 @@ void NeuronNetworkBuilder::removeNeuronsRange(unsigned long fromIndex, unsigned 
 }
 
 void NeuronNetworkBuilder::addConnection(unsigned long from, unsigned long to) {
-    connections->at(from).push_back(to);
+    connections[from].push_back(to);
 }
 
-void NeuronNetworkBuilder::addManyConnectionsToOne(unsigned long fromIndex, unsigned long *toIndexes, unsigned long toIndexesCount) {
-    for (unsigned long i = 0; i < toIndexesCount; i++) {
+void NeuronNetworkBuilder::addManyConnectionsToOne(unsigned long fromIndex, vector<unsigned long> toIndexes) {
+    for (unsigned long i = 0; i < toIndexes.size(); i++) {
         addConnection(fromIndex, toIndexes[i]);
     }
 }
@@ -199,8 +175,8 @@ void NeuronNetworkBuilder::addManyConnectionsToOneRange(unsigned long fromIndex,
     }
 }
 
-void NeuronNetworkBuilder::addOneConnectionToMany(unsigned long *fromIndexes, unsigned long fromIndexesCount, unsigned long toIndex) {
-    for (unsigned long i = 0; i < fromIndexesCount; i++) {
+void NeuronNetworkBuilder::addOneConnectionToMany(vector<unsigned long> fromIndexes, unsigned long toIndex) {
+    for (unsigned long i = 0; i < fromIndexes.size(); i++) {
         addConnection(fromIndexes[i], toIndex);
     }
 }
@@ -211,9 +187,9 @@ void NeuronNetworkBuilder::addOneConnectionToManyRange(unsigned long fromFirstIn
     }
 }
 
-void NeuronNetworkBuilder::addManyConnectionsToMany(unsigned long *fromIndexes, unsigned long fromIndexesCount, unsigned long *toIndexes, unsigned long toIndexesCount) {
-    for (unsigned long i = 0; i < fromIndexesCount; i++) {
-        for (unsigned long j = 0; j < toIndexesCount; j++) {
+void NeuronNetworkBuilder::addManyConnectionsToMany(vector<unsigned long> fromIndexes, vector<unsigned long> toIndexes) {
+    for (unsigned long i = 0; i < fromIndexes.size(); i++) {
+        for (unsigned long j = 0; j < toIndexes.size(); j++) {
             addConnection(fromIndexes[i], toIndexes[j]);
         }
     }
@@ -228,9 +204,9 @@ void NeuronNetworkBuilder::addManyConnectionsToManyRange(unsigned long fromFirst
 }
 
 void NeuronNetworkBuilder::removeConnection(unsigned long from, unsigned long to) {
-    for (unsigned long i = 0; i < connections->at(from).size(); i++) {
-        if (connections->at(from).at(i) == to) {
-            connections->at(from).erase(connections->at(from).begin() + i);
+    for (unsigned long i = 0; i < connections[from].size(); i++) {
+        if (connections[from][i] == to) {
+            connections[from].erase(connections[from].begin() + i);
             i--;
         }
     }
@@ -247,32 +223,32 @@ string NeuronNetworkBuilder::getDate() {
 }
 
 Neuron NeuronNetworkBuilder::getNeuron(unsigned long index) {
-    return neurons->at(index);
+    return neurons[index];
 }
 
-vector<Neuron>* NeuronNetworkBuilder::getNeurons() {
+vector<Neuron> NeuronNetworkBuilder::getNeurons() {
     return neurons;
 }
 
 NeuronProperty NeuronNetworkBuilder::getPropertiesForNeuron(unsigned long index) {
-    return properties->at(index);
+    return properties[index];
 }
 
-vector<NeuronProperty>* NeuronNetworkBuilder::getProperties() {
+vector<NeuronProperty> NeuronNetworkBuilder::getProperties() {
     return properties;
 }
 
-vector<vector<unsigned long>>* NeuronNetworkBuilder::getConnections() {
+vector<vector<unsigned long>> NeuronNetworkBuilder::getConnections() {
     return connections;
 }
 
 // Setters
 
-CompositionFunction NeuronNetworkBuilder::getDefaultCompositionFunction() {
+compositionFunction NeuronNetworkBuilder::getDefaultCompositionFunction() {
     return defaultCompositionFunction;
 }
 
-ActivationFunction NeuronNetworkBuilder::getDefaultActivationFunction() {
+activationFunction NeuronNetworkBuilder::getDefaultActivationFunction() {
     return defaultActivationFunction;
 }
 
@@ -285,19 +261,19 @@ void NeuronNetworkBuilder::setDate(string aDate) {
 }
 
 void NeuronNetworkBuilder::setNeuron(Neuron neuron, unsigned long index) {
-    (*neurons)[index] = neuron;
+    neurons[index] = neuron;
 }
 
-void NeuronNetworkBuilder::setNeurons(vector<Neuron> *someNeurons) {
+void NeuronNetworkBuilder::setNeurons(vector<Neuron> someNeurons) {
     neurons = someNeurons;
 }
 
 void NeuronNetworkBuilder::setPropertiesForNeuron(NeuronProperty property, unsigned long index) {
-    (*properties)[index] = property;
+    properties[index] = property;
 }
 
-void NeuronNetworkBuilder::setPropertiesForNeurons(NeuronProperty property, unsigned long *indexes, unsigned long count) {
-    for (unsigned long i = 0; i < count; i++)
+void NeuronNetworkBuilder::setPropertiesForNeurons(NeuronProperty property, vector<unsigned long> indexes) {
+    for (unsigned long i = 0; i < indexes.size(); i++)
         setPropertiesForNeuron(property, indexes[i]);
 }
 
@@ -306,19 +282,19 @@ void NeuronNetworkBuilder::setPropertiesForNeuronRange(NeuronProperty property, 
         setPropertiesForNeuron(property, i);
 }
 
-void NeuronNetworkBuilder::setProperties(vector<NeuronProperty> *someProperties) {
+void NeuronNetworkBuilder::setProperties(vector<NeuronProperty> someProperties) {
     properties = someProperties;
 }
 
-void NeuronNetworkBuilder::setConnections(vector<vector<unsigned long>> *someConnections) {
+void NeuronNetworkBuilder::setConnections(vector<vector<unsigned long>> someConnections) {
     connections = someConnections;
 }
 
-void NeuronNetworkBuilder::setDefaultCompositionFunction(CompositionFunction compositionFunction) {
+void NeuronNetworkBuilder::setDefaultCompositionFunction(compositionFunction compositionFunction) {
     defaultCompositionFunction = compositionFunction;
 }
 
-void NeuronNetworkBuilder::setDefaultActivationFunction(ActivationFunction activationFunction) {
+void NeuronNetworkBuilder::setDefaultActivationFunction(activationFunction activationFunction) {
     defaultActivationFunction = activationFunction;
 }
 
