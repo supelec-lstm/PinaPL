@@ -8,12 +8,14 @@
 
 #include<vector>
 
-enum Command {DEFAULT, LIST, SCRIPT};
+enum Command {DEFAULT, LISTSAVEDNETWORKS, LISTSCRIPTS, LISTIDXS, SCRIPT};
 
 class Console {
 private:
     std::vector<std::string> parseCommandString(std::string rawInput);
-    bool listFolderContent();
+    bool listSavedNetworks();
+    bool listScripts();
+    bool listIdxs();
     void scriptExecution(std::string scriptPath);
     void commandExecution(std::vector<std::string> input);
 
