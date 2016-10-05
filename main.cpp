@@ -19,9 +19,10 @@
 
 using namespace std;
 
+/*
 void test2();
 void test3();
-
+*/
 
 int main(int argc, const char * argv[]) {
 
@@ -40,15 +41,15 @@ int main(int argc, const char * argv[]) {
         console.interactive();
         console.goodbye();
     } else {
-        test2();
-        test3();
+//        test2();
+//        test3();
 //        IdxParser parser;
 //        parser.testIdxParser();
     }
     return 0;
 }
 
-
+/*
 void test2() {
     NeuronNetworkBuilder builder = NeuronNetworkBuilder();
     builder.setName("Test");
@@ -91,3 +92,4 @@ void test3() {
     
     cout << network.description();
 }
+*/
