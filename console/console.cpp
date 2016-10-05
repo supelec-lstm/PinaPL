@@ -19,6 +19,8 @@
 
 using namespace std;
 
+string status = "";
+
 Console::Console() {
 }
 
@@ -150,7 +152,7 @@ void Console::interactive() {
     string rawInput;
 
 	while (interactiveEnabled) {
-		cout << ">> ";
+		cout << status << ">> ";
 		getline(cin, rawInput);
 
         vector<string> parsedInput = parseCommandString(rawInput);

@@ -8,9 +8,10 @@
 
 #include<vector>
 
-enum Command {DEFAULT, LISTSAVEDNETWORKS, LISTSCRIPTS, LISTIDXS, SCRIPT};
+enum Command {DEFAULT, LISTSAVEDNETWORKS, LISTSCRIPTS, LISTIDXS, SCRIPT, };
 
 class Console {
+
 private:
     std::vector<std::string> parseCommandString(std::string rawInput);
     bool listSavedNetworks();
@@ -19,9 +20,10 @@ private:
     void scriptExecution(std::string scriptPath);
     void commandExecution(std::vector<std::string> input);
 
+    std::string status;
+
 public:
     Console();
-
     void greeting();
     void goodbye();
     void interactive();
