@@ -26,9 +26,6 @@ NeuronNetworkBuilder::NeuronNetworkBuilder() {
     neurons = new vector<Neuron>;
     properties = new vector<NeuronProperty>;
     connections = new vector<vector<unsigned long>>;
-    
-    defaultCompositionFunction = NULL;
-    defaultActivationFunction = NULL;
 }
 
 NeuronNetworkBuilder::NeuronNetworkBuilder(NeuronNetwork network) {
@@ -38,9 +35,6 @@ NeuronNetworkBuilder::NeuronNetworkBuilder(NeuronNetwork network) {
     neurons = new vector<Neuron>;
     properties = new vector<NeuronProperty>;
     connections = new vector<vector<unsigned long>>;
-    
-    defaultCompositionFunction = NULL;
-    defaultActivationFunction = NULL;
 
     for (unsigned long i = 0; i < network.getNeuronsCount(); i++) {
         neurons->push_back(*network.getNeurons()[i]);
@@ -121,17 +115,14 @@ NeuronNetwork NeuronNetworkBuilder::generateComputeNetwork(bool setRandomWeights
 
 unsigned long NeuronNetworkBuilder::addNeuron() {
     Neuron newNeuron;
-    if (defaultCompositionFunction && defaultActivationFunction)
-        newNeuron = Neuron(1, defaultCompositionFunction, defaultActivationFunction);
-    else
-        newNeuron = Neuron();
+    newNeuron = Neuron(1, defaultCompositionFunction, defaultActivationFunction);
     neurons->push_back(newNeuron);
     properties->push_back(NeuronProportyNone);
     connections->push_back(vector<unsigned long>());
     return neurons->size() - 1;
 }
 
-unsigned long NeuronNetworkBuilder::addNeuron(CompositionFunction compositionFunction, ActivationFunction activationFunction) {
+unsigned long NeuronNetworkBuilder::addNeuron(compositionFunction compositionFunction, activationFunction activationFunction) {
     Neuron newNeuron = Neuron(1, compositionFunction, activationFunction);
     neurons->push_back(newNeuron);
     properties->push_back(NeuronProportyNone);
@@ -147,7 +138,7 @@ unsigned long* NeuronNetworkBuilder::addNeurons(unsigned long count) {
     return indexes;
 }
 
-unsigned long* NeuronNetworkBuilder::addNeurons(unsigned long count, CompositionFunction compositionFunction, ActivationFunction activationFunction) {
+unsigned long* NeuronNetworkBuilder::addNeurons(unsigned long count, compositionFunction compositionFunction, activationFunction activationFunction) {
     unsigned long *indexes = new unsigned long[count];
     for (unsigned long i = 0; i < count; i++) {
         indexes[i] = this->addNeuron(compositionFunction, activationFunction);
@@ -268,11 +259,11 @@ vector<vector<unsigned long>>* NeuronNetworkBuilder::getConnections() {
 
 // Setters
 
-CompositionFunction NeuronNetworkBuilder::getDefaultCompositionFunction() {
+compositionFunction NeuronNetworkBuilder::getDefaultCompositionFunction() {
     return defaultCompositionFunction;
 }
 
-ActivationFunction NeuronNetworkBuilder::getDefaultActivationFunction() {
+activationFunction NeuronNetworkBuilder::getDefaultActivationFunction() {
     return defaultActivationFunction;
 }
 
@@ -314,11 +305,11 @@ void NeuronNetworkBuilder::setConnections(vector<vector<unsigned long>> *someCon
     connections = someConnections;
 }
 
-void NeuronNetworkBuilder::setDefaultCompositionFunction(CompositionFunction compositionFunction) {
+void NeuronNetworkBuilder::setDefaultCompositionFunction(compositionFunction compositionFunction) {
     defaultCompositionFunction = compositionFunction;
 }
 
-void NeuronNetworkBuilder::setDefaultActivationFunction(ActivationFunction activationFunction) {
+void NeuronNetworkBuilder::setDefaultActivationFunction(activationFunction activationFunction) {
     defaultActivationFunction = activationFunction;
 }
 

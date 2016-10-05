@@ -23,7 +23,7 @@ Neuron::Neuron() {
     reset();
 }
 
-Neuron::Neuron(unsigned long count, CompositionFunction compositionFunction, ActivationFunction activationFunction) {
+Neuron::Neuron(unsigned long count, compositionFunction compositionFunction, activationFunction activationFunction) {
     activation = activationFunction;
     composition = compositionFunction;
 
@@ -116,42 +116,5 @@ void Neuron::calculateOutput() {
     for (unsigned long i = 0; i < inputCount; i++) {
         weightedInputs[i] = input[i] * weight[i];
     }
-    output = activation(composition(weightedInputs, inputCount));
-}
-
-// Activation functions
-
-double Neuron::activationSigmoid(double x) {
-    double a = 1 + exp(-x);
-    return (1 / a);
-}
-
-double Neuron::activationHeavyside(double x) {
-    if (x < 0) {
-        return 0;
-    } else {
-        return 1;
-    }
-}
-
-double Neuron::activationArctan(double x) {
-    return atan(x);
-}
-
-double Neuron::activationLinear(double x) {
-    return x;
-}
-
-// Composition functions
-
-double Neuron::compositionSum(double x[], unsigned long n) {
-    double sum = 0;
-    for (unsigned long i = 0; i < n; i++) {
-        sum += x[i];
-    }
-    return sum;
-}
-
-double Neuron::compositionDist(double x[], unsigned long n) {
-    return 0;
+    output = activation.main(composition.main(weightedInputs, inputCount));
 }

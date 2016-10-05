@@ -15,7 +15,7 @@
 #include "neuronNetwork.hpp"
 
 
-enum NeuronProperty {
+enum NeuronProperty : unsigned long {
     NeuronProportyNone = 0,
     NeuronProportyInput = 1 << 0,
     NeuronProportyOutput = 1 << 1
@@ -29,8 +29,8 @@ class NeuronNetworkBuilder {
     std::vector<NeuronProperty> *properties;
     std::vector<std::vector<unsigned long>> *connections;
     
-    CompositionFunction defaultCompositionFunction;
-    ActivationFunction defaultActivationFunction;
+    compositionFunction defaultCompositionFunction;
+    activationFunction defaultActivationFunction;
     
 public:
     NeuronNetworkBuilder();
@@ -38,9 +38,9 @@ public:
     NeuronNetwork generateComputeNetwork(bool setRandomWeights, double min = 0, double max = 0);
 
     unsigned long addNeuron();
-    unsigned long addNeuron(CompositionFunction compositionFunction, ActivationFunction activationFunction);
+    unsigned long addNeuron(compositionFunction compositionFunction, activationFunction activationFunction);
     unsigned long* addNeurons(unsigned long count);
-    unsigned long* addNeurons(unsigned long count, CompositionFunction compositionFunction, ActivationFunction activationFunction);
+    unsigned long* addNeurons(unsigned long count, compositionFunction compositionFunction, activationFunction activationFunction);
     
     void removeNeuron(unsigned long index);
     void removeNeurons(unsigned long* indexes, unsigned long count);
@@ -63,8 +63,8 @@ public:
     NeuronProperty getPropertiesForNeuron(unsigned long index);
     std::vector<NeuronProperty>* getProperties();
     std::vector<std::vector<unsigned long>>* getConnections();
-    CompositionFunction getDefaultCompositionFunction();
-    ActivationFunction getDefaultActivationFunction();
+    compositionFunction getDefaultCompositionFunction();
+    activationFunction getDefaultActivationFunction();
 
     void setName(std::string aName);
     void setDate(std::string aDate);
@@ -75,8 +75,8 @@ public:
     void setPropertiesForNeuronRange(NeuronProperty property, unsigned long firstIndex, unsigned long lastIndex);
     void setProperties(std::vector<NeuronProperty> *someProperties);
     void setConnections(std::vector<std::vector<unsigned long>> *someConnections);
-    void setDefaultCompositionFunction(CompositionFunction compositionFunction);
-    void setDefaultActivationFunction(ActivationFunction activationFunction);
+    void setDefaultCompositionFunction(compositionFunction compositionFunction);
+    void setDefaultActivationFunction(activationFunction activationFunction);
 };
 
 #endif /* neuronNetworkBuilder_hpp */

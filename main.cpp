@@ -52,11 +52,11 @@ void test() {
     // neurones
 
     Neuron *neurons[5];
-    neurons[0] = new Neuron(1, Neuron::compositionSum, Neuron::activationLinear); //entry
-    neurons[1] = new Neuron(1, Neuron::compositionSum, Neuron::activationLinear); //entry
-    neurons[2] = new Neuron(2, Neuron::compositionSum, Neuron::activationSigmoid);
-    neurons[3] = new Neuron(1, Neuron::compositionSum, Neuron::activationSigmoid);
-    neurons[4] = new Neuron(1, Neuron::compositionSum, Neuron::activationSigmoid);
+    neurons[0] = new Neuron(1, compositionFunctionSum, activationFunctionLinear); //entry
+    neurons[1] = new Neuron(1, compositionFunctionSum, activationFunctionLinear); //entry
+    neurons[2] = new Neuron(2, compositionFunctionSum, activationFunctionSigmoid);
+    neurons[3] = new Neuron(1, compositionFunctionSum, activationFunctionSigmoid);
+    neurons[4] = new Neuron(1, compositionFunctionSum, activationFunctionSigmoid);
     
     for (unsigned long i = 0; i < 5; i++) {
         neurons[i]->setBalancedWeight();
@@ -116,10 +116,10 @@ void test2() {
     NeuronNetworkBuilder builder = NeuronNetworkBuilder();
     builder.setName("Test");
     builder.setDate("2016-09-28");
-    builder.setDefaultCompositionFunction(&Neuron::compositionSum);
-    builder.setDefaultActivationFunction(&Neuron::activationSigmoid);
+    builder.setDefaultCompositionFunction(compositionFunctionSum);
+    builder.setDefaultActivationFunction(activationFunctionSigmoid);
     
-    builder.addNeurons(2, &Neuron::compositionSum, &Neuron::activationLinear);
+    builder.addNeurons(2, compositionFunctionSum, activationFunctionSigmoid);
     builder.addNeurons(3);
     
     builder.setPropertiesForNeuronRange(NeuronProportyInput, 0, 1);
@@ -138,8 +138,8 @@ void test2() {
 
 void test3() {
     NeuronNetworkBuilder builder = NeuronNetworkBuilder();
-    builder.setDefaultCompositionFunction(&Neuron::compositionSum);
-    builder.setDefaultActivationFunction(&Neuron::activationSigmoid);
+    builder.setDefaultCompositionFunction(compositionFunctionSum);
+    builder.setDefaultActivationFunction(activationFunctionSigmoid);
     builder.addNeurons(40);
     builder.setPropertiesForNeuronRange(NeuronProportyInput, 0, 9);
     builder.setPropertiesForNeuronRange(NeuronProportyOutput, 30, 39);
