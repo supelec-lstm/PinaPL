@@ -29,7 +29,7 @@ int main(int argc, const char * argv[]) {
     vector<string> stringedArgv;
 
     for (int i = 0; i < argc; i++) {
-        int length = strlen(argv[i]);
+        uint64_t length = strlen(argv[i]);
         string argument;
         argument.assign(argv[i], length);
         stringedArgv.push_back(argument);

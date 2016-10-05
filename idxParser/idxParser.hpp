@@ -13,7 +13,7 @@ class IdxParser {
 public:
     IdxParser();
     gzFile importGzFile(std::string path);
-    std::vector<std::vector<int32_t>> importMNISTImages(std::string path);
+    std::vector<std::vector<int32_t> > importMNISTImages(std::string path);
     std::vector<int> importMNISTLabels(std::string path);
 };
 
