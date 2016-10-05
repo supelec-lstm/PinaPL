@@ -23,6 +23,7 @@ class NeuronNetwork {
     std::vector<unsigned long> inputNeurons;
     std::vector<unsigned long> outputNeurons;
     std::vector<std::vector<bool>> relation;
+    std::vector<std::vector<double>> weight;
     std::vector<double> output;
     std::vector<double> input;
 
@@ -52,6 +53,11 @@ public:
     void calculate();
 
     std::vector<double> computeGradient(std::vector<double> expectedOutput);
+    std::vector<std::vector<double>> computeWeight(std::vector<double> gradient);
+    void applyWeight(std::vector<std::vector<double>> difference);
+
+    void onlineLearn(std::vector<std::vector<double>> dataInput, std::vector<std::vector<double>> dataOutput, unsigned long dataCount);
+    void batchLearn(std::vector<std::vector<double>> dataInput, std::vector<std::vector<double>> dataOutput, unsigned long dataCount);
 
 private:
     void plugInputIntoNeuron();
