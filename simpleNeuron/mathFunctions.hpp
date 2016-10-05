@@ -8,10 +8,11 @@
 
 #include <stdio.h>
 #include <climits>
+#include <vector>
 
 
-typedef double (*CompositionFunctionMain) (double[], unsigned long);
-typedef double (*CompositionFunctionDerivative) (double[], unsigned long);
+typedef double (*CompositionFunctionMain) (std::vector<double>);
+typedef double (*CompositionFunctionDerivative) (std::vector<double>);
 typedef double (*ActivationFunctionMain) (double);
 typedef double (*ActivationFunctionDerivative) (double);
 
@@ -45,13 +46,13 @@ struct activationFunction {
 
 
 namespace compositionFunctionMain {
-    double sum(double x[], unsigned long n);
-    double dist(double x[], unsigned long n);
+    double sum(std::vector<double> x);
+    double dist(std::vector<double> x);
 }
 
 namespace compositionFunctionDerivative {
-    double sum(double x[], unsigned long n);
-    double dist(double x[], unsigned long n);
+    double sum(std::vector<double> x);
+    double dist(std::vector<double> x);
 }
 
 namespace activationFunctionMain {

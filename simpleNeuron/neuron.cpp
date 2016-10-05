@@ -8,6 +8,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <vector>
 
 #include "neuron.hpp"
 
@@ -16,8 +17,8 @@ using namespace std;
 
 Neuron::Neuron() {
     inputCount = 1;
-    weight = new double[inputCount];
-    input = new double[inputCount];
+    weight = vector<double>(inputCount);
+    input = vector<double>(inputCount);
 
     setBalancedWeight();
     reset();
@@ -28,8 +29,8 @@ Neuron::Neuron(unsigned long count, compositionFunction compositionFunction, act
     composition = compositionFunction;
 
     inputCount = count;
-    weight = new double[inputCount];
-    input = new double[inputCount];
+    weight = vector<double>(inputCount);
+    input = vector<double>(inputCount);
 
     setBalancedWeight();
     reset();
@@ -61,17 +62,17 @@ string Neuron::description() {
 
 void Neuron::setInputCount(unsigned long count) {
     inputCount = count;
-    input = new double[inputCount];
-    weight = new double[inputCount];
+    input = vector<double>(inputCount);
+    weight = vector<double>(inputCount);
 }
 
 // Weights
 
-double* Neuron::getWeight() const {
+vector<double> Neuron::getWeight() const {
     return weight;
 }
 
-void Neuron::setWeight(const double newWeight[]) {
+void Neuron::setWeight(const vector<double> newWeight) {
     for (unsigned long i = 0; i < inputCount; i++) {
         weight[i] = newWeight[i];
     }
@@ -96,11 +97,11 @@ unsigned long Neuron::getInputCount() const {
     return inputCount;
 }
 
-double* Neuron::getInput() const {
+vector<double> Neuron::getInput() const {
     return input;
 }
 
-void Neuron::setInput(const double newInput[]) {
+void Neuron::setInput(const vector<double> newInput) {
     for (unsigned long i = 0; i < inputCount; i++) {
         input[i] = newInput[i];
     }
@@ -111,10 +112,10 @@ double Neuron::getOutput() const {
 }
 
 void Neuron::calculateOutput() {
-    double *weightedInputs = new double[inputCount];
+    vector<double> weightedInputs = vector<double>(inputCount);
 
     for (unsigned long i = 0; i < inputCount; i++) {
         weightedInputs[i] = input[i] * weight[i];
     }
-    output = activation.main(composition.main(weightedInputs, inputCount));
+    output = activation.main(composition.main(weightedInputs));
 }

@@ -7,6 +7,7 @@
 #define DEF_NETWORK
 
 #include <string>
+#include <vector>
 
 #include "../simpleNeuron/neuron.hpp"
 
@@ -18,12 +19,12 @@ class NeuronNetwork {
     unsigned long inputCount;
     unsigned long outputCount;
     unsigned long neuronsCount;
-    Neuron **neurons;
-    unsigned long *inputNeurons;
-    unsigned long *outputNeurons;
-    bool **relation;
-    double *output;
-    double *input;
+    std::vector<Neuron> neurons;
+    std::vector<unsigned long> inputNeurons;
+    std::vector<unsigned long> outputNeurons;
+    std::vector<std::vector<bool>> relation;
+    std::vector<double> output;
+    std::vector<double> input;
 
 public:
     NeuronNetwork(std::string name, std::string date, unsigned long nbin, unsigned long nbout, unsigned long ntot);
@@ -35,25 +36,27 @@ public:
     unsigned long getInputCount();
     unsigned long getOutputCount();
     unsigned long getNeuronsCount();
-    Neuron** getNeurons();
-    unsigned long* getInputNeurons();
-    unsigned long* getOutputNeurons();
-    bool** getRelation();
-    double* getInput();
-    double* getOutput();
+    std::vector<Neuron> getNeurons();
+    std::vector<unsigned long> getInputNeurons();
+    std::vector<unsigned long> getOutputNeurons();
+    std::vector<std::vector<bool>> getRelation();
+    std::vector<double> getInput();
+    std::vector<double> getOutput();
     
-    void setRelation(bool **tab);
-    void setInputNeurons(unsigned long *tab);
-    void setOutputNeurons(unsigned long *tab);
-    void setNeurons(Neuron **tab);
+    void setRelation(std::vector<std::vector<bool>> tab);
+    void setInputNeurons(std::vector<unsigned long> tab);
+    void setOutputNeurons(std::vector<unsigned long> tab);
+    void setNeurons(std::vector<Neuron> tab);
 
-    void setInput(double *data);
+    void setInput(std::vector<double> data);
     void calculate();
+
+    std::vector<double> computeGradient(std::vector<double> expectedOutput);
 
 private:
     void plugInputIntoNeuron();
     void calculeNeurons();
-    double leastSquareError(double x[], double y[], unsigned long n);
+    double leastSquareError(std::vector<double> x, std::vector<double> y, unsigned long n);
 };
 
 

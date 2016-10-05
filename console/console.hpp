@@ -3,8 +3,8 @@
 //  PinaPL
 //
 
-#ifndef DEF_CLI
-#define DEF_CLI
+#ifndef DEF_CONSOLE
+#define DEF_CONSOLE
 
 #include<vector>
 
@@ -12,17 +12,18 @@ enum Command {DEFAULT, LIST, SCRIPT};
 
 class Console {
 private:
+    std::vector<std::string> parseCommandString(std::string rawInput);
+    bool listFolderContent();
+    void scriptExecution(std::string scriptPath);
+    void commandExecution(std::vector<std::string> input);
+
 public:
     Console();
 
     void greeting();
     void goodbye();
-    std::vector<std::string> parseCommandString(std::string rawInput);
-    bool listFolderContent();
-    void scriptExecution(std::string scriptPath);
-    void commandExecution(std::vector<std::string> input);
     void interactive();
 
 };
 
-#endif // DEF_CLI
+#endif // DEF_CONSOLE

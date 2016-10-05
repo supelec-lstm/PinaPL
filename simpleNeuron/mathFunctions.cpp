@@ -8,27 +8,29 @@
 #include "mathFunctions.hpp"
 
 
+using namespace std;
+
 // Composition functions
 
-double compositionFunctionMain::sum(double x[], unsigned long n) {
+double compositionFunctionMain::sum(vector<double> x) {
     double sum = 0;
-    for (unsigned long i = 0; i < n; i++) {
+    for (unsigned long i = 0; i < x.size(); i++) {
         sum += x[i];
     }
     return sum;
 }
 
-double compositionFunctionMain::dist(double x[], unsigned long n) {
+double compositionFunctionMain::dist(vector<double> x) {
     return 0;
 }
 
 // Composition function derivatives
 
-double compositionFunctionDerivative::sum(double x[], unsigned long n) {
-    return n;
+double compositionFunctionDerivative::sum(vector<double> x) {
+    return x.size();
 }
 
-double compositionFunctionDerivative::dist(double x[], unsigned long n) {
+double compositionFunctionDerivative::dist(vector<double> x) {
     return 0;
 }
 

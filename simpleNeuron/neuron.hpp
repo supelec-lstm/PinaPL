@@ -6,13 +6,15 @@
 #ifndef DEF_NEURON
 #define DEF_NEURON
 
+#include <vector>
+
 #include "mathFunctions.hpp"
 
 
 class Neuron {
     unsigned long inputCount;
-    double* weight;
-    double* input;
+    std::vector<double> weight;
+    std::vector<double> input;
     double output;
     compositionFunction composition;
     activationFunction activation;
@@ -25,14 +27,14 @@ public:
 
     void setInputCount(unsigned long count);
     
-    double* getWeight() const;
-    void setWeight(const double newWeight[]);
+    std::vector<double> getWeight() const;
+    void setWeight(const std::vector<double> newWeight);
     void setBalancedWeight();
     void setRandomWeight(double min, double max);
 
     unsigned long getInputCount() const;
-    double* getInput() const;
-    void setInput(const double newInput[]);
+    std::vector<double> getInput() const;
+    void setInput(const std::vector<double> newInput);
 
     double getOutput() const;
     void calculateOutput();
