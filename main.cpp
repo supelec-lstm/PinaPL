@@ -41,10 +41,10 @@ int main(int argc, const char * argv[]) {
         console.interactive();
         console.goodbye();
     } else {
-//        test2();
-//        test3();
+        cout << "Non-interactive start" << endl;
         IdxParser parser;
-        parser.testIdxParser();
+        parser.importMNISTImages("./idxParser/train-images-idx3-ubyte.gz");
+        parser.importMNISTLabels("./idxParser/train-labels-idx1-ubyte.gz");
     }
     return 0;
 }
