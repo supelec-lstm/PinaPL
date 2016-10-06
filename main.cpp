@@ -29,6 +29,7 @@ int main(int argc, const char * argv[]) {
     vector<string> stringedArgv;
 
     for (int i = 0; i < argc; i++) {
+        // argument parser
         uint64_t length = strlen(argv[i]);
         string argument;
         argument.assign(argv[i], length);
@@ -36,16 +37,21 @@ int main(int argc, const char * argv[]) {
     }
 
     if (argc == 2 && stringedArgv[1] == "--interactive") {
+        // if there is a single argument and it is "--interactive"
         Console console;
         console.greeting();
         console.interactive();
         console.goodbye();
     } else {
+        // else
         cout << "Non-interactive start" << endl;
         IdxParser parser;
-        parser.importMNISTImages("./idxParser/train-images-idx3-ubyte.gz");
-        parser.importMNISTLabels("./idxParser/train-labels-idx1-ubyte.gz");
+        string imagesPath = "./idxParser/train-images-idx3-ubyte.gz";
+        string labelsPath = "./idxParser/train-labels-idx1-ubyte.gz";
+        parser.importMNISTImages(imagesPath);
+        parser.importMNISTLabels(labelsPath);
     }
+
     return 0;
 }
 

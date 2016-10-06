@@ -15,19 +15,24 @@
 using namespace std;
 
 IdxParser::IdxParser() {
+// IdxParser constructor
 }
 
-gzFile IdxParser::importGzFile(string path) {
+gzFile IdxParser::importGzFile(string& path) {
+    // imports a .gz file and returns a gzFile object
     const char * pathChared = path.c_str();
     gzFile file = gzopen(pathChared, "rb");
     if (!file) {
-    cout << "Error: file not found" << endl;
+    cout << "Error: could not open file" << endl;
     }
     return file;
 }
 
-vector<vector<int>> IdxParser::importMNISTImages(string path) {
-    cout << "Importing MNIST Images File " << path << endl;
+vector<vector<int>> IdxParser::importMNISTImages(string& path) {
+    // reads an IDX3 .gz file (like MNIST image files) and returns a vector of images (pixels for an image are stored in a single continuous vector)
+    // (it is in fact treated like a IDX2 file, considering the images have only one dimension)
+
+    cout << "Importing IDX3 File " << path << endl;
     // import images file
     gzFile file = importGzFile(path);
     // magic number
@@ -66,8 +71,10 @@ vector<vector<int>> IdxParser::importMNISTImages(string path) {
     return(output);
 }
 
-vector<int> IdxParser::importMNISTLabels(string path) {
-    cout << "Importing MNIST Labels File " << path << endl;
+vector<int> IdxParser::importMNISTLabels(string& path) {
+    // reads an IDX1 .gz file (like MNIST label files) and returns a vector of labels
+
+    cout << "Importing IDX1 Labels File " << path << endl;
     // import labels file
     gzFile file = importGzFile(path);
     // magic number

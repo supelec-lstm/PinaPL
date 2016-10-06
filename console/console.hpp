@@ -13,6 +13,8 @@ enum Command {DEFAULT, LISTSAVEDNETWORKS, LISTSCRIPTS, LISTIDXS, SCRIPT};
 class Console {
 
 private:
+    std::string status;
+
     std::vector<std::string> parseCommandString(std::string rawInput);
     bool listSavedNetworks();
     bool listScripts();
@@ -20,14 +22,11 @@ private:
     void scriptExecution(std::string scriptPath);
     void commandExecution(std::vector<std::string> input);
 
-    std::string status;
-
 public:
     Console();
     void greeting();
     void goodbye();
     void interactive();
-
 };
 
 #endif // DEF_CONSOLE
