@@ -38,6 +38,9 @@ public:
 
     double getOutput() const;
     void calculateOutput();
+
+    double getCompositionDerivative(double x);
+    double getActivationDerivative();
 };
 
 

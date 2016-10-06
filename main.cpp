@@ -19,12 +19,13 @@
 
 using namespace std;
 
+/*
 void test2();
 void test3();
+*/
 
 
 int main(int argc, const char * argv[]) {
-
     vector<string> stringedArgv = vector<string>(argc);
 
     for (int i = 0; i < argc; i++) {
@@ -35,20 +36,25 @@ int main(int argc, const char * argv[]) {
     }
 
     if (argc == 2 && stringedArgv[1] == "--interactive") {
+        // if there is a single argument and it is "--interactive"
         Console console;
         console.greeting();
         console.interactive();
         console.goodbye();
     } else {
-        test2();
-        test3();
-//        IdxParser parser;
-//        parser.testIdxParser();
+        // else
+        cout << "Non-interactive start" << endl;
+        IdxParser parser;
+        string imagesPath = "./idxParser/train-images-idx3-ubyte.gz";
+        string labelsPath = "./idxParser/train-labels-idx1-ubyte.gz";
+        parser.importMNISTImages(imagesPath);
+        parser.importMNISTLabels(labelsPath);
     }
+
     return 0;
 }
 
-
+/*
 void test2() {
     NeuronNetworkBuilder builder = NeuronNetworkBuilder();
     builder.setName("Test");
@@ -93,3 +99,4 @@ void test3() {
     
     cout << network.description();
 }
+*/
