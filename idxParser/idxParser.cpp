@@ -40,17 +40,17 @@ vector<vector<int>> IdxParser::importMNISTImages(string& path) {
     gzread(file, &magicNumberChared, sizeof(magicNumberChared));
     int magicNumber =  uint32_t(magicNumberChared[0] << 24 | magicNumberChared[1] << 16 | magicNumberChared[2] << 8 | magicNumberChared[3]);
     cout << "Magic Number: " << magicNumber << endl;
-    // number of images
+    // first IDX3 dimension: number of images
     uint8_t imageCountChared[4];
     gzread(file, &imageCountChared, sizeof(imageCountChared));
     int imageCount = uint32_t(imageCountChared[0] << 24 | imageCountChared[1] << 16 | imageCountChared[2] << 8 | imageCountChared[3]);
     cout << "Image count: " << imageCount << endl;
-    // number of rows
+    // second IDX3 dimension: number of rows
     uint8_t rowCountChared[4];
     gzread(file, &rowCountChared, sizeof(rowCountChared));
     int rowCount = uint32_t(rowCountChared[0] << 24 | rowCountChared[1] << 16 | rowCountChared[2] << 8 | rowCountChared[3]);
     cout << "Image row count: " << rowCount << endl;
-    // number of columns
+    // third IDX3 dimension: number of columns
     uint8_t columnCountChared[4];
     gzread(file, &columnCountChared, sizeof(columnCountChared));
     int columnCount = uint32_t(columnCountChared[0] << 24 | columnCountChared[1] << 16 | columnCountChared[2] << 8 | columnCountChared[3]);
@@ -82,7 +82,7 @@ vector<int> IdxParser::importMNISTLabels(string& path) {
     gzread(file, &magicNumberChared, sizeof(magicNumberChared));
     int magicNumber =  uint32_t(magicNumberChared[0] << 24 | magicNumberChared[1] << 16 | magicNumberChared[2] << 8 | magicNumberChared[3]);
     cout << "Magic Number: " << magicNumber << endl;
-    // number of labels
+    // first and only IDX1 dimension: number of labels
     uint8_t labelCountChared[4];
     gzread(file, &labelCountChared, sizeof(labelCountChared));
     int labelCount = uint32_t(labelCountChared[0] << 24 | labelCountChared[1] << 16 | labelCountChared[2] << 8 | labelCountChared[3]);
