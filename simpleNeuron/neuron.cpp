@@ -120,12 +120,10 @@ void Neuron::calculateOutput() {
     output = activation.main(composition.main(weightedInputs));
 }
 
-double Neuron::getCompositionDerivative(double x) {
-#warning TO DO (pour Julien)
-    return 1;
+compositionFunction Neuron::getCompositionFunction() {
+    return composition;
 }
 
-double Neuron::getActivationDerivative() {
-#warning TO DO (pour Julien)
-    return 1;
+activationFunction Neuron::getActivationFunction() {
+    return activation;
 }

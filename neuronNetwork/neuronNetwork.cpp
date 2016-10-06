@@ -240,7 +240,9 @@ vector<double> NeuronNetwork::computeGradient(vector<double> expectedOutput){
             error[i] = 0;
             for(unsigned j = 0; j < neuronsCount; j++) {
                 if(relation[i][j]){
-                    error[i] += weight[i][j] * neurons[j].getCompositionDerivative(weight[i][j]*neurons[i].getOutput()) * gradient[j];
+                    error[i] += weight[i][j] * gradient[j];
+//                    error[i] += weight[i][j] * neurons[j].getCompositionDerivative(weight[i][j]*neurons[i].getOutput()) * gradient[j];
+//                    For now we suppose the derivative of the composition function is always 1
                 }
             }
         }
@@ -248,7 +250,7 @@ vector<double> NeuronNetwork::computeGradient(vector<double> expectedOutput){
             error[outputNeurons[i]] = expectedOutput[i] - output[i];
         }
         for (unsigned long i = 0; i < neuronsCount; i++) {
-            gradient[i] = error[i] * neurons[i].getActivationDerivative();
+            gradient[i] = error[i] * neurons[i].getActivationFunction().derivative(neurons[i].getOutput());
         }
     } while(leastSquareError(gradient, gradientBefore, neuronsCount) >= MAX_DIFFERENCE_ERROR);
 
