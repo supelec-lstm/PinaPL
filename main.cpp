@@ -25,13 +25,13 @@ void test3();
 
 int main(int argc, const char * argv[]) {
 
-    vector<string> stringedArgv;
+    vector<string> stringedArgv = vector<string>(argc);
 
     for (int i = 0; i < argc; i++) {
-        int length = strlen(argv[i]);
+        unsigned long length = strlen(argv[i]);
         string argument;
         argument.assign(argv[i], length);
-        stringedArgv.push_back(argument);
+        stringedArgv[i] = argument;
     }
 
     if (argc == 2 && stringedArgv[1] == "--interactive") {
@@ -66,7 +66,8 @@ void test2() {
     builder.addManyConnectionsToOneRange(2, 3, 4);
     
     vector<double> inputs = {0, 1};
-    NeuronNetwork network = builder.generateComputeNetwork(false);
+    builder.buildNeurons(false);
+    NeuronNetwork network = builder.generateComputationalNetwork();
     network.setInput(inputs);
     network.calculate();
 
@@ -85,7 +86,8 @@ void test3() {
     builder.addManyConnectionsToManyRange(20, 29, 30, 39);
     
     vector<double> inputs = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    NeuronNetwork network = builder.generateComputeNetwork(true, -0.1, 0.1);
+    builder.buildNeurons(true, -0.1, 0.1);
+    NeuronNetwork network = builder.generateComputationalNetwork();
     network.setInput(inputs);
     network.calculate();
     
