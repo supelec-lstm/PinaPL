@@ -15,7 +15,7 @@
 using namespace std;
 
 IdxParser::IdxParser() {
-// IdxParser constructor
+    // IdxParser constructor
 }
 
 gzFile IdxParser::importGzFile(string& path) {
@@ -23,7 +23,7 @@ gzFile IdxParser::importGzFile(string& path) {
     const char * pathChared = path.c_str();
     gzFile file = gzopen(pathChared, "rb");
     if (!file) {
-    cout << "Error: could not open file" << endl;
+        cout << "Error: could not open file" << endl;
     }
     return file;
 }
@@ -31,7 +31,7 @@ gzFile IdxParser::importGzFile(string& path) {
 vector<vector<int>> IdxParser::importMNISTImages(string& path) {
     // reads an IDX3 .gz file (like MNIST image files) and returns a vector of images (pixels for an image are stored in a single continuous vector)
     // (it is in fact treated like a IDX2 file, considering the images have only one dimension)
-
+    
     cout << "Importing IDX3 File " << path << endl;
     // import images file
     gzFile file = importGzFile(path);
@@ -55,9 +55,9 @@ vector<vector<int>> IdxParser::importMNISTImages(string& path) {
     gzread(file, &columnCountChared, sizeof(columnCountChared));
     int columnCount = uint32_t(columnCountChared[0] << 24 | columnCountChared[1] << 16 | columnCountChared[2] << 8 | columnCountChared[3]);
     cout << "Image column count: " << columnCount << endl;
-
+    
     vector<vector<int>> output;
-
+    
     for (int imageIndex = 0; imageIndex < imageCount; imageIndex++) {
         vector<int> image;
         for (int pixelIndex = 0; pixelIndex < rowCount*columnCount; pixelIndex++) {
@@ -73,7 +73,7 @@ vector<vector<int>> IdxParser::importMNISTImages(string& path) {
 
 vector<int> IdxParser::importMNISTLabels(string& path) {
     // reads an IDX1 .gz file (like MNIST label files) and returns a vector of labels
-
+    
     cout << "Importing IDX1 Labels File " << path << endl;
     // import labels file
     gzFile file = importGzFile(path);
@@ -87,9 +87,9 @@ vector<int> IdxParser::importMNISTLabels(string& path) {
     gzread(file, &labelCountChared, sizeof(labelCountChared));
     int labelCount = uint32_t(labelCountChared[0] << 24 | labelCountChared[1] << 16 | labelCountChared[2] << 8 | labelCountChared[3]);
     cout << "Label count: " << labelCount << endl;
-
+    
     vector<int> output;
-
+    
     for (int labelIndex = 0; labelIndex < labelCount; labelIndex++) {
         uint8_t labelChared;
         gzread(file, &labelChared, sizeof(labelChared));
@@ -98,5 +98,4 @@ vector<int> IdxParser::importMNISTLabels(string& path) {
     }
     return(output);
 }
-
 

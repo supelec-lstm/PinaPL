@@ -134,9 +134,9 @@ void Console::commandExecution(vector<string> parsedInput) {
         case SCRIPT:
             scriptExecution(parsedInput[1]);
             break;
-        default:
-            cout << "Error: unrecognized command" << endl;
-            break;
+//        default:
+//            cout << "Error: unrecognized command" << endl;
+//            break;
     }
 }
 

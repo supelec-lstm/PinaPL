@@ -10,6 +10,7 @@
 #include <random>
 #include <string.h>
 
+#include "simpleNeuron/mathFunctions.hpp"
 #include "simpleNeuron/neuron.hpp"
 #include "neuronNetwork/neuronNetwork.hpp"
 #include "neuronNetwork/neuronNetworkBuilder.hpp"
@@ -19,21 +20,19 @@
 
 using namespace std;
 
-/*
+void test();
 void test2();
 void test3();
-*/
+
 
 int main(int argc, const char * argv[]) {
-
-    vector<string> stringedArgv;
+    vector<string> stringedArgv = vector<string>(argc);
 
     for (int i = 0; i < argc; i++) {
-        // argument parser
-        uint64_t length = strlen(argv[i]);
+        unsigned long length = strlen(argv[i]);
         string argument;
         argument.assign(argv[i], length);
-        stringedArgv.push_back(argument);
+        stringedArgv[i] = argument;
     }
 
     if (argc == 2 && stringedArgv[1] == "--interactive") {
@@ -44,18 +43,46 @@ int main(int argc, const char * argv[]) {
         console.goodbye();
     } else {
         // else
-        cout << "Non-interactive start" << endl;
+        /*cout << "Non-interactive start" << endl;
         IdxParser parser;
         string imagesPath = "./idxParser/train-images-idx3-ubyte.gz";
         string labelsPath = "./idxParser/train-labels-idx1-ubyte.gz";
         parser.importMNISTImages(imagesPath);
-        parser.importMNISTLabels(labelsPath);
+        parser.importMNISTLabels(labelsPath);*/
+        test();
     }
 
     return 0;
 }
 
-/*
+void test() {
+    NeuronNetworkBuilder builder = NeuronNetworkBuilder();
+    builder.setName("Test");
+    builder.setDate("2016-09-28");
+    builder.setDefaultCompositionFunction(compositionFunctionSum);
+    builder.setDefaultActivationFunction(activationFunctionSigmoid);
+
+    builder.addNeurons(2, compositionFunctionSum, activationFunctionLinear);
+    builder.addNeurons(3);
+
+    builder.setPropertiesForNeuronRange(NeuronProportyInput, 0, 1);
+    builder.setPropertiesForNeuronRange(NeuronProportyOutput, 3, 4);
+
+    builder.addOneConnectionToManyRange(0, 1, 2);
+    builder.addManyConnectionsToOneRange(2, 3, 4);
+
+    NeuronNetwork network = builder.generateComputationalNetwork();
+
+    vector<vector<double>> dataInput = {{0, 1}};
+    vector<vector<double>> dataOutput = {{1, 0}};
+
+    network.batchLearn(dataInput, dataOutput, 1);
+
+    cout << network.description();
+    
+}
+
+
 void test2() {
     NeuronNetworkBuilder builder = NeuronNetworkBuilder();
     builder.setName("Test");
@@ -73,7 +100,8 @@ void test2() {
     builder.addManyConnectionsToOneRange(2, 3, 4);
     
     vector<double> inputs = {0, 1};
-    NeuronNetwork network = builder.generateComputeNetwork(false);
+    builder.buildNeurons(false);
+    NeuronNetwork network = builder.generateComputationalNetwork();
     network.setInput(inputs);
     network.calculate();
 
@@ -92,10 +120,10 @@ void test3() {
     builder.addManyConnectionsToManyRange(20, 29, 30, 39);
     
     vector<double> inputs = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    NeuronNetwork network = builder.generateComputeNetwork(true, -0.1, 0.1);
+    builder.buildNeurons(true, -0.1, 0.1);
+    NeuronNetwork network = builder.generateComputationalNetwork();
     network.setInput(inputs);
     network.calculate();
     
     cout << network.description();
 }
-*/

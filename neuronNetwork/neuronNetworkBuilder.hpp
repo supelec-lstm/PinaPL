@@ -21,9 +21,13 @@ enum NeuronProperty : unsigned long {
     NeuronProportyOutput = 1 << 1
 };
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpadded"
 class NeuronNetworkBuilder {
+#pragma clang diagnostic pop
     std::string name;
     std::string date;
+    double learningFactor;
     
     std::vector<Neuron> neurons;
     std::vector<NeuronProperty> properties;
@@ -32,10 +36,13 @@ class NeuronNetworkBuilder {
     compositionFunction defaultCompositionFunction;
     activationFunction defaultActivationFunction;
     
+    bool isPrepared;
+    
 public:
     NeuronNetworkBuilder();
     NeuronNetworkBuilder(NeuronNetwork network);
-    NeuronNetwork generateComputeNetwork(bool setRandomWeights, double min = 0, double max = 0);
+    void buildNeurons(bool setRandomWeights, double min = 0, double max = 0);
+    NeuronNetwork generateComputationalNetwork();
 
     unsigned long addNeuron();
     unsigned long addNeuron(compositionFunction compositionFunction, activationFunction activationFunction);
@@ -55,6 +62,9 @@ public:
     void addManyConnectionsToManyRange(unsigned long fromFirstIndex, unsigned long fromLastIndex, unsigned long toFirstIndex, unsigned long toLastIndex);
     void removeConnection(unsigned long from, unsigned long to);
     
+    bool setWeighstForNeuron(unsigned long aNeuron, std::vector<double>weights);
+    std::vector<bool> setWeightsForNeurons(std::vector<unsigned long> someNeurons, std::vector<double>weights);
+    std::vector<bool> setWeightsForNeuronRange(unsigned long firstNeuron, unsigned long lastNeuron, std::vector<double>weights);
     
     std::string getName();
     std::string getDate();

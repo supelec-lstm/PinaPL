@@ -26,12 +26,12 @@ double compositionFunctionMain::dist(vector<double> x) {
 
 // Composition function derivatives
 
-double compositionFunctionDerivative::sum(vector<double> x) {
-    return x.size();
+double compositionFunctionDerivative::sum(double x) {
+    return 1;
 }
 
-double compositionFunctionDerivative::dist(vector<double> x) {
-    return 0;
+double compositionFunctionDerivative::dist(double x) {
+    return 1;
 }
 
 // Activation functions
@@ -71,7 +71,8 @@ double activationFunctionDerivative::heavyside(double x) {
 }
 
 double activationFunctionDerivative::arctan(double x) {
-    return 1 / (x * x + 1);
+    double a = cos(x);
+    return a*a;
 }
 
 double activationFunctionDerivative::linear(double x) {

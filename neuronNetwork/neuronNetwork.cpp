@@ -12,24 +12,24 @@
 #include "../simpleNeuron/neuron.hpp"
 
 #define MAX_DIFFERENCE_OUTPUT 0.001
-#define MAX_DIFFERENCE_ERROR 0.001
+#define MAX_DIFFERENCE_ERROR 0.00001
 
 
 using namespace std;
 
 // Initialization
 
-NeuronNetwork::NeuronNetwork(string givenName, string givenDate, unsigned long nbin, unsigned long nbout, unsigned long ntot) {
+NeuronNetwork::NeuronNetwork(string givenName, string givenDate, unsigned long nbin, unsigned long nbout, unsigned long ntot, double learning) {
     name = givenName;
     date = givenDate;
     inputCount = nbin;
     outputCount = nbout;
     neuronsCount = ntot;
+    learningFactor = learning;
 
     input = vector<double>(nbin);
     output = vector<double>(ntot);
 
-    // 2-dimensional array allocation
     relation = vector<vector<bool>>(ntot);
     for (unsigned long i = 0; i < ntot; i++) {
         vector<bool> v = vector<bool>(ntot);
@@ -91,6 +91,10 @@ string NeuronNetwork::description() {
 
 void NeuronNetwork::setRelation(vector<vector<bool>> tab) {
     relation = tab;
+}
+
+void NeuronNetwork::setWeight(vector<vector<double>> tab) {
+    weight = tab;
 }
 
 void NeuronNetwork::setInputNeurons(vector<unsigned long> tab) {
@@ -177,6 +181,10 @@ string NeuronNetwork::getDate() {
     return date;
 }
 
+double NeuronNetwork::getLearningFactor() {
+    return learningFactor;
+}
+
 unsigned long NeuronNetwork::getInputCount() {
     return inputCount;
 }
@@ -230,9 +238,6 @@ vector<double> NeuronNetwork::computeGradient(vector<double> expectedOutput){
     vector<double> error(neuronsCount, 0);
     vector<double> gradient(neuronsCount, 0);
     vector<double> gradientBefore(neuronsCount, 0);
-    for(unsigned long i = 0; i < outputCount; i++){
-        error[outputNeurons[i]] = expectedOutput[i] - output[i];
-    }
 
     do {
         for (unsigned long i = 0; i < neuronsCount; i++) {
@@ -245,7 +250,7 @@ vector<double> NeuronNetwork::computeGradient(vector<double> expectedOutput){
             }
         }
         for (unsigned long i = 0; i < outputCount; i++) {
-            error[outputNeurons[i]] = expectedOutput[i] - output[i];
+            error[outputNeurons[i]] = expectedOutput[i] - output[outputNeurons[i]];
         }
         for (unsigned long i = 0; i < neuronsCount; i++) {
             gradient[i] = error[i] * neurons[i].getActivationDerivative();
@@ -259,13 +264,13 @@ vector<vector<double>> NeuronNetwork::computeWeight(vector<double> gradient){
     vector<vector<double>> result(neuronsCount);
     for(unsigned long i = 0; i < neuronsCount; i++){
         vector<double> v(neuronsCount);
+        result[i] = v;
         for (unsigned long j = 0; j < neuronsCount; j++) {
-            v[i] = 0;
-            if (relation[j][i]) {
-                v[i] = gradient[i]*output[j];
+            result[i][j] = 0;
+            if (relation[i][j]) {
+                result[i][j] = gradient[j]*output[i];
             }
         }
-        result[i] = v;
     }
 
     return result;
@@ -276,9 +281,9 @@ void NeuronNetwork::applyWeight(vector<vector<double>> difference) {
         unsigned long k = 0;
         vector<double> v(neurons[i].getInputCount());
         for (unsigned long j = 0; j < neuronsCount; j++) {
-            weight[i][j] += difference[i][j];
-            if (relation[i][j]){
-                v[k] = weight[i][j];
+            weight[i][j] += learningFactor * difference[i][j];
+            if (relation[j][i]){
+                v[k] = weight[j][i];
                 k++;
             }
         }

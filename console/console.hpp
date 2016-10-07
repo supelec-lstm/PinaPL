@@ -8,7 +8,12 @@
 
 #include<vector>
 
-enum Command {DEFAULT, LISTSAVEDNETWORKS, LISTSCRIPTS, LISTIDXS, SCRIPT};
+enum Command {
+    LISTSAVEDNETWORKS = 1,
+    LISTSCRIPTS = 2,
+    LISTIDXS = 3,
+    SCRIPT = 4
+};
 
 class Console {
 

@@ -121,11 +121,9 @@ void Neuron::calculateOutput() {
 }
 
 double Neuron::getCompositionDerivative(double x) {
-    // TO DO
-    return 1;
+    return composition.derivative(x);
 }
 
 double Neuron::getActivationDerivative() {
-    // TO DO
-    return 1;
+    return activation.derivative(output);
 }
