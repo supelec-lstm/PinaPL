@@ -12,7 +12,7 @@
 
 
 typedef double (*CompositionFunctionMain) (std::vector<double>);
-typedef double (*CompositionFunctionDerivative) (std::vector<double>);
+typedef double (*CompositionFunctionDerivative) (double);
 typedef double (*ActivationFunctionMain) (double);
 typedef double (*ActivationFunctionDerivative) (double);
 
@@ -51,8 +51,8 @@ namespace compositionFunctionMain {
 }
 
 namespace compositionFunctionDerivative {
-    double sum(std::vector<double> x);
-    double dist(std::vector<double> x);
+    double sum(double x);
+    double dist(double x);
 }
 
 namespace activationFunctionMain {

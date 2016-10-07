@@ -16,6 +16,7 @@ using namespace std;
 
 NeuronNetworkBuilder::NeuronNetworkBuilder() {
     name = "New neuron network";
+    learningFactor = 0.2;
     
     time_t rawtime;
     time(&rawtime);
@@ -31,9 +32,14 @@ NeuronNetworkBuilder::NeuronNetworkBuilder() {
     isPrepared = false;
 }
 
+// !!!!!!!!!!
+// ATTENTION FACTEUR D'APPRENTISSAGE HARDCODE
+// !!!!!!!!!!
+
 NeuronNetworkBuilder::NeuronNetworkBuilder(NeuronNetwork network) {
     name = network.getName();
     date = network.getDate();
+    learningFactor = network.getLearningFactor();
     
     neurons = network.getNeurons();
     properties = vector<NeuronProperty>(neurons.size(), NeuronProportyNone);
@@ -98,9 +104,25 @@ NeuronNetwork NeuronNetworkBuilder::generateComputationalNetwork() {
             relations[i][connections[i][j]] = true;
         }
     }
+
+    vector<vector<double>> weights = vector<vector<double>>(neurons.size());
+    for (unsigned long i = 0; i < neurons.size(); i++) {
+        weights[i] = vector<double>(neurons.size());
+    }
+    for(unsigned long i = 0; i < neurons.size(); i++) {
+        unsigned long k = 0;
+        vector<double> weightNeuron = neurons[i].getWeight();
+        for (unsigned long j = 0; j < neurons.size(); j++) {
+            if(relations[j][i]){
+                weights[j][i] = weightNeuron[k];
+                k++;
+            }
+        }
+    }
     
-    NeuronNetwork network = NeuronNetwork(name, date, inputs.size(), outputs.size(), neurons.size());
+    NeuronNetwork network = NeuronNetwork(name, date, inputs.size(), outputs.size(), neurons.size(), learningFactor);
     network.setNeurons(neurons);
+    network.setWeight(weights);
     network.setRelation(relations);
     network.setInputNeurons(inputs);
     network.setOutputNeurons(outputs);

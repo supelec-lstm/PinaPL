@@ -27,6 +27,7 @@ class NeuronNetworkBuilder {
 #pragma clang diagnostic pop
     std::string name;
     std::string date;
+    double learningFactor;
     
     std::vector<Neuron> neurons;
     std::vector<NeuronProperty> properties;

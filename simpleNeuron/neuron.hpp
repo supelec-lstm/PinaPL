@@ -39,8 +39,8 @@ public:
     double getOutput() const;
     void calculateOutput();
 
-    compositionFunction getCompositionFunction();
-    activationFunction getActivationFunction();
+    double getCompositionDerivative(double x);
+    double getActivationDerivative();
 };
 
 
