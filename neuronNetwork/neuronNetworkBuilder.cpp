@@ -16,7 +16,7 @@ using namespace std;
 
 NeuronNetworkBuilder::NeuronNetworkBuilder() {
     name = "New neuron network";
-    learningFactor = 0.2;
+    learningFactor = 1;
     
     time_t rawtime;
     time(&rawtime);
@@ -31,10 +31,6 @@ NeuronNetworkBuilder::NeuronNetworkBuilder() {
     
     isPrepared = false;
 }
-
-// !!!!!!!!!!
-// ATTENTION FACTEUR D'APPRENTISSAGE HARDCODE
-// !!!!!!!!!!
 
 NeuronNetworkBuilder::NeuronNetworkBuilder(NeuronNetwork network) {
     name = network.getName();

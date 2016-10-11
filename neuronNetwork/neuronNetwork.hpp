@@ -57,7 +57,7 @@ public:
 
     std::vector<double> computeGradient(std::vector<double> expectedOutput);
     std::vector<std::vector<double>> computeWeight(std::vector<double> gradient);
-    void applyWeight(std::vector<std::vector<double>> difference);
+    void applyWeight(std::vector<std::vector<double>> difference, std::vector<double> gradient);
 
     void onlineLearn(std::vector<std::vector<double>> dataInput, std::vector<std::vector<double>> dataOutput, unsigned long dataCount);
     void batchLearn(std::vector<std::vector<double>> dataInput, std::vector<std::vector<double>> dataOutput, unsigned long dataCount);

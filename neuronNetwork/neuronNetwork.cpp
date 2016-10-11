@@ -12,7 +12,7 @@
 #include "../simpleNeuron/neuron.hpp"
 
 #define MAX_DIFFERENCE_OUTPUT 0.001
-#define MAX_DIFFERENCE_ERROR 0.00001
+#define MAX_DIFFERENCE_ERROR 0
 
 
 using namespace std;
@@ -52,6 +52,11 @@ void NeuronNetwork::reset() {
     output = vector<double>(neuronsCount);
     for (unsigned long i = 0; i < neuronsCount; i++) {
         neurons[i].reset();
+        output[i] = 0;
+    }
+    for(unsigned long i = 0; i < inputCount; i++) {
+        neurons[inputNeurons[i]].setBalancedWeight();
+        input[i] = 0;
     }
 }
 
@@ -89,11 +94,11 @@ string NeuronNetwork::description() {
     return str.str();
 }
 
-void NeuronNetwork::setRelation(vector<vector<bool>> tab) {
+void NeuronNetwork::setRelation(vector<vector<bool> > tab) {
     relation = tab;
 }
 
-void NeuronNetwork::setWeight(vector<vector<double>> tab) {
+void NeuronNetwork::setWeight(vector<vector<double> > tab) {
     weight = tab;
 }
 
@@ -238,14 +243,14 @@ vector<double> NeuronNetwork::computeGradient(vector<double> expectedOutput){
     vector<double> error(neuronsCount, 0);
     vector<double> gradient(neuronsCount, 0);
     vector<double> gradientBefore(neuronsCount, 0);
-
+     
     do {
         for (unsigned long i = 0; i < neuronsCount; i++) {
             gradientBefore[i] = gradient[i];
             error[i] = 0;
             for(unsigned j = 0; j < neuronsCount; j++) {
                 if(relation[i][j]){
-                    error[i] += weight[i][j] * neurons[j].getCompositionDerivative(weight[i][j]*neurons[i].getOutput()) * gradient[j];
+                    error[i] += weight[i][j] * gradient[j];
                 }
             }
         }
@@ -255,13 +260,20 @@ vector<double> NeuronNetwork::computeGradient(vector<double> expectedOutput){
         for (unsigned long i = 0; i < neuronsCount; i++) {
             gradient[i] = error[i] * neurons[i].getActivationDerivative();
         }
-    } while(leastSquareError(gradient, gradientBefore, neuronsCount) >= MAX_DIFFERENCE_ERROR);
+
+    } while(leastSquareError(gradient, gradientBefore, neuronsCount) > MAX_DIFFERENCE_ERROR);
+
+    for(int i = 0; i < inputCount; i++){
+        gradient[inputNeurons[i]] = 0;
+    }
 
     return gradient;
 }
 
 vector<vector<double>> NeuronNetwork::computeWeight(vector<double> gradient){
-    vector<vector<double>> result(neuronsCount);
+
+    vector<vector<double> > result(neuronsCount);
+
     for(unsigned long i = 0; i < neuronsCount; i++){
         vector<double> v(neuronsCount);
         result[i] = v;
@@ -276,8 +288,9 @@ vector<vector<double>> NeuronNetwork::computeWeight(vector<double> gradient){
     return result;
 }
 
-void NeuronNetwork::applyWeight(vector<vector<double>> difference) {
+void NeuronNetwork::applyWeight(vector<vector<double>> difference, vector<double> gradient) {
     for(unsigned long i = 0; i < neuronsCount; i++){
+        neurons[i].setBiais(neurons[i].getBiais() + gradient[i]);
         unsigned long k = 0;
         vector<double> v(neurons[i].getInputCount());
         for (unsigned long j = 0; j < neuronsCount; j++) {
@@ -300,21 +313,22 @@ void NeuronNetwork::onlineLearn(vector<vector<double>> dataInput, vector<vector<
         calculate();
         vector<double> gradient = computeGradient(dataOutput[i]);
         vector<vector<double>> difference = computeWeight(gradient);
-        applyWeight(difference);
+        applyWeight(difference, gradient);
     }
 }
 
 
 void NeuronNetwork::batchLearn(vector<vector<double>> dataInput, vector<vector<double>> dataOutput, unsigned long dataCount){
     vector<vector<vector<double>>> difference(dataCount);
+    vector<vector<double>> gradients(dataCount);
     for (unsigned long i = 0; i < dataCount; i++){
         reset();
         setInput(dataInput[i]);
         calculate();
-        vector<double> gradient = computeGradient(dataOutput[i]);
-        difference[i] = computeWeight(gradient);
+        gradients[i] = computeGradient(dataOutput[i]);
+        difference[i] = computeWeight(gradients[i]);
     }
     for (unsigned long i = 0; i < dataCount; i++) {
-        applyWeight(difference[i]);
+        applyWeight(difference[i], gradients[i]);
     }
 }

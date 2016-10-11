@@ -19,6 +19,7 @@ Neuron::Neuron() {
     inputCount = 1;
     weight = vector<double>(inputCount);
     input = vector<double>(inputCount);
+    biais = 0;
 
     setBalancedWeight();
     reset();
@@ -31,6 +32,8 @@ Neuron::Neuron(unsigned long count, compositionFunction compositionFunction, act
     inputCount = count;
     weight = vector<double>(inputCount);
     input = vector<double>(inputCount);
+
+    biais = 0;
 
     setBalancedWeight();
     reset();
@@ -46,6 +49,7 @@ void Neuron::reset() {
 string Neuron::description() {
     stringstream str;
     str << "Number of inputs: " << inputCount << endl;
+    str << "        Biais: " << biais << endl;
     str << "        Inputs: {";
     for (unsigned long i = 0; i < inputCount; i++) {
         str << "  " << input[i];
@@ -91,6 +95,14 @@ void Neuron::setRandomWeight(double min, double max) {
     }
 }
 
+void Neuron::setBiais(double x) {
+    biais = x;
+}
+
+double Neuron::getBiais() {
+    return biais;
+}
+
 // Inputs & Output
 
 unsigned long Neuron::getInputCount() const {
@@ -117,7 +129,7 @@ void Neuron::calculateOutput() {
     for (unsigned long i = 0; i < inputCount; i++) {
         weightedInputs[i] = input[i] * weight[i];
     }
-    output = activation.main(composition.main(weightedInputs));
+    output = activation.main(composition.main(weightedInputs) + biais);
 }
 
 double Neuron::getCompositionDerivative(double x) {

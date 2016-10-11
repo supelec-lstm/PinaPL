@@ -9,6 +9,7 @@
 #include <typeinfo>
 #include <random>
 #include <string.h>
+#include <time.h>
 
 #include "simpleNeuron/mathFunctions.hpp"
 #include "simpleNeuron/neuron.hpp"
@@ -26,6 +27,7 @@ void test3();
 
 
 int main(int argc, const char * argv[]) {
+    srand(time(NULL));
     vector<string> stringedArgv = vector<string>(argc);
 
     for (int i = 0; i < argc; i++) {
@@ -56,6 +58,7 @@ int main(int argc, const char * argv[]) {
 }
 
 void test() {
+
     NeuronNetworkBuilder builder = NeuronNetworkBuilder();
     builder.setName("Test");
     builder.setDate("2016-09-28");
@@ -66,23 +69,46 @@ void test() {
     builder.addNeurons(3);
 
     builder.setPropertiesForNeuronRange(NeuronProportyInput, 0, 1);
-    builder.setPropertiesForNeuronRange(NeuronProportyOutput, 3, 4);
+    builder.setPropertiesForNeuronRange(NeuronProportyOutput, 4, 4);
 
     builder.addOneConnectionToManyRange(0, 1, 2);
-    builder.addManyConnectionsToOneRange(2, 3, 4);
+    builder.addOneConnectionToManyRange(0, 1, 3);
+    builder.addOneConnectionToManyRange(2, 3, 4);;
+
+    builder.buildNeurons(true, -5, 5);
 
     NeuronNetwork network = builder.generateComputationalNetwork();
 
-    vector<vector<double>> dataInput = {{0, 1}};
-    vector<vector<double>> dataOutput = {{1, 0}};
+    unsigned long sizeData = 4;
+    unsigned long nData = 4;
+    vector<vector<double> > dataInput(sizeData);
+    vector<vector<double> > dataOutput(sizeData);
+    for(unsigned long i = 0; i < sizeData; i++) {
+        vector<double> input(2);
+        vector<double> output(1);
+        dataInput[i] = input;
+        dataOutput[i] = output;
+    }
 
-    network.batchLearn(dataInput, dataOutput, 1);
+    dataInput[0][0] = 0; dataInput[0][1] = 1; dataOutput[0][0] = 1;
+    dataInput[1][0] = 0; dataInput[1][1] = 0; dataOutput[1][0] = 0;
+    dataInput[2][0] = 1; dataInput[2][1] = 1; dataOutput[2][0] = 0;
+    dataInput[3][0] = 1; dataInput[3][1] = 0; dataOutput[3][0] = 1; 
 
-    cout << network.description();
-    
+    for(int i = 0; i < 1000; i++){
+        network.batchLearn(dataInput, dataOutput, nData);
+    }
+
+    cout << network.description() << endl;
+
+    for(unsigned long i = 0; i < 4; i++){
+        network.setInput(dataInput[i]);
+        network.calculate();
+        cout << network.getOutput()[0] << endl;
+    }    
 }
 
-
+/*
 void test2() {
     NeuronNetworkBuilder builder = NeuronNetworkBuilder();
     builder.setName("Test");
@@ -126,4 +152,4 @@ void test3() {
     network.calculate();
     
     cout << network.description();
-}
+}*/
