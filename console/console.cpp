@@ -11,6 +11,9 @@ Console::Console() {
 // Console constructor
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Text output methods
+
 void Console::greeting() {
 	// greeting message
 	cout << "-----PinaPL Neuronal Network Simulation-----" << endl;
@@ -75,6 +78,9 @@ bool Console::listIdxs() {
     }
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Command parsing methods
+
 vector<string> Console::parseCommandString(string rawInput) {
     // parses a command string, outputs a vector of arguments
 
@@ -82,6 +88,19 @@ vector<string> Console::parseCommandString(string rawInput) {
     vector<string> commands{istream_iterator<string>{iss}, istream_iterator<string>{}};
     return commands;
 }
+
+bool Console::argumentCountCheck(int argumentCount, int desiredCount) {
+    if (argumentCount != desiredCount) {
+        cout << "Error: wrong argument count" << endl;
+        return false;
+    } else {
+        return true;
+    }
+
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Execution methods
 
 void Console::scriptExecution(string scriptPath) {
     // executes a script
@@ -95,80 +114,6 @@ void Console::scriptExecution(string scriptPath) {
         commandExecution(parsedLine);
     }
     return;
-}
-
-NeuronNetwork Console::networkBuilderInteractive() {
-    // calls NeuronNetworkBuilder methods interactively
-
-    bool networkBuilderMode = true;
-    string rawInput;
-    status = "network builder";
-
-    NeuronNetworkBuilder builder = NeuronNetworkBuilder();
-
-    while (networkBuilderMode == true) {
-        cout << status << ">> ";
-		getline(cin, rawInput);
-
-        vector<string> parsedInput = parseCommandString(rawInput);
-        if (parsedInput[0] == "exit" || parsedInput[0] == "quit") {
-            status = "";
-            break;
-        }
-
-        networkBuilderCommandExecution(parsedInput, &builder);
-    }
-
-    cout << "Generated network named: " << builder.getName() << endl;
-    return(builder.generateComputationalNetwork());
-}
-
-bool Console::argumentCountCheck(int argumentCount, int desiredCount) {
-    if (argumentCount != desiredCount) {
-        cout << "Error: wrong argument count" << endl;
-        return false;
-    } else {
-        return true;
-    }
-
-}
-
-void Console::commandExecution(vector<string> parsedInput) {
-    // executes a command
-
-    int argumentCount = parsedInput.size();
-
-    map<string,Command> commands = {
-        {"list-saved-networks", LISTSAVEDNETWORKS},
-        {"list-scripts", LISTSCRIPTS},
-        {"list-idxs", LISTIDXS},
-        {"script", SCRIPT},
-        {"network-builder",NETWORKBUILDER}
-    };
-
-	switch(commands[parsedInput[0]])
-    {
-        case LISTSAVEDNETWORKS:
-    	    listSavedNetworks();
-      	    break;
-      	case LISTSCRIPTS:
-            listScripts();
-      	    break;
-      	case LISTIDXS:
-      	    listIdxs();
-      	    break;
-        case SCRIPT:
-            if (argumentCountCheck(argumentCount, 2)) {
-                scriptExecution(parsedInput[1]);
-            }
-            break;
-        case NETWORKBUILDER:
-            networkBuilderInteractive();
-            break;
-        default:
-            cout << "Error: unrecognized command" << endl;
-            break;
-    }
 }
 
 void Console::networkBuilderCommandExecution(vector<string> parsedInput, NeuronNetworkBuilder *builder) {
@@ -224,6 +169,74 @@ void Console::networkBuilderCommandExecution(vector<string> parsedInput, NeuronN
             cout << "Error: unrecognized command" << endl;
             break;
     }
+}
+
+void Console::commandExecution(vector<string> parsedInput) {
+    // executes a command
+
+    int argumentCount = parsedInput.size();
+
+    map<string,Command> commands = {
+        {"list-saved-networks", LISTSAVEDNETWORKS},
+        {"list-scripts", LISTSCRIPTS},
+        {"list-idxs", LISTIDXS},
+        {"script", SCRIPT},
+        {"network-builder",NETWORKBUILDER}
+    };
+
+	switch(commands[parsedInput[0]])
+    {
+        case LISTSAVEDNETWORKS:
+    	    listSavedNetworks();
+      	    break;
+      	case LISTSCRIPTS:
+            listScripts();
+      	    break;
+      	case LISTIDXS:
+      	    listIdxs();
+      	    break;
+        case SCRIPT:
+            if (argumentCountCheck(argumentCount, 2)) {
+                scriptExecution(parsedInput[1]);
+            }
+            break;
+        case NETWORKBUILDER:
+            networkBuilderInteractive();
+            break;
+        default:
+            cout << "Error: unrecognized command" << endl;
+            break;
+    }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Interactive methods
+
+NeuronNetwork Console::networkBuilderInteractive() {
+    // calls NeuronNetworkBuilder methods interactively
+
+    bool networkBuilderMode = true;
+    string rawInput;
+    status = "network builder";
+
+    NeuronNetworkBuilder builder = NeuronNetworkBuilder();
+
+    while (networkBuilderMode == true) {
+        cout << status << ">> ";
+		getline(cin, rawInput);
+
+        vector<string> parsedInput = parseCommandString(rawInput);
+        if (parsedInput[0] == "exit" || parsedInput[0] == "quit") {
+            status = "";
+            break;
+        }
+
+        networkBuilderCommandExecution(parsedInput, &builder);
+    }
+
+    cout << "Generated network named: " << builder.getName() << endl;
+    return(builder.generateComputationalNetwork());
 }
 
 void Console::interactive() {
