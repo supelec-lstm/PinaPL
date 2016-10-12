@@ -3,19 +3,7 @@
 //  PinaPL
 //
 
-#include <iostream>
-#include <fstream>
-#include <map>
-#include <dirent.h>
-#include <algorithm>
-#include <iterator>
-#include <sstream>
-
-#include "../simpleNeuron/neuron.hpp"
-#include "../neuronNetwork/neuronNetwork.hpp"
-#include "../neuronNetwork/neuronNetworkBuilder.hpp"
 #include "console.hpp"
-#include "../idxParser/idxParser.hpp"
 
 using namespace std;
 
@@ -109,15 +97,53 @@ void Console::scriptExecution(string scriptPath) {
     return;
 }
 
+NeuronNetwork Console::networkBuilderInteractive() {
+    // calls NeuronNetworkBuilder methods interactively
+
+    bool networkBuilderMode = true;
+    string rawInput;
+    status = "network builder";
+
+    NeuronNetworkBuilder builder = NeuronNetworkBuilder();
+
+    while (networkBuilderMode == true) {
+        cout << status << ">> ";
+		getline(cin, rawInput);
+
+        vector<string> parsedInput = parseCommandString(rawInput);
+        if (parsedInput[0] == "exit" || parsedInput[0] == "quit") {
+            status = "";
+            break;
+        }
+
+        networkBuilderCommandExecution(parsedInput, &builder);
+    }
+
+    cout << "Generated network named: " << builder.getName() << endl;
+    return(builder.generateComputationalNetwork());
+}
+
+bool Console::argumentCountCheck(int argumentCount, int desiredCount) {
+    if (argumentCount != desiredCount) {
+        cout << "Error: wrong argument count" << endl;
+        return false;
+    } else {
+        return true;
+    }
+
+}
 
 void Console::commandExecution(vector<string> parsedInput) {
     // executes a command
+
+    int argumentCount = parsedInput.size();
 
     map<string,Command> commands = {
         {"list-saved-networks", LISTSAVEDNETWORKS},
         {"list-scripts", LISTSCRIPTS},
         {"list-idxs", LISTIDXS},
-        {"script", SCRIPT}
+        {"script", SCRIPT},
+        {"network-builder",NETWORKBUILDER}
     };
 
 	switch(commands[parsedInput[0]])
@@ -132,11 +158,71 @@ void Console::commandExecution(vector<string> parsedInput) {
       	    listIdxs();
       	    break;
         case SCRIPT:
-            scriptExecution(parsedInput[1]);
+            if (argumentCountCheck(argumentCount, 2)) {
+                scriptExecution(parsedInput[1]);
+            }
             break;
-//        default:
-//            cout << "Error: unrecognized command" << endl;
-//            break;
+        case NETWORKBUILDER:
+            networkBuilderInteractive();
+            break;
+        default:
+            cout << "Error: unrecognized command" << endl;
+            break;
+    }
+}
+
+void Console::networkBuilderCommandExecution(vector<string> parsedInput, NeuronNetworkBuilder *builder) {
+    // executes a command
+
+    int argumentCount = parsedInput.size();
+
+    map<string,NetworkBuilderCommand> commands = {
+        {"set-name", SETNAME},
+        {"set-date", SETDATE},
+        {"set-default-composition-function", SETDEFCOMPFUNC},
+        {"set-default-activation-function", SETDEFACTFUNC},
+        {"add-neurons", ADDNEURONS},
+        {"set-property", SETPROPERTY},
+        {"add-one2many-connection", ADDONE2MANY},
+        {"add-many2one-connection", ADDMANY2ONE}
+    };
+
+	switch(commands[parsedInput[0]])
+    {
+        case SETNAME:
+            if(argumentCountCheck(argumentCount, 2)) {
+                builder->setName(parsedInput[1]);
+            }
+            break;
+        case SETDATE:
+            if(argumentCountCheck(argumentCount, 2)) {
+                builder->setDate(parsedInput[1]);
+            }
+            break;
+        case SETDEFCOMPFUNC:
+            if(argumentCountCheck(argumentCount, 2)) {
+                if(parsedInput[1] == "sum") {
+                    builder->setDefaultCompositionFunction(compositionFunctionSum);
+                }
+            }
+            break;
+        case SETDEFACTFUNC:
+            if(argumentCountCheck(argumentCount, 2)) {
+                if(parsedInput[1] == "sigmoid") {
+                    builder->setDefaultActivationFunction(activationFunctionSigmoid);
+                }
+            }
+            break;
+        case ADDNEURONS:
+             if(argumentCountCheck(argumentCount, 2)) {
+                builder->addNeurons(stoi(parsedInput[1]));
+            }
+            break;
+        case SETPROPERTY:
+            break;
+        default:
+            cout << "Error: unrecognized command" << endl;
+            break;
     }
 }
 
