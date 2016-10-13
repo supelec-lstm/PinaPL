@@ -24,24 +24,24 @@ using namespace std;
 void test();
 void test2();
 void test3();
-bool isArgumentPresent(string argument, vector<string> arguments);
+bool isArgumentPresent(string argument, vector<string> *arguments);
 
 int main(int argc, const char * argv[]) {
-    srand(time(NULL));
+    srand(unsigned(short(time(NULL))));
 
-    vector<string> stringedArgv = vector<string>(argc);
+    vector<string> stringedArgv = vector<string>(unsigned(argc));
 
     for (int i = 0; i < argc; i++) {
         unsigned long length = strlen(argv[i]);
         string argument;
         argument.assign(argv[i], length);
-        stringedArgv[(unsigned int) i] = argument;
+        stringedArgv[unsigned(i)] = argument;
     }
 
-    if (isArgumentPresent("--log", stringedArgv)) {
+    if (isArgumentPresent("--log", &stringedArgv)) {
     }
 
-    if (isArgumentPresent("--interactive", stringedArgv)) {
+    if (isArgumentPresent("--interactive", &stringedArgv)) {
         // if there is a single argument and it is "--interactive"
         Console console;
         console.greeting();
@@ -112,9 +112,9 @@ void test() {
     }    
 }
 
-bool isArgumentPresent(string argument, vector<string> arguments){
-    for (unsigned long i = 0; i < arguments.size(); i++) {
-        if (arguments[i] == argument)
+bool isArgumentPresent(string argument, vector<string> *arguments){
+    for (unsigned long i = 0; i < arguments->size(); i++) {
+        if ((*arguments)[i] == argument)
             return(true);
         }
     return(false);
