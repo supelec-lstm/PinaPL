@@ -26,7 +26,8 @@ enum Command {
     LISTSCRIPTS = 2,
     LISTIDXS = 3,
     SCRIPT = 4,
-    NETWORKBUILDER = 5
+    NETWORKBUILDERSCRIPT = 5,
+    NETWORKBUILDER = 6
 };
 
 enum NetworkBuilderCommand {
@@ -49,11 +50,13 @@ private:
     bool listScripts();
     bool listIdxs();
     void scriptExecution(std::string scriptPath);
-    bool argumentCountCheck(int argumentCount, int desiredCount);
+    NeuronNetwork networkBuilderScriptExecution(std::string scriptPath);
+    bool argumentCountCheck(int argumentCount, int desiredCount, bool errorReport);
     void commandExecution(std::vector<std::string> parsedInput);
     void networkBuilderCommandExecution(std::vector<std::string> parsedInput, NeuronNetworkBuilder *builder);
     NeuronNetwork networkBuilderInteractive();
     std::vector<std::string> splitString(const std::string &input, std::string delim);
+    std::vector<int> splitStringToInt(const std::string &input, std::string delim);
 
 public:
     Console();

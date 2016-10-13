@@ -35,7 +35,7 @@ int main(int argc, const char * argv[]) {
         unsigned long length = strlen(argv[i]);
         string argument;
         argument.assign(argv[i], length);
-        stringedArgv[i] = argument;
+        stringedArgv[(unsigned int) i] = argument;
     }
 
     if (isArgumentPresent("--log", stringedArgv)) {
@@ -113,7 +113,7 @@ void test() {
 }
 
 bool isArgumentPresent(string argument, vector<string> arguments){
-    for (int i = 0; i < arguments.size(); i++) {
+    for (unsigned long i = 0; i < arguments.size(); i++) {
         if (arguments[i] == argument)
             return(true);
         }
