@@ -24,10 +24,11 @@ using namespace std;
 void test();
 void test2();
 void test3();
-
+bool isArgumentPresent(string argument, vector<string> arguments);
 
 int main(int argc, const char * argv[]) {
     srand(time(NULL));
+
     vector<string> stringedArgv = vector<string>(argc);
 
     for (int i = 0; i < argc; i++) {
@@ -37,7 +38,10 @@ int main(int argc, const char * argv[]) {
         stringedArgv[i] = argument;
     }
 
-    if (argc == 2 && stringedArgv[1] == "--interactive") {
+    if (isArgumentPresent("--log", stringedArgv)) {
+    }
+
+    if (isArgumentPresent("--interactive", stringedArgv)) {
         // if there is a single argument and it is "--interactive"
         Console console;
         console.greeting();
@@ -107,6 +111,15 @@ void test() {
         cout << network.getOutput()[0] << endl;
     }    
 }
+
+bool isArgumentPresent(string argument, vector<string> arguments){
+    for (int i = 0; i < arguments.size(); i++) {
+        if (arguments[i] == argument)
+            return(true);
+        }
+    return(false);
+    }
+
 
 /*
 void test2() {

@@ -9,6 +9,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <map>
 #include <dirent.h>
 #include <algorithm>
@@ -21,24 +22,22 @@
 #include "../idxParser/idxParser.hpp"
 
 enum Command {
-    DEFAULT,
-    LISTSAVEDNETWORKS,
-    LISTSCRIPTS,
-    LISTIDXS,
-    SCRIPT,
-    NETWORKBUILDER
+    LISTSAVEDNETWORKS = 1,
+    LISTSCRIPTS = 2,
+    LISTIDXS = 3,
+    SCRIPT = 4,
+    NETWORKBUILDER = 5
 };
 
 enum NetworkBuilderCommand {
-    DEFAULTNB,
-    SETNAME,
-    SETDATE,
-    SETDEFCOMPFUNC,
-    SETDEFACTFUNC,
-    ADDNEURONS,
-    SETPROPERTY,
-    ADDONE2MANY,
-    ADDMANY2ONE
+    SETNAME = 1,
+    SETDATE = 2,
+    SETDEFCOMPFUNC = 3,
+    SETDEFACTFUNC = 4,
+    ADDNEURON = 5,
+    SETPROPERTY = 6,
+    ADDCONNECTION = 7,
+    BUILD = 8
 };
 
 class Console {
@@ -46,7 +45,6 @@ class Console {
 private:
     std::string status;
 
-    std::vector<std::string> parseCommandString(std::string rawInput);
     bool listSavedNetworks();
     bool listScripts();
     bool listIdxs();
@@ -55,7 +53,7 @@ private:
     void commandExecution(std::vector<std::string> parsedInput);
     void networkBuilderCommandExecution(std::vector<std::string> parsedInput, NeuronNetworkBuilder *builder);
     NeuronNetwork networkBuilderInteractive();
-
+    std::vector<std::string> splitString(const std::string &input, std::string delim);
 
 public:
     Console();

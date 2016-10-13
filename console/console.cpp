@@ -81,14 +81,6 @@ bool Console::listIdxs() {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Command parsing methods
 
-vector<string> Console::parseCommandString(string rawInput) {
-    // parses a command string, outputs a vector of arguments
-
-    istringstream iss(rawInput);
-    vector<string> commands{istream_iterator<string>{iss}, istream_iterator<string>{}};
-    return commands;
-}
-
 bool Console::argumentCountCheck(int argumentCount, int desiredCount) {
     if (argumentCount != desiredCount) {
         cout << "Error: wrong argument count" << endl;
@@ -97,6 +89,18 @@ bool Console::argumentCountCheck(int argumentCount, int desiredCount) {
         return true;
     }
 
+}
+
+vector<string> Console::splitString(const string &input, string delim) {
+    char delimChar = delim[0];
+    vector<string> elements;
+    stringstream ss;
+    ss.str(input);
+    string item;
+    while (getline(ss, item, delimChar)) {
+        elements.push_back(item);
+    }
+    return elements;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -110,7 +114,7 @@ void Console::scriptExecution(string scriptPath) {
     ifstream input(path);
     for (string line; getline(input, line);)
     {
-        vector<string> parsedLine = parseCommandString(line);
+        vector<string> parsedLine = splitString(line, " ");
         commandExecution(parsedLine);
     }
     return;
@@ -126,10 +130,10 @@ void Console::networkBuilderCommandExecution(vector<string> parsedInput, NeuronN
         {"set-date", SETDATE},
         {"set-default-composition-function", SETDEFCOMPFUNC},
         {"set-default-activation-function", SETDEFACTFUNC},
-        {"add-neurons", ADDNEURONS},
+        {"add-neuron", ADDNEURON},
         {"set-property", SETPROPERTY},
-        {"add-one2many-connection", ADDONE2MANY},
-        {"add-many2one-connection", ADDMANY2ONE}
+        {"add-connection", ADDCONNECTION},
+        {"build", BUILD}
     };
 
 	switch(commands[parsedInput[0]])
@@ -158,12 +162,57 @@ void Console::networkBuilderCommandExecution(vector<string> parsedInput, NeuronN
                 }
             }
             break;
-        case ADDNEURONS:
-             if(argumentCountCheck(argumentCount, 2)) {
+        case ADDNEURON:
+            if(argumentCountCheck(argumentCount, 2)) {
                 builder->addNeurons(stoi(parsedInput[1]));
             }
             break;
         case SETPROPERTY:
+            if(argumentCountCheck(argumentCount, 4)) {
+                string iOProperty = parsedInput[1];
+                int from = stoi(parsedInput[2]);
+                int to = stoi(parsedInput[3]);
+
+                if (iOProperty == "input") {
+                    builder->setPropertiesForNeuronRange(NeuronProportyInput, from, to);
+                    cout << "property input set" << endl;
+                } else if (iOProperty == "output") {
+                    builder->setPropertiesForNeuronRange(NeuronProportyOutput, from, to);
+                    cout << "property output set" << endl;
+                }
+            }
+            break;
+        case ADDCONNECTION:
+            if(argumentCountCheck(argumentCount, 3)) {
+                string from = parsedInput[1];
+                string to = parsedInput[2];
+                vector<string> parsedFrom = splitString(from, "-");
+                vector<string> parsedTo = splitString(to, "-");
+
+                if(parsedFrom.size()==1 && parsedTo.size()==1) {
+                    builder->addConnection(stoi(parsedFrom[0]), stoi(parsedTo[0]));
+                } else if (parsedFrom.size()==2 && parsedTo.size()==1) {
+                    cout << "many to one" << endl;
+                } else if (parsedFrom.size()==1 && parsedTo.size()==2) {
+                    cout << "one to many" << endl;
+                } else if (parsedFrom.size()==2 && parsedTo.size()==2){
+                    cout << "many to many" << endl;
+                } else {
+                    cout << "Error : invalid input" << endl;
+                }
+            }
+            break;
+        case BUILD:
+            if(argumentCountCheck(argumentCount, 4)) {
+                bool randomWeights = false;
+                if(parsedInput[1] == "Y" || parsedInput[1] == "y" || parsedInput[1] == "yes") {
+                    randomWeights = true;
+                }
+                int minWeight = stoi(parsedInput[2]);
+                int maxWeight = stoi(parsedInput[3]);
+
+                builder->buildNeurons(randomWeights, minWeight, maxWeight);
+            }
             break;
         default:
             cout << "Error: unrecognized command" << endl;
@@ -201,7 +250,9 @@ void Console::commandExecution(vector<string> parsedInput) {
             }
             break;
         case NETWORKBUILDER:
-            networkBuilderInteractive();
+            if (argumentCountCheck(argumentCount, 1)) {
+                NeuronNetwork network = networkBuilderInteractive();
+            }
             break;
         default:
             cout << "Error: unrecognized command" << endl;
@@ -226,15 +277,15 @@ NeuronNetwork Console::networkBuilderInteractive() {
         cout << status << ">> ";
 		getline(cin, rawInput);
 
-        vector<string> parsedInput = parseCommandString(rawInput);
+        vector<string> parsedInput = splitString(rawInput, " ");
         if (parsedInput[0] == "exit" || parsedInput[0] == "quit") {
             status = "";
+            networkBuilderMode = false;
             break;
         }
 
         networkBuilderCommandExecution(parsedInput, &builder);
     }
-
     cout << "Generated network named: " << builder.getName() << endl;
     return(builder.generateComputationalNetwork());
 }
@@ -249,10 +300,11 @@ void Console::interactive() {
 		cout << status << ">> ";
 		getline(cin, rawInput);
 
-        vector<string> parsedInput = parseCommandString(rawInput);
+        vector<string> parsedInput = splitString(rawInput, " ");
 
         if (parsedInput[0] == "exit" || parsedInput[0] == "quit") {
             goodbye();
+            interactiveEnabled = false;
             return;
         }
 
