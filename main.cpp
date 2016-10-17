@@ -21,23 +21,26 @@
 
 using namespace std;
 
+<<<<<<< HEAD
 void testXOR();
 void testMNIST(vector<vector<double> > imagesLearn, vector<double> labelsLearn, int numberData, vector<vector<double> > imagesTest, vector<double> labelsTest, int numberTest);
-int maximum(vector<double> v);
-
 
 int main(int argc, const char * argv[]) {
-    srand(time(NULL));
-    vector<string> stringedArgv = vector<string>(argc);
+    srand(unsigned(short(time(NULL))));
+
+    vector<string> stringedArgv = vector<string>(unsigned(argc));
 
     for (int i = 0; i < argc; i++) {
         unsigned long length = strlen(argv[i]);
         string argument;
         argument.assign(argv[i], length);
-        stringedArgv[i] = argument;
+        stringedArgv[unsigned(i)] = argument;
     }
 
-    if (argc == 2 && stringedArgv[1] == "--interactive") {
+    if (isArgumentPresent("--log", &stringedArgv)) {
+    }
+
+    if (isArgumentPresent("--interactive", &stringedArgv)) {
         // if there is a single argument and it is "--interactive"
         Console console;
         console.greeting();
