@@ -59,7 +59,7 @@ void NeuronNetwork::init(){
 
     initNextNode();
     initPreviousNode();
-
+    initNextNeighbor();
 }
 
 void NeuronNetwork::initNextNode(){
@@ -120,13 +120,16 @@ void NeuronNetwork::initNextNeighbor(){
     bool* neighbor = new bool[neuronCount];
     int n = 0;
     for(int i = 0; i < neuronCount; i++){
-        for(int j = 0; j < inputCount; j++){
-            if(relation[i][j]){
-                if(!neighbor[i]){
-                    n++;
-                    neighbor[i] = true;
-                }
-            }
+        neighbor[i] = false;
+    }
+    for(int i = 0; i < neuronCount; i++){
+        int j = 0;
+        while(!relation[i][j] && j < inputCount){
+            j++;
+        }
+        if(j != inputCount){
+            n++;
+            neighbor[i] = true;
         }
     }
 
@@ -141,6 +144,7 @@ void NeuronNetwork::initNextNeighbor(){
         }
         result.push_back(v);
         resultCount.push_back(n);
+
         n = newNode(neighbor);
     }
 
@@ -164,7 +168,7 @@ int NeuronNetwork::newNode(bool* voisin){
     int n = 0;
     for(int i = 0; i < neuronCount; i++){
         if(voisin[i]){
-            for(int j = 0; j < n; j++){
+            for(int j = 0; j < nextCount[i]; j++){
                 if(!result[nextNode[i][j]]){
                     n++;
                     result[nextNode[i][j]] = true;

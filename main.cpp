@@ -17,6 +17,8 @@
 
 using namespace std;
 
+double sigmoid(double x);
+
 void testXOR();
 void testMNIST(vector<vector<double> > imagesLearn, vector<double> labelsLearn, int numberData, vector<vector<double> > imagesTest, vector<double> labelsTest, int numberTest);
 
@@ -56,7 +58,57 @@ int main(int argc, const char * argv[]) {
         testMNIST(imgLearn, labelLearn, 20, imgTest, labelTest, 100);
     }*/
 
+    NeuronNetwork network(2, 1, 3);
+
+    vector<vector<bool> > relation(3);
+    for(int i = 0; i < 3; i++){
+        vector<bool> v(5, false);
+        relation[i] = v;
+    }
+    relation[0][0] = true;
+    relation[0][1] = true;
+    relation[1][0] = true;
+    relation[1][1] = true;
+    relation[2][2] = true;
+    relation[2][3] = true;
+    network.setRelation(relation);
+
+    vector<vector<double> > weight(3);
+    for(int i = 0; i < 3; i++){
+        vector<double> v(5, 0);
+        weight[i] = v;
+    }
+    weight[0][0] = 0.5;
+    weight[0][1] = 0.5;
+    weight[1][0] = 0.5;
+    weight[1][1] = 0.5;
+    weight[2][2] = 0.5;
+    weight[2][3] = 0.5;
+    network.setWeight(weight);
+
+    vector<double> bias(3, 0);
+    network.setBias(bias);
+
+    vector<ActivationFunctionMain> functions(3, &sigmoid);
+    network.setActivation(functions);
+
+    network.init();
+
+    double* input = new double[2];
+    input[0] = 0;
+    input[1] = 1;
+    network.setInput(input);
+
+    network.calculate();
+    cout << network.getOutput()[0];
+
+    cout << endl;
     return 0;
+}
+
+double sigmoid(double x){
+    double a = 1 + exp(-x);
+    return 1/a;
 }
 
 /*void testXOR() {
