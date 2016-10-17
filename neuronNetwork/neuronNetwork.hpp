@@ -7,6 +7,7 @@
 #define DEF_NETWORK
 
 #include <string>
+#include <vector>
 
 typedef double (*ActivationFunctionMain) (double);
 typedef double (*ActivationFunctionDerivative) (double);
@@ -14,7 +15,7 @@ typedef double (*ActivationFunctionDerivative) (double);
 class NeuronNetwork {
     bool** relation;
     double** weight;
-    double* biais;
+    double* bias;
     ActivationFunctionMain* functions;
 
     double* output;
@@ -27,19 +28,26 @@ class NeuronNetwork {
     int* nextCount;
     int** previousNode;
     int* previousCount;
-    bool* firstNode;
+    int** nextNeighbor;
+    int* nextNeighborCount;
+    int nextNeighborTurnCount;
 
-    void calculateOutput(bool* voisin);
-    bool newNode(bool* voisin);
+    void initNextNode();
+    void initPreviousNode();
+    void initNextNeighbor();
+
+    void calculateOutput(int* neighbor, int neighborCount);
+    int newNode(bool* voisin);
 
 public:
     NeuronNetwork(int nbin, int nbout, int nbtot);
     void reset();
+    void init();
 
-    void setRelation(bool** relation);
-    void setWeight(double** weight);
-    void setBiais(double* biais);
-    void setActivation(ActivationFunctionMain* functions);
+    void setRelation(std::vector<std::vector<bool> > relation);
+    void setWeight(std::vector<std::vector<double> > weight);
+    void setBias(std::vector<double> bias);
+    void setActivation(std::vector<ActivationFunctionMain> functions);
     void setInput(double*);
 
     double* getOutput();
