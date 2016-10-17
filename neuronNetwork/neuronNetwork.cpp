@@ -42,14 +42,39 @@ NeuronNetwork::NeuronNetwork(int nbin, int nbout, int nbtot){
     bias = new double[neuronCount];
     functions = new ActivationFunctionMain[neuronCount];
 
+    // Learning
+
+    gradient = new double[neuronCount];
+
+    weightDifference = static_cast<double**>(malloc(neuronCount * sizeof(double*)));
+    for(int i = 0; i < neuronCount; i++){
+        weightDifference[i] = new double[inputCount + neuronCount];
+    }
+
     // Reset before running
 
     reset();
 }
 
 void NeuronNetwork::reset(){
-    for(int i = 0; i < inputCount + neuronCount; i++){
+    resetOutput();
+    resetBackPropagation();
+}
+
+void NeuronNetwork::resetOutput(){
+    int n = inputCount + neuronCount;
+    for(int i = 0; i < n; i++){
         output[i] = 0;
+    }
+}
+
+void NeuronNetwork::resetBackPropagation(){
+    int n = inputCount + neuronCount;
+    for(int i = 0; i < neuronCount; i++){
+        gradient[i] = 0;
+        for(int j = 0; j < n; j++){
+            weightDifference[i][j] = 0;
+        }
     }
 }
 
@@ -145,7 +170,7 @@ void NeuronNetwork::initNextNeighbor(){
         result.push_back(v);
         resultCount.push_back(n);
 
-        n = newNode(neighbor);
+        n = newNextNeighbor(neighbor);
     }
 
     nextNeighborTurnCount = result.size();
@@ -158,10 +183,45 @@ void NeuronNetwork::initNextNeighbor(){
     }
 }
 
+void NeuronNetwork::initPreviousNeighbor(){
+    vector<int*> result;
+    vector<int> resultCount;
+    bool* neighbor = new bool[neuronCount];
+    int n = 0;
+    for(int i = 0; i < neuronCount; i++){
+        neighbor[i] = false;
+    }
+    for(int i = neuronCount - outputCount; i < neuronCount; i++){
+        neighbor[i] = true;
+    }
 
-int NeuronNetwork::newNode(bool* voisin){
+    while(n != 0){
+        int* v = new int[n];
+        int k = 0;
+        for(int i = 0; i < neuronCount; i++){
+            if(neighbor[i]){
+                v[k] = i;
+                k++;
+            }
+        }
+        result.push_back(v);
+        resultCount.push_back(n);
+
+        n = newPreviousNeighbor(neighbor);
+    }
+
+    previousNeighborTurnCount = result.size();
+    previousNeighbor = static_cast<int**>(malloc(previousNeighborTurnCount * sizeof(int*)));
+    previousNeighborCount = new int[previousNeighborTurnCount];
+
+    for(int i = 0; i < neuronCount; i++){
+        previousNeighbor[i] = result[i];
+        previousNeighborCount[i] = resultCount[i];
+    }
+}
+
+int NeuronNetwork::newNextNeighbor(bool* voisin){
     bool* result = new bool[neuronCount];
-    bool isEmpty = true;
     for(int i = 0; i < neuronCount; i++){
         result[i] = false;
     }
@@ -174,6 +234,29 @@ int NeuronNetwork::newNode(bool* voisin){
                     result[nextNode[i][j]] = true;
                 }
                 
+            }
+        }
+    }
+    for(int i = 0; i < neuronCount; i++){
+        voisin[i] = result[i];
+    }
+    return n;
+}
+
+int NeuronNetwork::newPreviousNeighbor(bool* voisin){
+    bool* result = new bool[neuronCount];
+    for(int i = 0; i < neuronCount; i++){
+        result[i] = false;
+    }
+    int n = 0;
+    for(int i = 0; i < neuronCount; i++){
+        if(voisin[i]){
+            for(int j = 0; j < previousCount[i]; j++){
+                int k = previousNode[i][j] - inputCount;
+                if(k >= 0 && !result[k]){
+                    n++;
+                    result[k] = true;
+                }
             }
         }
     }
@@ -223,7 +306,7 @@ void NeuronNetwork::setInput(double* inputArg){
 
 double* NeuronNetwork::getOutput(){
     double* result = new double[outputCount];
-    int i = 0, j = neuronCount - outputCount;
+    int i = 0, j = neuronCount + inputCount - outputCount;
     while(i < outputCount){
         result[i] = output[j];
         i++;
@@ -235,7 +318,6 @@ double* NeuronNetwork::getOutput(){
 // Calculate from the input
 
 void NeuronNetwork::calculate(){
-    reset();
     for(int i = 0; i < nextNeighborTurnCount; i++){
         calculateOutput(nextNeighbor[i], nextNeighborCount[i]);
     }
@@ -254,5 +336,51 @@ void NeuronNetwork::calculateOutput(int* neighbor, int neighborCount){
     }
     for(int i = 0; i < neighborCount; i++){
         output[neighbor[i]] = (functions[i])(comp[i]);
+    }
+}
+
+// Make a learning
+
+void NeuronNetwork::learn(double* input, double* outputTheorical){
+    resetOutput();
+    setInput(input);
+    calculate();
+    calculateOutputGradient(outputTheorical);
+    for(int i = 1; i < previousNeighborTurnCount; i++){
+        calculateGradient(previousNeighbor[i], previousNeighborCount[i]);
+    }
+    for(int i = 0; i < neuronCount; i++){
+        for(int j = 0; j < previousCount[i]; j++){
+            int k = previousNode[i][j];
+            weightDifference[i][k] += gradient[i] * output[k];
+        }
+    }
+}
+
+void NeuronNetwork::calculateOutputGradient(double* outputTheorical){
+    int i = 0;
+    int j = neuronCount + inputCount - outputCount;
+    while(i < outputCount){
+        double e = outputTheorical[i] - output[j];
+        gradient[j] = e * (functionsDerivative[j])(output[j]);
+        i++;
+        j++;
+    }
+
+}
+
+void NeuronNetwork::calculateGradient(int* neighbor, int neighborCount){
+    double* error = new double[neighborCount];
+    for(int i = 0; i < neighborCount; i++){
+        int k = neighbor[i];
+        int n = nextCount[k];
+        double s = 0;
+        for(int j = 0; j < n; j++){
+            s += weight[nextNode[k][j]][k] * gradient[j];
+        }
+        error[i] = s;
+    }
+    for(int i = 0; i < neighborCount; i++){
+        gradient[neighbor[i]] = (functionsDerivative[i])(output[neighbor[i]]) * error[i];
     }
 }

@@ -31,13 +31,29 @@ class NeuronNetwork {
     int** nextNeighbor;
     int* nextNeighborCount;
     int nextNeighborTurnCount;
+    int** previousNeighbor;
+    int* previousNeighborCount;
+    int previousNeighborTurnCount;
+
+    double* gradient;
+    double** weightDifference;
+    ActivationFunctionDerivative* functionsDerivative;
+
+    void resetOutput();
+    void resetBackPropagation();
 
     void initNextNode();
     void initPreviousNode();
     void initNextNeighbor();
+    void initPreviousNeighbor();
 
     void calculateOutput(int* neighbor, int neighborCount);
-    int newNode(bool* voisin);
+    int newNextNeighbor(bool* voisin);
+    int newPreviousNeighbor(bool* voisin);
+
+    void learn(double* input, double* outputTheorical);
+    void calculateOutputGradient(double* outputTheorical);
+    void calculateGradient(int* neighbor, int neighborCount);
 
 public:
     NeuronNetwork(int nbin, int nbout, int nbtot);
