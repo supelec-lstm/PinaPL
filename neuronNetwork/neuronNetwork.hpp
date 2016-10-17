@@ -7,65 +7,44 @@
 #define DEF_NETWORK
 
 #include <string>
-#include <vector>
 
-#include "../simpleNeuron/neuron.hpp"
-
+typedef double (*ActivationFunctionMain) (double);
+typedef double (*ActivationFunctionDerivative) (double);
 
 class NeuronNetwork {
-    std::string name;
-    std::string date;
-    
-    unsigned long inputCount;
-    unsigned long outputCount;
-    unsigned long neuronsCount;
-    double learningFactor;
-    std::vector<Neuron> neurons;
-    std::vector<unsigned long> inputNeurons;
-    std::vector<unsigned long> outputNeurons;
-    std::vector<std::vector<bool>> relation;
-    std::vector<std::vector<double>> weight;
-    std::vector<double> output;
-    std::vector<double> input;
+    bool** relation;
+    double** weight;
+    double* biais;
+    ActivationFunctionMain* functions;
+
+    double* output;
+
+    int inputCount;
+    int outputCount;
+    int neuronCount;
+
+    int** nextNode;
+    int* nextCount;
+    int** previousNode;
+    int* previousCount;
+    bool* firstNode;
+
+    void calculateOutput(bool* voisin);
+    bool newNode(bool* voisin);
 
 public:
-    NeuronNetwork(std::string name, std::string date, unsigned long nbin, unsigned long nbout, unsigned long ntot, double learning);
+    NeuronNetwork(int nbin, int nbout, int nbtot);
     void reset();
-    std::string description();
-    
-    std::string getName();
-    std::string getDate();
-    double getLearningFactor();
-    unsigned long getInputCount();
-    unsigned long getOutputCount();
-    unsigned long getNeuronsCount();
-    std::vector<Neuron> getNeurons();
-    std::vector<unsigned long> getInputNeurons();
-    std::vector<unsigned long> getOutputNeurons();
-    std::vector<std::vector<bool>> getRelation();
-    std::vector<double> getInput();
-    std::vector<double> getOutput();
-    
-    void setRelation(std::vector<std::vector<bool>> tab);
-    void setWeight(std::vector<std::vector<double>> tab);
-    void setInputNeurons(std::vector<unsigned long> tab);
-    void setOutputNeurons(std::vector<unsigned long> tab);
-    void setNeurons(std::vector<Neuron> tab);
 
-    void setInput(std::vector<double> data);
+    void setRelation(bool** relation);
+    void setWeight(double** weight);
+    void setBiais(double* biais);
+    void setActivation(ActivationFunctionMain* functions);
+    void setInput(double*);
+
+    double* getOutput();
+
     void calculate();
-
-    std::vector<double> computeGradient(std::vector<double> expectedOutput);
-    std::vector<std::vector<double>> computeWeight(std::vector<double> gradient);
-    void applyWeight(std::vector<std::vector<double>> difference, std::vector<double> gradient);
-
-    void onlineLearn(std::vector<std::vector<double>> dataInput, std::vector<std::vector<double>> dataOutput, unsigned long dataCount);
-    void batchLearn(std::vector<std::vector<double>> dataInput, std::vector<std::vector<double>> dataOutput, unsigned long dataCount);
-
-private:
-    void plugInputIntoNeuron();
-    void calculeNeurons();
-    double leastSquareError(std::vector<double> x, std::vector<double> y, unsigned long n);
 };
 
 

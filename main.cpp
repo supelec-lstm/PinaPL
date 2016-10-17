@@ -11,24 +11,19 @@
 #include <string.h>
 #include <time.h>
 
-#include "simpleNeuron/mathFunctions.hpp"
-#include "simpleNeuron/neuron.hpp"
 #include "neuronNetwork/neuronNetwork.hpp"
-#include "neuronNetwork/neuronNetworkBuilder.hpp"
-#include "console/console.hpp"
 #include "idxParser/idxParser.hpp"
 
 
 using namespace std;
 
-<<<<<<< HEAD
 void testXOR();
 void testMNIST(vector<vector<double> > imagesLearn, vector<double> labelsLearn, int numberData, vector<vector<double> > imagesTest, vector<double> labelsTest, int numberTest);
 
 int main(int argc, const char * argv[]) {
     srand(unsigned(short(time(NULL))));
 
-    vector<string> stringedArgv = vector<string>(unsigned(argc));
+/*    vector<string> stringedArgv = vector<string>(unsigned(argc));
 
     for (int i = 0; i < argc; i++) {
         unsigned long length = strlen(argv[i]);
@@ -59,12 +54,12 @@ int main(int argc, const char * argv[]) {
         vector<vector<double> > imgTest = parser.importMNISTImages(imagesTestPath);
         vector<double> labelTest = parser.importMNISTLabels(labelsTestPath);
         testMNIST(imgLearn, labelLearn, 20, imgTest, labelTest, 100);
-    }
+    }*/
 
     return 0;
 }
 
-void testXOR() {
+/*void testXOR() {
 
     NeuronNetworkBuilder builder = NeuronNetworkBuilder();
     builder.setName("Test");
@@ -204,4 +199,4 @@ int maximum(vector<double> v){
         }
     }
     return result;
-}
+}*/
