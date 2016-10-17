@@ -319,16 +319,25 @@ void NeuronNetwork::onlineLearn(vector<vector<double>> dataInput, vector<vector<
 
 
 void NeuronNetwork::batchLearn(vector<vector<double>> dataInput, vector<vector<double>> dataOutput, unsigned long dataCount){
-    vector<vector<vector<double>>> difference(dataCount);
-    vector<vector<double>> gradients(dataCount);
+    vector<vector<double>> difference(neuronsCount);
+    for(unsigned long i = 0; i < neuronsCount; i++){
+        vector<double> v(neuronsCount, 0);
+        difference[i] = v;
+    }
+    vector<double> gradients(neuronsCount, 0);
     for (unsigned long i = 0; i < dataCount; i++){
+        cout << i << endl;
         reset();
         setInput(dataInput[i]);
         calculate();
-        gradients[i] = computeGradient(dataOutput[i]);
-        difference[i] = computeWeight(gradients[i]);
+        vector<double> grad = computeGradient(dataOutput[i]);
+        vector<vector<double> > diff = computeWeight(grad);
+        for(unsigned long j = 0; j < neuronsCount; j++){
+            for(unsigned long k = 0; k < neuronsCount; k++){
+                difference[i][j] += diff[i][j];
+            }
+            gradients[i] += grad[i];
+        }
     }
-    for (unsigned long i = 0; i < dataCount; i++) {
-        applyWeight(difference[i], gradients[i]);
-    }
+    applyWeight(difference, gradients);
 }

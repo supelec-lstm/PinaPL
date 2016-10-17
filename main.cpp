@@ -21,9 +21,9 @@
 
 using namespace std;
 
-void test();
-void test2();
-void test3();
+void testXOR();
+void testMNIST(vector<vector<double> > imagesLearn, vector<double> labelsLearn, int numberData, vector<vector<double> > imagesTest, vector<double> labelsTest, int numberTest);
+int maximum(vector<double> v);
 
 
 int main(int argc, const char * argv[]) {
@@ -45,19 +45,23 @@ int main(int argc, const char * argv[]) {
         console.goodbye();
     } else {
         // else
-        /*cout << "Non-interactive start" << endl;
+        cout << "Non-interactive start" << endl;
         IdxParser parser;
-        string imagesPath = "./idxParser/train-images-idx3-ubyte.gz";
-        string labelsPath = "./idxParser/train-labels-idx1-ubyte.gz";
-        parser.importMNISTImages(imagesPath);
-        parser.importMNISTLabels(labelsPath);*/
-        test();
+        string imagesLearnPath = "./idxs/train-images-idx3-ubyte.gz";
+        string labelsLearnPath = "./idxs/train-labels-idx1-ubyte.gz";
+        string imagesTestPath = "./idxs/t10k-images-idx3-ubyte.gz";
+        string labelsTestPath = "./idxs/t10k-labels-idx1-ubyte.gz";
+        vector<vector<double> > imgLearn = parser.importMNISTImages(imagesLearnPath);
+        vector<double> labelLearn = parser.importMNISTLabels(labelsLearnPath);
+        vector<vector<double> > imgTest = parser.importMNISTImages(imagesTestPath);
+        vector<double> labelTest = parser.importMNISTLabels(labelsTestPath);
+        testMNIST(imgLearn, labelLearn, 20, imgTest, labelTest, 100);
     }
 
     return 0;
 }
 
-void test() {
+void testXOR() {
 
     NeuronNetworkBuilder builder = NeuronNetworkBuilder();
     builder.setName("Test");
@@ -75,7 +79,7 @@ void test() {
     builder.addOneConnectionToManyRange(0, 1, 3);
     builder.addOneConnectionToManyRange(2, 3, 4);;
 
-    builder.buildNeurons(true, -5, 5);
+    builder.buildNeurons(true, -1.5, 1.5);
 
     NeuronNetwork network = builder.generateComputationalNetwork();
 
@@ -90,13 +94,13 @@ void test() {
         dataOutput[i] = output;
     }
 
-    dataInput[0][0] = 0; dataInput[0][1] = 1; dataOutput[0][0] = 1;
-    dataInput[1][0] = 0; dataInput[1][1] = 0; dataOutput[1][0] = 0;
-    dataInput[2][0] = 1; dataInput[2][1] = 1; dataOutput[2][0] = 0;
-    dataInput[3][0] = 1; dataInput[3][1] = 0; dataOutput[3][0] = 1; 
+    dataInput[0][0] = 0; dataInput[0][1] = 0; dataOutput[0][0] = 0;
+    dataInput[1][0] = 0; dataInput[1][1] = 1; dataOutput[1][0] = 1;
+    dataInput[2][0] = 1; dataInput[2][1] = 0; dataOutput[2][0] = 1;
+    dataInput[3][0] = 1; dataInput[3][1] = 1; dataOutput[3][0] = 0; 
 
     for(int i = 0; i < 1000; i++){
-        network.batchLearn(dataInput, dataOutput, nData);
+        network.onlineLearn(dataInput, dataOutput, nData);
     }
 
     cout << network.description() << endl;
@@ -108,48 +112,93 @@ void test() {
     }    
 }
 
-/*
-void test2() {
+void testMNIST(vector<vector<double> > imagesLearn, vector<double> labelsLearn, int numberData, vector<vector<double> > imagesTest, vector<double> labelsTest, int numberTest){
+
+    cout << "---------  Création du réseau  ---------" << endl;
+
     NeuronNetworkBuilder builder = NeuronNetworkBuilder();
     builder.setName("Test");
     builder.setDate("2016-09-28");
     builder.setDefaultCompositionFunction(compositionFunctionSum);
     builder.setDefaultActivationFunction(activationFunctionSigmoid);
-    
-    builder.addNeurons(2, compositionFunctionSum, activationFunctionSigmoid);
-    builder.addNeurons(3);
-    
-    builder.setPropertiesForNeuronRange(NeuronProportyInput, 0, 1);
-    builder.setPropertiesForNeuronRange(NeuronProportyOutput, 3, 4);
-    
-    builder.addOneConnectionToManyRange(0, 1, 2);
-    builder.addManyConnectionsToOneRange(2, 3, 4);
-    
-    vector<double> inputs = {0, 1};
-    builder.buildNeurons(false);
-    NeuronNetwork network = builder.generateComputationalNetwork();
-    network.setInput(inputs);
-    network.calculate();
 
-    cout << network.description();
+    builder.addNeurons(784, compositionFunctionSum, activationFunctionLinear);
+    builder.addNeurons(20);
+
+    builder.setPropertiesForNeuronRange(NeuronProportyInput, 0, 783);
+    builder.setPropertiesForNeuronRange(NeuronProportyOutput, 794, 803);
+
+    builder.addManyConnectionsToManyRange(0, 783, 784, 793);
+    builder.addManyConnectionsToManyRange(784, 793, 794, 803);
+
+    builder.buildNeurons(true, 0, 1);
+
+    NeuronNetwork network = builder.generateComputationalNetwork();
+
+    cout << "---------  Génération des données  ---------" << endl;
+
+    vector<vector<double> > dataInput(numberData);
+    vector<vector<double> > dataOutput(numberData);
+    vector<vector<double> > testInput(numberTest);
+    vector<double> testOutput = labelsTest;
+
+    for(int i = 0; i < numberData; i++){
+        vector<double> v1(784);
+        vector<double> v2(10, 0);
+        dataInput[i] = v1;
+        dataOutput[i] = v2;
+        for(int j = 0; j < 784; j++){
+            dataInput[i][j] = imagesLearn[i][j] / 255;
+        }
+        dataOutput[i][(int)labelsLearn[i]] = 1;
+    }
+
+    for(int i = 0; i < numberTest; i++){
+        vector<double> v(784);
+        testInput[i] = v;
+        for(int j = 0; j < 784; j++){
+            testInput[i][j] = imagesTest[i][j] / 255;
+        }
+    }
+
+    vector<vector<double> > s(0);
+    vector<double> s2(0);
+    imagesLearn = s;
+    labelsLearn = s2;
+    imagesTest = s;
+    labelsTest = s2;
+
+    cout << "---------  Apprentissage  ---------" << endl;
+
+    for(unsigned long i = 0; i < 200; i++){
+        cout << i << endl;
+        network.batchLearn(dataInput, dataOutput, numberData);
+    }
+
+    cout << "---------  Test  ---------" << endl;
+
+    int result = 0;
+
+    for(int i = 0; i < numberTest; i++){
+        network.setInput(testInput[i]);
+        network.calculate();
+        int a = maximum(network.getOutput());
+        cout << a << " - " << testOutput[i] << endl;
+        if(a == (int)testOutput[i]){
+            result ++;
+        }
+    }
+
+    cout << (double)result/numberTest * 100 << endl;
 }
 
-void test3() {
-    NeuronNetworkBuilder builder = NeuronNetworkBuilder();
-    builder.setDefaultCompositionFunction(compositionFunctionSum);
-    builder.setDefaultActivationFunction(activationFunctionSigmoid);
-    builder.addNeurons(40);
-    builder.setPropertiesForNeuronRange(NeuronProportyInput, 0, 9);
-    builder.setPropertiesForNeuronRange(NeuronProportyOutput, 30, 39);
-    builder.addManyConnectionsToManyRange(0, 9, 10, 19);
-    builder.addManyConnectionsToManyRange(10, 19, 20, 29);
-    builder.addManyConnectionsToManyRange(20, 29, 30, 39);
-    
-    vector<double> inputs = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    builder.buildNeurons(true, -0.1, 0.1);
-    NeuronNetwork network = builder.generateComputationalNetwork();
-    network.setInput(inputs);
-    network.calculate();
-    
-    cout << network.description();
-}*/
+int maximum(vector<double> v){
+    int result = 0;
+    int n = v.size();
+    for(int i = 1; i < n; i++){
+        if(v[result] < v[i]){
+            result = i;
+        }
+    }
+    return result;
+}
