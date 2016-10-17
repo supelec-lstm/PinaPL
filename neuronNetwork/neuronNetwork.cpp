@@ -330,12 +330,13 @@ void NeuronNetwork::calculateOutput(int* neighbor, int neighborCount){
         int n = previousCount[k];
         double s = 0;
         for(int j = 0; j < n; j++){
-            s += weight[k][previousNode[k][j]] * output[j];
+            int a = previousNode[k][j];
+            s += weight[k][a] * output[a];
         }
         comp[i] = s + bias[k];
     }
     for(int i = 0; i < neighborCount; i++){
-        output[neighbor[i]] = (functions[i])(comp[i]);
+        output[neighbor[i] + inputCount] = (functions[i])(comp[i]);
     }
 }
 
@@ -366,7 +367,6 @@ void NeuronNetwork::calculateOutputGradient(double* outputTheorical){
         i++;
         j++;
     }
-
 }
 
 void NeuronNetwork::calculateGradient(int* neighbor, int neighborCount){
