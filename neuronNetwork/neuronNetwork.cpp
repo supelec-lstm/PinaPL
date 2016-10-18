@@ -15,13 +15,14 @@ using namespace std;
 
 // Initialization
 
-NeuronNetwork::NeuronNetwork(int nbin, int nbout, int nbtot){
+NeuronNetwork::NeuronNetwork(int nbin, int nbout, int nbtot, double learning){
 
     // Main information
 
     inputCount = nbin;
     outputCount = nbout;
     neuronCount = nbtot;
+    learningRate = learning;
 
     // Input/Output vector
 
@@ -50,6 +51,8 @@ NeuronNetwork::NeuronNetwork(int nbin, int nbout, int nbtot){
     for(int i = 0; i < neuronCount; i++){
         weightDifference[i] = new double[inputCount + neuronCount];
     }
+
+    functionsDerivative = new ActivationFunctionDerivative[neuronCount];
 
     // Reset before running
 
@@ -85,6 +88,7 @@ void NeuronNetwork::init(){
     initNextNode();
     initPreviousNode();
     initNextNeighbor();
+    initPreviousNeighbor();
 }
 
 void NeuronNetwork::initNextNode(){
@@ -187,7 +191,7 @@ void NeuronNetwork::initPreviousNeighbor(){
     vector<int*> result;
     vector<int> resultCount;
     bool* neighbor = new bool[neuronCount];
-    int n = 0;
+    int n = outputCount;
     for(int i = 0; i < neuronCount; i++){
         neighbor[i] = false;
     }
@@ -214,7 +218,7 @@ void NeuronNetwork::initPreviousNeighbor(){
     previousNeighbor = static_cast<int**>(malloc(previousNeighborTurnCount * sizeof(int*)));
     previousNeighborCount = new int[previousNeighborTurnCount];
 
-    for(int i = 0; i < neuronCount; i++){
+    for(int i = 0; i < previousNeighborTurnCount; i++){
         previousNeighbor[i] = result[i];
         previousNeighborCount[i] = resultCount[i];
     }
@@ -298,6 +302,12 @@ void NeuronNetwork::setActivation(vector<ActivationFunctionMain> functionsArg){
     }
 }
 
+void NeuronNetwork::setActivationDerivate(vector<ActivationFunctionDerivative> functionsArg){
+    for(int i = 0; i < neuronCount; i++){
+        functionsDerivative[i] = functionsArg[i];
+    }
+}
+
 void NeuronNetwork::setInput(double* inputArg){
     for(int i = 0; i < inputCount; i++){
         output[i] = inputArg[i];
@@ -342,6 +352,26 @@ void NeuronNetwork::calculateOutput(int* neighbor, int neighborCount){
 
 // Make a learning
 
+void NeuronNetwork::batchLearning(double** input, double** output, int nbreData, int nbreLearning){
+    for(int k = 0; k < nbreLearning; k++){
+        reset();
+        for(int i = 0; i < nbreData; i++){
+            learn(input[i], output[i]);
+        }
+        applyWeight();
+    }
+}
+
+void NeuronNetwork::stochasticLearning(double** input, double** output, int nbreData, int nbreLearning){
+    for(int k = 0; k < nbreLearning; k++){
+        reset();
+        for(int i = 0; i < nbreData; i++){
+            learn(input[i], output[i]);
+            applyWeight();
+        }
+    }
+}
+
 void NeuronNetwork::learn(double* input, double* outputTheorical){
     resetOutput();
     setInput(input);
@@ -361,11 +391,13 @@ void NeuronNetwork::learn(double* input, double* outputTheorical){
 void NeuronNetwork::calculateOutputGradient(double* outputTheorical){
     int i = 0;
     int j = neuronCount + inputCount - outputCount;
+    int k = neuronCount - outputCount;
     while(i < outputCount){
         double e = outputTheorical[i] - output[j];
-        gradient[j] = e * (functionsDerivative[j])(output[j]);
+        gradient[k] = e * (functionsDerivative[k])(output[j]);
         i++;
         j++;
+        k++;
     }
 }
 
@@ -374,13 +406,25 @@ void NeuronNetwork::calculateGradient(int* neighbor, int neighborCount){
     for(int i = 0; i < neighborCount; i++){
         int k = neighbor[i];
         int n = nextCount[k];
+        int b = k + inputCount;
         double s = 0;
         for(int j = 0; j < n; j++){
-            s += weight[nextNode[k][j]][k] * gradient[j];
+            int a = nextNode[k][j];
+            s += weight[a][b] * gradient[a];
         }
         error[i] = s;
     }
     for(int i = 0; i < neighborCount; i++){
-        gradient[neighbor[i]] = (functionsDerivative[i])(output[neighbor[i]]) * error[i];
+        gradient[neighbor[i]] = (functionsDerivative[i])(output[neighbor[i] + inputCount]) * error[i];
     }
+}
+
+void NeuronNetwork::applyWeight(){
+    int n = neuronCount + inputCount;
+    for(int i = 0; i < neuronCount; i++){
+        for(int j = 0; j < n; j++){
+            weight[i][j] += learningRate * weightDifference[i][j];
+        }
+    }
+    resetBackPropagation();
 }

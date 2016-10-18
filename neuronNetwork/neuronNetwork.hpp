@@ -38,6 +38,7 @@ class NeuronNetwork {
     double* gradient;
     double** weightDifference;
     ActivationFunctionDerivative* functionsDerivative;
+    double learningRate;
 
     void resetOutput();
     void resetBackPropagation();
@@ -51,12 +52,13 @@ class NeuronNetwork {
     int newNextNeighbor(bool* voisin);
     int newPreviousNeighbor(bool* voisin);
 
-    void learn(double* input, double* outputTheorical);
     void calculateOutputGradient(double* outputTheorical);
     void calculateGradient(int* neighbor, int neighborCount);
+    void applyWeight();
+    void learn(double* input, double* outputTheorical);
 
 public:
-    NeuronNetwork(int nbin, int nbout, int nbtot);
+    NeuronNetwork(int nbin, int nbout, int nbtot, double learning);
     void reset();
     void init();
 
@@ -64,11 +66,15 @@ public:
     void setWeight(std::vector<std::vector<double> > weight);
     void setBias(std::vector<double> bias);
     void setActivation(std::vector<ActivationFunctionMain> functions);
+    void setActivationDerivate(std::vector<ActivationFunctionDerivative> functions);
     void setInput(double*);
 
     double* getOutput();
 
     void calculate();
+
+    void stochasticLearning(double** input, double** output, int nbreData, int nbreLearning);
+    void batchLearning(double** input, double** output, int nbreData, int nbreLearning);
 };
 
 

@@ -18,6 +18,10 @@
 using namespace std;
 
 double sigmoid(double x);
+double sigmoidDerivate(double x);
+double relu(double x);
+double reluDerivate(double x);
+void test();
 
 void testXOR();
 void testMNIST(vector<vector<double> > imagesLearn, vector<double> labelsLearn, int numberData, vector<vector<double> > imagesTest, vector<double> labelsTest, int numberTest);
@@ -57,8 +61,35 @@ int main(int argc, const char * argv[]) {
         vector<double> labelTest = parser.importMNISTLabels(labelsTestPath);
         testMNIST(imgLearn, labelLearn, 20, imgTest, labelTest, 100);
     }*/
+    test();
+    return 0;
+}
 
-    NeuronNetwork network(2, 1, 3);
+double relu(double x){
+    if(x < 0){
+        return 0;
+    }
+    return x;
+}
+
+double reluDerivate(double x){
+    if(x > 0){
+        return 1;
+    }
+    return 0;
+}
+
+double sigmoid(double x){
+    double a = exp(-x);
+    return 1/(1+a);
+}
+
+double sigmoidDerivate(double x){
+    return x*(1-x);
+}
+
+void test(){
+    NeuronNetwork network(2, 1, 3, 0.3);
 
     vector<vector<bool> > relation(3);
     for(int i = 0; i < 3; i++){
@@ -79,8 +110,8 @@ int main(int argc, const char * argv[]) {
         weight[i] = v;
     }
     weight[0][0] = 0.5;
-    weight[0][1] = 0.5;
-    weight[1][0] = 0.5;
+    weight[0][1] = -0.5;
+    weight[1][0] = -0.5;
     weight[1][1] = 0.5;
     weight[2][2] = 0.5;
     weight[2][3] = 0.5;
@@ -89,26 +120,41 @@ int main(int argc, const char * argv[]) {
     vector<double> bias(3, 0);
     network.setBias(bias);
 
-    vector<ActivationFunctionMain> functions(3, &sigmoid);
+    vector<ActivationFunctionMain> functions(3, &relu);
     network.setActivation(functions);
 
+    vector<ActivationFunctionDerivative> functionsDerivate(3, &reluDerivate);
+    network.setActivationDerivate(functionsDerivate);
     network.init();
 
-    double* input = new double[2];
-    input[0] = 0;
-    input[1] = 1;
-    network.setInput(input);
+    double** input = static_cast<double**>(malloc(4 * sizeof(double*)));
+    for(int i = 0; i < 4; i++){
+        input[i] = new double[2];
+    }
+    input[0][0] = 0; input[0][1] = 0;
+    input[1][0] = 0; input[1][1] = 1;
+    input[2][0] = 1; input[2][1] = 0;
+    input[3][0] = 1; input[3][1] = 1;
 
-    network.calculate();
-    cout << network.getOutput()[0];
+    double** output = static_cast<double**>(malloc(4 * sizeof(double*)));
+    for(int i = 0; i < 4; i++){
+        output[i] = new double[2];
+    }
+    output[0][0] = 0;
+    output[1][0] = 1;
+    output[2][0] = 1;
+    output[3][0] = 0;
+
+    network.batchLearning(input, output, 4, 1000);
+
+    network.reset();
+    for(int i = 0; i < 4; i++){
+        network.setInput(input[i]);
+        network.calculate();
+        cout << network.getOutput()[0] << endl;
+    }
 
     cout << endl;
-    return 0;
-}
-
-double sigmoid(double x){
-    double a = 1 + exp(-x);
-    return 1/a;
 }
 
 /*void testXOR() {
