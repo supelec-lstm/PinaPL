@@ -105,11 +105,11 @@ NeuronNetwork NeuronNetworkBuilder::generateComputationalNetwork() {
     for (unsigned long i = 0; i < neurons.size(); i++) {
         weights[i] = vector<double>(neurons.size());
     }
-    for(unsigned long i = 0; i < neurons.size(); i++) {
+    for (unsigned long i = 0; i < neurons.size(); i++) {
         unsigned long k = 0;
         vector<double> weightNeuron = neurons[i].getWeight();
         for (unsigned long j = 0; j < neurons.size(); j++) {
-            if(relations[j][i]){
+            if (relations[j][i]) {
                 weights[j][i] = weightNeuron[k];
                 k++;
             }
@@ -203,28 +203,28 @@ void NeuronNetworkBuilder::addConnection(unsigned long from, unsigned long to) {
     connections[from].push_back(to);
 }
 
-void NeuronNetworkBuilder::addManyConnectionsToOne(unsigned long fromIndex, vector<unsigned long> toIndexes) {
+void NeuronNetworkBuilder::addOneConnectionToMany(unsigned long fromIndex, vector<unsigned long> toIndexes) {
     isPrepared = false;
     for (unsigned long i = 0; i < toIndexes.size(); i++) {
         addConnection(fromIndex, toIndexes[i]);
     }
 }
 
-void NeuronNetworkBuilder::addManyConnectionsToOneRange(unsigned long fromIndex, unsigned long toFirstIndex, unsigned long toLastIndex) {
+void NeuronNetworkBuilder::addOneConnectionToManyRange(unsigned long fromIndex, unsigned long toFirstIndex, unsigned long toLastIndex) {
     isPrepared = false;
     for (unsigned long i = toFirstIndex; i < toLastIndex + 1; i++) {
         addConnection(fromIndex, i);
     }
 }
 
-void NeuronNetworkBuilder::addOneConnectionToMany(vector<unsigned long> fromIndexes, unsigned long toIndex) {
+void NeuronNetworkBuilder::addManyConnectionsToOne(vector<unsigned long> fromIndexes, unsigned long toIndex) {
     isPrepared = false;
     for (unsigned long i = 0; i < fromIndexes.size(); i++) {
         addConnection(fromIndexes[i], toIndex);
     }
 }
 
-void NeuronNetworkBuilder::addOneConnectionToManyRange(unsigned long fromFirstIndex, unsigned long fromLastIndex, unsigned long toIndex) {
+void NeuronNetworkBuilder::addManyConnectionsToOneRange(unsigned long fromFirstIndex, unsigned long fromLastIndex, unsigned long toIndex) {
     isPrepared = false;
     for (unsigned long i = fromFirstIndex; i < fromLastIndex + 1; i++) {
         addConnection(i, toIndex);

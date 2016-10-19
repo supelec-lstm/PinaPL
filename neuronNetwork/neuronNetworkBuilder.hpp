@@ -54,10 +54,10 @@ public:
     void removeNeuronsRange(unsigned long fromIndex, unsigned long toIndex);
     
     void addConnection(unsigned long fromIndex, unsigned long toIndex);
-    void addManyConnectionsToOne(unsigned long fromIndex, std::vector<unsigned long> toIndexes);
-    void addManyConnectionsToOneRange(unsigned long fromIndex, unsigned long toFirstIndex, unsigned long toLastIndex);
-    void addOneConnectionToMany(std::vector<unsigned long> fromIndexes, unsigned long toIndex);
-    void addOneConnectionToManyRange(unsigned long fromFirstIndex, unsigned long fromLastIndex, unsigned long toIndex);
+    void addOneConnectionToMany(unsigned long fromIndex, std::vector<unsigned long> toIndexes);
+    void addOneConnectionToManyRange(unsigned long fromIndex, unsigned long toFirstIndex, unsigned long toLastIndex);
+    void addManyConnectionsToOne(std::vector<unsigned long> fromIndexes, unsigned long toIndex);
+    void addManyConnectionsToOneRange(unsigned long fromFirstIndex, unsigned long fromLastIndex, unsigned long toIndex);
     void addManyConnectionsToMany(std::vector<unsigned long> fromIndexes, std::vector<unsigned long> toIndexes);
     void addManyConnectionsToManyRange(unsigned long fromFirstIndex, unsigned long fromLastIndex, unsigned long toFirstIndex, unsigned long toLastIndex);
     void removeConnection(unsigned long from, unsigned long to);

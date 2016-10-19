@@ -21,6 +21,7 @@
 #include "../neuronNetwork/neuronNetworkBuilder.hpp"
 #include "../idxParser/idxParser.hpp"
 
+
 enum Command {
     LISTSAVEDNETWORKS = 1,
     LISTSCRIPTS = 2,
@@ -41,28 +42,28 @@ enum NetworkBuilderCommand {
     BUILD = 8
 };
 
+
 class Console {
-
-private:
     std::string status;
-
-    bool listSavedNetworks();
-    bool listScripts();
-    bool listIdxs();
-    void scriptExecution(std::string scriptPath);
-    NeuronNetwork networkBuilderScriptExecution(std::string scriptPath);
-    bool argumentCountCheck(int argumentCount, int desiredCount, bool errorReport);
-    void commandExecution(std::vector<std::string> parsedInput);
-    void networkBuilderCommandExecution(std::vector<std::string> parsedInput, NeuronNetworkBuilder *builder);
-    NeuronNetwork networkBuilderInteractive();
-    std::vector<std::string> splitString(const std::string &input, std::string delim);
-    std::vector<int> splitStringToInt(const std::string &input, std::string delim);
 
 public:
     Console();
     void greeting();
     void goodbye();
     void interactive();
+
+private:
+    bool listSavedNetworks();
+    bool listScripts();
+    bool listIdxs();
+    void scriptExecution(std::string scriptPath);
+    NeuronNetwork networkBuilderScriptExecution(std::string scriptPath);
+    bool argumentCountCheck(unsigned long argumentCount, unsigned long desiredCount, bool errorReport);
+    void commandExecution(std::vector<std::string> parsedInput);
+    void networkBuilderCommandExecution(std::vector<std::string> parsedInput, NeuronNetworkBuilder *builder);
+    NeuronNetwork networkBuilderInteractive();
+    std::vector<std::string> splitString(const std::string &input, std::string delim);
+    std::vector<int> splitStringToInt(const std::string &input, std::string delim);
 };
 
 #endif // DEF_CONSOLE

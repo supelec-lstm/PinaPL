@@ -37,7 +37,7 @@ NeuronNetwork::NeuronNetwork(string givenName, string givenDate, unsigned long n
     }
 
     weight = vector<vector<double>>(ntot);
-    for(unsigned long i = 0; i < ntot; i++){
+    for (unsigned long i = 0; i < ntot; i++) {
         vector<double> v(ntot);
         weight[i] = v;
     }
@@ -54,7 +54,7 @@ void NeuronNetwork::reset() {
         neurons[i].reset();
         output[i] = 0;
     }
-    for(unsigned long i = 0; i < inputCount; i++) {
+    for (unsigned long i = 0; i < inputCount; i++) {
         neurons[inputNeurons[i]].setBalancedWeight();
         input[i] = 0;
     }
@@ -94,11 +94,11 @@ string NeuronNetwork::description() {
     return str.str();
 }
 
-void NeuronNetwork::setRelation(vector<vector<bool> > tab) {
+void NeuronNetwork::setRelation(vector<vector<bool>> tab) {
     relation = tab;
 }
 
-void NeuronNetwork::setWeight(vector<vector<double> > tab) {
+void NeuronNetwork::setWeight(vector<vector<double>> tab) {
     weight = tab;
 }
 
@@ -140,7 +140,7 @@ void NeuronNetwork::calculate() {
         for (unsigned long i = 0; i < neuronsCount; i++) {
             outputAfter[i] = neurons[i].getOutput();
         }
-    } while(leastSquareError(output, outputAfter, neuronsCount) >= MAX_DIFFERENCE_OUTPUT);
+    } while (leastSquareError(output, outputAfter, neuronsCount) > MAX_DIFFERENCE_OUTPUT);
 
     // Result
     for (unsigned long i = 0; i < neuronsCount; i++) {
@@ -239,7 +239,7 @@ double NeuronNetwork::leastSquareError(vector<double> x, vector<double> y, unsig
     return result;
 }
 
-vector<double> NeuronNetwork::computeGradient(vector<double> expectedOutput){
+vector<double> NeuronNetwork::computeGradient(vector<double> expectedOutput) {
     vector<double> error(neuronsCount, 0);
     vector<double> gradient(neuronsCount, 0);
     vector<double> gradientBefore(neuronsCount, 0);
@@ -248,10 +248,9 @@ vector<double> NeuronNetwork::computeGradient(vector<double> expectedOutput){
         for (unsigned long i = 0; i < neuronsCount; i++) {
             gradientBefore[i] = gradient[i];
             error[i] = 0;
-            for(unsigned j = 0; j < neuronsCount; j++) {
-                if(relation[i][j]){
+            for (unsigned j = 0; j < neuronsCount; j++) {
+                if (relation[i][j])
                     error[i] += weight[i][j] * gradient[j];
-                }
             }
         }
         for (unsigned long i = 0; i < outputCount; i++) {
@@ -261,20 +260,18 @@ vector<double> NeuronNetwork::computeGradient(vector<double> expectedOutput){
             gradient[i] = error[i] * neurons[i].getActivationDerivative();
         }
 
-    } while(leastSquareError(gradient, gradientBefore, neuronsCount) > MAX_DIFFERENCE_ERROR);
+    } while (leastSquareError(gradient, gradientBefore, neuronsCount) > MAX_DIFFERENCE_ERROR);
 
-    for(int i = 0; i < inputCount; i++){
+    for (unsigned long i = 0; i < inputCount; i++)
         gradient[inputNeurons[i]] = 0;
-    }
 
     return gradient;
 }
 
-vector<vector<double>> NeuronNetwork::computeWeight(vector<double> gradient){
+vector<vector<double>> NeuronNetwork::computeWeight(vector<double> gradient) {
+    vector<vector<double>> result(neuronsCount);
 
-    vector<vector<double> > result(neuronsCount);
-
-    for(unsigned long i = 0; i < neuronsCount; i++){
+    for (unsigned long i = 0; i < neuronsCount; i++) {
         vector<double> v(neuronsCount);
         result[i] = v;
         for (unsigned long j = 0; j < neuronsCount; j++) {
@@ -289,25 +286,24 @@ vector<vector<double>> NeuronNetwork::computeWeight(vector<double> gradient){
 }
 
 void NeuronNetwork::applyWeight(vector<vector<double>> difference, vector<double> gradient) {
-    for(unsigned long i = 0; i < neuronsCount; i++){
+    for (unsigned long i = 0; i < neuronsCount; i++) {
         neurons[i].setBiais(neurons[i].getBiais() + gradient[i]);
         unsigned long k = 0;
         vector<double> v(neurons[i].getInputCount());
         for (unsigned long j = 0; j < neuronsCount; j++) {
             weight[i][j] += learningFactor * difference[i][j];
-            if (relation[j][i]){
+            if (relation[j][i]) {
                 v[k] = weight[j][i];
                 k++;
             }
         }
-        if(k != 0){
+        if (k != 0)
             neurons[i].setWeight(v);
-        }
     }
 }
 
-void NeuronNetwork::onlineLearn(vector<vector<double>> dataInput, vector<vector<double>> dataOutput, unsigned long dataCount){
-    for (unsigned long i = 0; i < dataCount; i++){
+void NeuronNetwork::onlineLearn(vector<vector<double>> dataInput, vector<vector<double>> dataOutput, unsigned long dataCount) {
+    for (unsigned long i = 0; i < dataCount; i++) {
         reset();
         setInput(dataInput[i]);
         calculate();
@@ -318,24 +314,22 @@ void NeuronNetwork::onlineLearn(vector<vector<double>> dataInput, vector<vector<
 }
 
 
-void NeuronNetwork::batchLearn(vector<vector<double>> dataInput, vector<vector<double>> dataOutput, unsigned long dataCount){
+void NeuronNetwork::batchLearn(vector<vector<double>> dataInput, vector<vector<double>> dataOutput, unsigned long dataCount) {
     vector<vector<double>> difference(neuronsCount);
-    for(unsigned long i = 0; i < neuronsCount; i++){
+    for (unsigned long i = 0; i < neuronsCount; i++) {
         vector<double> v(neuronsCount, 0);
         difference[i] = v;
     }
     vector<double> gradients(neuronsCount, 0);
-    for (unsigned long i = 0; i < dataCount; i++){
-        cout << i << endl;
+    for (unsigned long i = 0; i < dataCount; i++) {
         reset();
         setInput(dataInput[i]);
         calculate();
         vector<double> grad = computeGradient(dataOutput[i]);
-        vector<vector<double> > diff = computeWeight(grad);
-        for(unsigned long j = 0; j < neuronsCount; j++){
-            for(unsigned long k = 0; k < neuronsCount; k++){
+        vector<vector<double>> diff = computeWeight(grad);
+        for (unsigned long j = 0; j < neuronsCount; j++) {
+            for (unsigned long k = 0; k < neuronsCount; k++)
                 difference[i][j] += diff[i][j];
-            }
             gradients[i] += grad[i];
         }
     }
