@@ -68,6 +68,7 @@ public:
     
     std::string getName();
     std::string getDate();
+    double getLearningFactor();
     Neuron getNeuron(unsigned long index);
     std::vector<Neuron> getNeurons();
     NeuronProperty getPropertiesForNeuron(unsigned long index);
@@ -78,6 +79,7 @@ public:
 
     void setName(std::string aName);
     void setDate(std::string aDate);
+    void setLearningFactor(double aLearningFactor);
     void setNeuron(Neuron neuron, unsigned long index);
     void setNeurons(std::vector<Neuron> someNeurons);
     void setPropertiesForNeuron(NeuronProperty property, unsigned long index);

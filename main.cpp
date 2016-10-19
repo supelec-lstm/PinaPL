@@ -28,18 +28,15 @@ void testMNIST(vector<vector<double>> imagesLearn, vector<double> labelsLearn, i
 
 
 int main(int argc, const char *argv[]) {
-    srand(unsigned(short(time(NULL))));
-
+    srand(static_cast<unsigned int>(time(NULL)));
     vector<string> stringedArgv = vector<string>(unsigned(argc));
-
+    bool log = isArgumentPresent("--log", stringedArgv);
+    
     for (int i = 0; i < argc; i++) {
         unsigned long length = strlen(argv[i]);
         string argument;
         argument.assign(argv[i], length);
         stringedArgv[unsigned(i)] = argument;
-    }
-
-    if (isArgumentPresent("--log", stringedArgv)) {
     }
 
     if (isArgumentPresent("--interactive", stringedArgv)) {
@@ -51,15 +48,16 @@ int main(int argc, const char *argv[]) {
     } else {
         // else
         cout << "Non-interactive start" << endl;
+        cout << "Importing MNIST database..." << endl;
         IdxParser parser;
         string imagesLearnPath = "./idxs/train-images-idx3-ubyte.gz";
         string labelsLearnPath = "./idxs/train-labels-idx1-ubyte.gz";
         string imagesTestPath = "./idxs/t10k-images-idx3-ubyte.gz";
         string labelsTestPath = "./idxs/t10k-labels-idx1-ubyte.gz";
-        vector<vector<double>> imgLearn = parser.importMNISTImages(imagesLearnPath);
-        vector<double> labelLearn = parser.importMNISTLabels(labelsLearnPath);
-        vector<vector<double>> imgTest = parser.importMNISTImages(imagesTestPath);
-        vector<double> labelTest = parser.importMNISTLabels(labelsTestPath);
+        vector<vector<double>> imgLearn = parser.importMNISTImages(imagesLearnPath, log);
+        vector<double> labelLearn = parser.importMNISTLabels(labelsLearnPath, log);
+        vector<vector<double>> imgTest = parser.importMNISTImages(imagesTestPath, log);
+        vector<double> labelTest = parser.importMNISTLabels(labelsTestPath, log);
         testMNIST(imgLearn, labelLearn, 20, imgTest, labelTest, 100);
     }
 
@@ -112,12 +110,12 @@ void testXOR() {
     for (unsigned long i = 0; i < 4; i++) {
         network.setInput(dataInput[i]);
         network.calculate();
-        cout << network.getOutput()[0] << endl;
+        cout << network.getOutputs()[0] << endl;
     }    
 }
 
 void testMNIST(vector<vector<double>> imagesLearn, vector<double> labelsLearn, int numberData, vector<vector<double>> imagesTest, vector<double> labelsTest, int numberTest) {
-    cout << "---------  Création du réseau  ---------" << endl;
+    cout << "Creating network..." << endl;
 
     NeuronNetworkBuilder builder = NeuronNetworkBuilder();
     builder.setName("Test");
@@ -138,7 +136,7 @@ void testMNIST(vector<vector<double>> imagesLearn, vector<double> labelsLearn, i
 
     NeuronNetwork network = builder.generateComputationalNetwork();
 
-    cout << "---------  Génération des données  ---------" << endl;
+    cout << "Generating data..." << endl;
 
     vector<vector<double>> dataInput(numberData);
     vector<vector<double>> dataOutput(numberData);
@@ -171,32 +169,33 @@ void testMNIST(vector<vector<double>> imagesLearn, vector<double> labelsLearn, i
     imagesTest = s;
     labelsTest = s2;
 
-    cout << "---------  Apprentissage  ---------" << endl;
+    cout << "Learning..." << endl;
 
     for (unsigned long i = 0; i < 200; i++) {
-        cout << "Numéro de lot: " << i << endl;
+        cout << i / 200.0 * 100.0 << "%\tdone" << endl;
         network.batchLearn(dataInput, dataOutput, numberData);
     }
 
-    cout << "---------  Test  ---------" << endl;
+    cout << "Testing..." << endl;
 
     int result = 0;
 
     for (int i = 0; i < numberTest; i++) {
         network.setInput(testInput[i]);
         network.calculate();
-        unsigned long a = maximum(network.getOutput());
-        cout << "Résultat du réseau:   " << a << "   - Résultat attendu:   " << testOutput[i] << endl;
+        unsigned long a = maximum(network.getOutputs());
+        cout << "Result:   " << a << "    Expected:   " << testOutput[i] << endl;
         if (a == static_cast<unsigned long>(testOutput[i]))
             result ++;
     }
 
-    cout << static_cast<double>(result/numberTest * 100) << endl;
+    cout << "Success rate: " << result / numberTest * 100.0 << "%" << endl;
+    cout << "Done!" << endl;
 }
 
 unsigned long maximum(vector<double> v) {
     unsigned long result = 0;
-#warning Pourquoi commencer a i=1 ??
+#warning Why start at i=1 ??
     for (unsigned long i = 1; i < v.size(); i++) {
         if (v[result] < v[i])
             result = i;

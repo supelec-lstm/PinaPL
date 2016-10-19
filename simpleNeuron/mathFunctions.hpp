@@ -11,7 +11,7 @@
 #include <vector>
 
 
-typedef double (*CompositionFunctionMain) (std::vector<double>);
+typedef double (*CompositionFunctionMain) (std::vector<double>, double);
 typedef double (*CompositionFunctionDerivative) (double);
 typedef double (*ActivationFunctionMain) (double);
 typedef double (*ActivationFunctionDerivative) (double);
@@ -46,8 +46,8 @@ struct activationFunction {
 
 
 namespace compositionFunctionMain {
-    double sum(std::vector<double> x);
-    double dist(std::vector<double> x);
+    double sum(std::vector<double> x, double bias);
+    double dist(std::vector<double> x, double bias);
 }
 
 namespace compositionFunctionDerivative {
