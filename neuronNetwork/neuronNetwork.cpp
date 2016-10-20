@@ -59,6 +59,27 @@ NeuronNetwork::NeuronNetwork(int nbin, int nbout, int nbtot, double learning){
     reset();
 }
 
+/*NeuronNetwork::~NeuronNetwork(){
+    delete(relation);
+    delete(weight);
+    delete(bias);
+    delete(functions);
+
+    delete(nextNode);
+    delete(nextCount);
+    delete(nextNeighbor);
+    delete(nextNeighborCount);
+
+    delete(previousCount);
+    delete(previousNode);
+    delete(previousNeighbor);
+    delete(previousNeighborCount);
+
+    delete(gradient);
+    delete(weightDifference);
+    delete(functionsDerivative);
+}*/
+
 void NeuronNetwork::reset(){
     resetOutput();
     resetBackPropagation();
@@ -105,7 +126,12 @@ void NeuronNetwork::initNextNode(){
                 nextCount[i]++;  
             }
         }
-        nextNode[i] = new int(nextCount[i]);
+        cout << "1" << endl;
+        cout << nextCount[i] << endl;
+        int* v = new int(nextCount[i]);
+        cout << "2" << endl;
+        nextNode[i] = v;
+        cout << "3" << endl;
         k = 0;
         for(int j = 0; j < neuronCount; j++){
             if(relation[j][i + inputCount]){

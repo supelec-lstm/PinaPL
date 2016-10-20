@@ -59,6 +59,7 @@ class NeuronNetwork {
 
 public:
     NeuronNetwork(int nbin, int nbout, int nbtot, double learning);
+    //~NeuronNetwork();
     void reset();
     void init();
 

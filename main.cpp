@@ -21,15 +21,15 @@ double sigmoid(double x);
 double sigmoidDerivate(double x);
 double relu(double x);
 double reluDerivate(double x);
-void test();
+double randomizer(double m, double M);
 
 void testXOR();
-void testMNIST(vector<vector<double> > imagesLearn, vector<double> labelsLearn, int numberData, vector<vector<double> > imagesTest, vector<double> labelsTest, int numberTest);
+void testMNIST(int nbreData, int nbreTest);
 
 int main(int argc, const char * argv[]) {
     srand(unsigned(short(time(NULL))));
 
-/*    vector<string> stringedArgv = vector<string>(unsigned(argc));
+    /*vector<string> stringedArgv = vector<string>(unsigned(argc));
 
     for (int i = 0; i < argc; i++) {
         unsigned long length = strlen(argv[i]);
@@ -37,6 +37,8 @@ int main(int argc, const char * argv[]) {
         argument.assign(argv[i], length);
         stringedArgv[unsigned(i)] = argument;
     }
+
+
 
     if (isArgumentPresent("--log", &stringedArgv)) {
     }
@@ -48,21 +50,16 @@ int main(int argc, const char * argv[]) {
         console.interactive();
         console.goodbye();
     } else {
-        // else
-        cout << "Non-interactive start" << endl;
-        IdxParser parser;
-        string imagesLearnPath = "./idxs/train-images-idx3-ubyte.gz";
-        string labelsLearnPath = "./idxs/train-labels-idx1-ubyte.gz";
-        string imagesTestPath = "./idxs/t10k-images-idx3-ubyte.gz";
-        string labelsTestPath = "./idxs/t10k-labels-idx1-ubyte.gz";
-        vector<vector<double> > imgLearn = parser.importMNISTImages(imagesLearnPath);
-        vector<double> labelLearn = parser.importMNISTLabels(labelsLearnPath);
-        vector<vector<double> > imgTest = parser.importMNISTImages(imagesTestPath);
-        vector<double> labelTest = parser.importMNISTLabels(labelsTestPath);
-        testMNIST(imgLearn, labelLearn, 20, imgTest, labelTest, 100);
+        testMINST();
     }*/
-    test();
+    testMNIST(10, 10);
     return 0;
+}
+
+double randomizer(double m, double M){
+    int a = rand();
+    double b = static_cast<double>(a)/RAND_MAX * (M - m) + m;
+    return b;
 }
 
 double relu(double x){
@@ -88,7 +85,7 @@ double sigmoidDerivate(double x){
     return x*(1-x);
 }
 
-void test(){
+void testXOR(){
     NeuronNetwork network(2, 1, 3, 0.3);
 
     vector<vector<bool> > relation(3);
@@ -153,148 +150,117 @@ void test(){
         network.calculate();
         cout << network.getOutput()[0] << endl;
     }
+}
+
+void testMNIST(int nbreData, int nbreTest){
+
+    cout << "=== Importation des images ===" << endl;
+
+    IdxParser parser;
+    string imagesLearnPath = "./idxs/train-images-idx3-ubyte.gz";
+    string labelsLearnPath = "./idxs/train-labels-idx1-ubyte.gz";
+    string imagesTestPath = "./idxs/t10k-images-idx3-ubyte.gz";
+    string labelsTestPath = "./idxs/t10k-labels-idx1-ubyte.gz";
+    vector<vector<int> > imgLearn = parser.importMNISTImages(imagesLearnPath);
+    vector<int> labelLearn = parser.importMNISTLabels(labelsLearnPath);
+    vector<vector<int> > imgTest = parser.importMNISTImages(imagesTestPath);
+    vector<int> labelTest = parser.importMNISTLabels(labelsTestPath);
+
+    cout << "=== Traitement des inputs ===" << endl;
+
+    double** inputData = static_cast<double**>(malloc(nbreData * sizeof(double*)));
+    for(int i = 0; i < nbreData; i++){
+        inputData[i] = new double[784];
+        for(int j = 0; j < 784; j++){
+            inputData[i][j] = (double)imgLearn[i][j]/255;
+        }
+    }
+    imgLearn = (vector<vector<int> >)NULL;
+
+    double** inputTest = static_cast<double**>(malloc(nbreTest * sizeof(double*)));
+    for(int i = 0; i < nbreTest; i++){
+        inputTest[i] = new double[784];
+        for(int j = 0; j < 784; j++){
+            inputTest[i][j] = (double)imgTest[i][j]/255;
+        }
+    }
+    imgTest = (vector<vector<int> >)NULL;
+
+    cout << "=== Traitement des outputs ===" << endl;
+
+    double** outputData = static_cast<double**>(malloc(nbreData * sizeof(double*)));
+    for(int i = 0; i < nbreData; i++){
+        outputData[i] = new double[10];
+        for(int j = 0; j < 10; j++){
+            outputData[i][j] = 0;
+        }
+        outputData[i][labelLearn[i]] = 1;
+    }
+    labelLearn = (vector<int>)NULL;
+
+    double** outputTest = static_cast<double**>(malloc(nbreTest * sizeof(double*)));
+    for(int i = 0; i < nbreTest; i++){
+        outputTest[i] = new double[10];
+        for(int j = 0; j < 10; j++){
+            outputTest[i][j] = 0;
+        }
+        outputTest[i][labelTest[i]] = 1;
+    }
+    labelTest = (vector<int>)NULL;
+
+    cout << "=== Création du réseau ===" << endl;
+
+    NeuronNetwork network(784, 10, 20, 0.3);
+
+    cout << "=== Matrice de relation ===" << endl;
+
+    vector<vector<bool> > relation(20);
+    for(int i = 0; i < 20; i++){
+        vector<bool> v(804, false);
+        relation[i] = v;
+    }
+    for(int i = 0; i < 10; i++){
+        for(int j = 0; j < 784; j++){
+            relation[i][j] = true;
+        }
+    }
+    for(int i = 10; i < 20; i++){
+        for(int j = 784; j < 794; j++){
+            relation[i][j] = true;
+        }
+    }
+    network.setRelation(relation);
+
+    cout << "=== Création des poids ===" << endl;
+
+    vector<vector<double> > weight(20);
+    for(int i = 0; i < 20; i++){
+        vector<double> v(784);
+        weight[i] = v;
+        for(int j = 0; j < 784; j++){
+            weight[i][j] = randomizer(-0.5, 0.5);
+        }
+    }
+    network.setWeight(weight);
+
+    cout << "=== Création des biais ===" << endl;
+
+    vector<double> bias(20, 0);
+    network.setBias(bias);
+
+    cout << "=== Création des fonctions d'activation ===" << endl;
+
+    vector<ActivationFunctionMain> functions(20, &relu);
+    network.setActivation(functions);
+
+    cout << "=== Création des dérivées ===" << endl;
+
+    vector<ActivationFunctionDerivative> functionsDerivate(20, &reluDerivate);
+    network.setActivationDerivate(functionsDerivate);
+
+    cout << "=== Initialisation du réseau ===" << endl;
+
+    network.init();
 
     cout << endl;
 }
-
-/*void testXOR() {
-
-    NeuronNetworkBuilder builder = NeuronNetworkBuilder();
-    builder.setName("Test");
-    builder.setDate("2016-09-28");
-    builder.setDefaultCompositionFunction(compositionFunctionSum);
-    builder.setDefaultActivationFunction(activationFunctionSigmoid);
-
-    builder.addNeurons(2, compositionFunctionSum, activationFunctionLinear);
-    builder.addNeurons(3);
-
-    builder.setPropertiesForNeuronRange(NeuronProportyInput, 0, 1);
-    builder.setPropertiesForNeuronRange(NeuronProportyOutput, 4, 4);
-
-    builder.addOneConnectionToManyRange(0, 1, 2);
-    builder.addOneConnectionToManyRange(0, 1, 3);
-    builder.addOneConnectionToManyRange(2, 3, 4);;
-
-    builder.buildNeurons(true, -1.5, 1.5);
-
-    NeuronNetwork network = builder.generateComputationalNetwork();
-
-    unsigned long sizeData = 4;
-    unsigned long nData = 4;
-    vector<vector<double> > dataInput(sizeData);
-    vector<vector<double> > dataOutput(sizeData);
-    for(unsigned long i = 0; i < sizeData; i++) {
-        vector<double> input(2);
-        vector<double> output(1);
-        dataInput[i] = input;
-        dataOutput[i] = output;
-    }
-
-    dataInput[0][0] = 0; dataInput[0][1] = 0; dataOutput[0][0] = 0;
-    dataInput[1][0] = 0; dataInput[1][1] = 1; dataOutput[1][0] = 1;
-    dataInput[2][0] = 1; dataInput[2][1] = 0; dataOutput[2][0] = 1;
-    dataInput[3][0] = 1; dataInput[3][1] = 1; dataOutput[3][0] = 0; 
-
-    for(int i = 0; i < 1000; i++){
-        network.onlineLearn(dataInput, dataOutput, nData);
-    }
-
-    cout << network.description() << endl;
-
-    for(unsigned long i = 0; i < 4; i++){
-        network.setInput(dataInput[i]);
-        network.calculate();
-        cout << network.getOutput()[0] << endl;
-    }    
-}
-
-void testMNIST(vector<vector<double> > imagesLearn, vector<double> labelsLearn, int numberData, vector<vector<double> > imagesTest, vector<double> labelsTest, int numberTest){
-
-    cout << "---------  Création du réseau  ---------" << endl;
-
-    NeuronNetworkBuilder builder = NeuronNetworkBuilder();
-    builder.setName("Test");
-    builder.setDate("2016-09-28");
-    builder.setDefaultCompositionFunction(compositionFunctionSum);
-    builder.setDefaultActivationFunction(activationFunctionSigmoid);
-
-    builder.addNeurons(784, compositionFunctionSum, activationFunctionLinear);
-    builder.addNeurons(20);
-
-    builder.setPropertiesForNeuronRange(NeuronProportyInput, 0, 783);
-    builder.setPropertiesForNeuronRange(NeuronProportyOutput, 794, 803);
-
-    builder.addManyConnectionsToManyRange(0, 783, 784, 793);
-    builder.addManyConnectionsToManyRange(784, 793, 794, 803);
-
-    builder.buildNeurons(true, 0, 1);
-
-    NeuronNetwork network = builder.generateComputationalNetwork();
-
-    cout << "---------  Génération des données  ---------" << endl;
-
-    vector<vector<double> > dataInput(numberData);
-    vector<vector<double> > dataOutput(numberData);
-    vector<vector<double> > testInput(numberTest);
-    vector<double> testOutput = labelsTest;
-
-    for(int i = 0; i < numberData; i++){
-        vector<double> v1(784);
-        vector<double> v2(10, 0);
-        dataInput[i] = v1;
-        dataOutput[i] = v2;
-        for(int j = 0; j < 784; j++){
-            dataInput[i][j] = imagesLearn[i][j] / 255;
-        }
-        dataOutput[i][(int)labelsLearn[i]] = 1;
-    }
-
-    for(int i = 0; i < numberTest; i++){
-        vector<double> v(784);
-        testInput[i] = v;
-        for(int j = 0; j < 784; j++){
-            testInput[i][j] = imagesTest[i][j] / 255;
-        }
-    }
-
-    vector<vector<double> > s(0);
-    vector<double> s2(0);
-    imagesLearn = s;
-    labelsLearn = s2;
-    imagesTest = s;
-    labelsTest = s2;
-
-    cout << "---------  Apprentissage  ---------" << endl;
-
-    for(unsigned long i = 0; i < 200; i++){
-        cout << i << endl;
-        network.batchLearn(dataInput, dataOutput, numberData);
-    }
-
-    cout << "---------  Test  ---------" << endl;
-
-    int result = 0;
-
-    for(int i = 0; i < numberTest; i++){
-        network.setInput(testInput[i]);
-        network.calculate();
-        int a = maximum(network.getOutput());
-        cout << a << " - " << testOutput[i] << endl;
-        if(a == (int)testOutput[i]){
-            result ++;
-        }
-    }
-
-    cout << (double)result/numberTest * 100 << endl;
-}
-
-int maximum(vector<double> v){
-    int result = 0;
-    int n = v.size();
-    for(int i = 1; i < n; i++){
-        if(v[result] < v[i]){
-            result = i;
-        }
-    }
-    return result;
-}*/

@@ -28,7 +28,7 @@ gzFile IdxParser::importGzFile(string& path) {
     return file;
 }
 
-vector<vector<double>> IdxParser::importMNISTImages(string& path) {
+vector<vector<int>> IdxParser::importMNISTImages(string& path) {
     // reads an IDX3 .gz file (like MNIST image files) and returns a vector of images (pixels for an image are stored in a single continuous vector)
     // (it is in fact treated like a IDX2 file, considering the images have only one dimension)
     
@@ -56,14 +56,14 @@ vector<vector<double>> IdxParser::importMNISTImages(string& path) {
     int columnCount = uint32_t(columnCountChared[0] << 24 | columnCountChared[1] << 16 | columnCountChared[2] << 8 | columnCountChared[3]);
     cout << "Image column count: " << columnCount << endl;
     
-    vector<vector<double>> output;
+    vector<vector<int>> output;
     
     for (int imageIndex = 0; imageIndex < imageCount; imageIndex++) {
-        vector<double> image;
+        vector<int> image;
         for (int pixelIndex = 0; pixelIndex < rowCount*columnCount; pixelIndex++) {
             uint8_t pixelLevelChared;
             gzread(file, &pixelLevelChared, sizeof(pixelLevelChared));
-            double pixelLevel = uint8_t(pixelLevelChared);
+            int pixelLevel = uint8_t(pixelLevelChared);
             image.push_back(pixelLevel);
         }
         output.push_back(image);
@@ -71,7 +71,7 @@ vector<vector<double>> IdxParser::importMNISTImages(string& path) {
     return(output);
 }
 
-vector<double> IdxParser::importMNISTLabels(string& path) {
+vector<int> IdxParser::importMNISTLabels(string& path) {
     // reads an IDX1 .gz file (like MNIST label files) and returns a vector of labels
     
     cout << "Importing IDX1 Labels File " << path << endl;
@@ -88,12 +88,12 @@ vector<double> IdxParser::importMNISTLabels(string& path) {
     int labelCount = uint32_t(labelCountChared[0] << 24 | labelCountChared[1] << 16 | labelCountChared[2] << 8 | labelCountChared[3]);
     cout << "Label count: " << labelCount << endl;
     
-    vector<double> output;
+    vector<int> output;
     
     for (int labelIndex = 0; labelIndex < labelCount; labelIndex++) {
         uint8_t labelChared;
         gzread(file, &labelChared, sizeof(labelChared));
-        double label = uint8_t(labelChared);
+        int label = uint8_t(labelChared);
         output.push_back(label);
     }
     return(output);

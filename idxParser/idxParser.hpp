@@ -16,8 +16,8 @@ private:
 
 public:
     IdxParser();
-    std::vector<std::vector<double> > importMNISTImages(std::string& path);
-    std::vector<double> importMNISTLabels(std::string& path);
+    std::vector<std::vector<int> > importMNISTImages(std::string& path);
+    std::vector<int> importMNISTLabels(std::string& path);
 };
 
 #endif // DEF_IDXPARSER
