@@ -37,6 +37,7 @@ class NeuronNetwork {
 
     double* gradient;
     double** weightDifference;
+    double* biasDifference;
     ActivationFunctionDerivative* functionsDerivative;
     double learningRate;
 
@@ -59,7 +60,7 @@ class NeuronNetwork {
 
 public:
     NeuronNetwork(int nbin, int nbout, int nbtot, double learning);
-    //~NeuronNetwork();
+    ~NeuronNetwork();
     void reset();
     void init();
 

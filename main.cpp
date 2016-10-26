@@ -22,9 +22,10 @@ double sigmoidDerivate(double x);
 double relu(double x);
 double reluDerivate(double x);
 double randomizer(double m, double M);
+int maximum(double* tab, int n);
 
 void testXOR();
-void testMNIST(int nbreData, int nbreTest);
+void testMNIST(int nbreData, int nbreLearn, int nbreTest);
 
 int main(int argc, const char * argv[]) {
     srand(unsigned(short(time(NULL))));
@@ -52,7 +53,8 @@ int main(int argc, const char * argv[]) {
     } else {
         testMINST();
     }*/
-    testMNIST(10, 10);
+    //testMNIST(60000, 1, 1000);
+    testXOR();
     return 0;
 }
 
@@ -106,20 +108,25 @@ void testXOR(){
         vector<double> v(5, 0);
         weight[i] = v;
     }
-    weight[0][0] = 0.5;
-    weight[0][1] = -0.5;
-    weight[1][0] = -0.5;
-    weight[1][1] = 0.5;
-    weight[2][2] = 0.5;
-    weight[2][3] = 0.5;
+    weight[0][0] = randomizer(-2, 2);
+    weight[0][1] = randomizer(-2, 2);
+    weight[1][0] = randomizer(-2, 2);
+    weight[1][1] = randomizer(-2, 2);
+    weight[2][2] = randomizer(-2, 2);
+    weight[2][3] = randomizer(-2, 2);
     network.setWeight(weight);
 
     vector<double> bias(3, 0);
     network.setBias(bias);
+    bias[0] = randomizer(-2, 2);
+    bias[1] = randomizer(-2, 2);
+    bias[2] = randomizer(-2, 2);
 
+    //vector<ActivationFunctionMain> functions(3, &sigmoid);
     vector<ActivationFunctionMain> functions(3, &relu);
     network.setActivation(functions);
 
+    //vector<ActivationFunctionDerivative> functionsDerivate(3, &sigmoidDerivate);
     vector<ActivationFunctionDerivative> functionsDerivate(3, &reluDerivate);
     network.setActivationDerivate(functionsDerivate);
     network.init();
@@ -142,7 +149,7 @@ void testXOR(){
     output[2][0] = 1;
     output[3][0] = 0;
 
-    network.batchLearning(input, output, 4, 1000);
+    network.batchLearning(input, output, 4, 100);
 
     network.reset();
     for(int i = 0; i < 4; i++){
@@ -152,7 +159,7 @@ void testXOR(){
     }
 }
 
-void testMNIST(int nbreData, int nbreTest){
+void testMNIST(int nbreData, int nbreLearn, int nbreTest){
 
     cout << "=== Importation des images ===" << endl;
 
@@ -175,7 +182,7 @@ void testMNIST(int nbreData, int nbreTest){
             inputData[i][j] = (double)imgLearn[i][j]/255;
         }
     }
-    imgLearn = (vector<vector<int> >)NULL;
+    imgLearn = (vector<vector<int> >)0;
 
     double** inputTest = static_cast<double**>(malloc(nbreTest * sizeof(double*)));
     for(int i = 0; i < nbreTest; i++){
@@ -184,7 +191,7 @@ void testMNIST(int nbreData, int nbreTest){
             inputTest[i][j] = (double)imgTest[i][j]/255;
         }
     }
-    imgTest = (vector<vector<int> >)NULL;
+    imgTest = (vector<vector<int> >)0;
 
     cout << "=== Traitement des outputs ===" << endl;
 
@@ -196,17 +203,13 @@ void testMNIST(int nbreData, int nbreTest){
         }
         outputData[i][labelLearn[i]] = 1;
     }
-    labelLearn = (vector<int>)NULL;
+    labelLearn = (vector<int>)0;
 
-    double** outputTest = static_cast<double**>(malloc(nbreTest * sizeof(double*)));
+    int* outputTest = new int[nbreTest];
     for(int i = 0; i < nbreTest; i++){
-        outputTest[i] = new double[10];
-        for(int j = 0; j < 10; j++){
-            outputTest[i][j] = 0;
-        }
-        outputTest[i][labelTest[i]] = 1;
+        outputTest[i] = labelTest[i];
     }
-    labelTest = (vector<int>)NULL;
+    labelTest = (vector<int>)0;
 
     cout << "=== Création du réseau ===" << endl;
 
@@ -238,7 +241,7 @@ void testMNIST(int nbreData, int nbreTest){
         vector<double> v(784);
         weight[i] = v;
         for(int j = 0; j < 784; j++){
-            weight[i][j] = randomizer(-0.5, 0.5);
+            weight[i][j] = randomizer(-0.01, 0.01);
         }
     }
     network.setWeight(weight);
@@ -250,17 +253,41 @@ void testMNIST(int nbreData, int nbreTest){
 
     cout << "=== Création des fonctions d'activation ===" << endl;
 
-    vector<ActivationFunctionMain> functions(20, &relu);
+    vector<ActivationFunctionMain> functions(20, &sigmoid);
     network.setActivation(functions);
 
     cout << "=== Création des dérivées ===" << endl;
 
-    vector<ActivationFunctionDerivative> functionsDerivate(20, &reluDerivate);
+    vector<ActivationFunctionDerivative> functionsDerivate(20, &sigmoidDerivate);
     network.setActivationDerivate(functionsDerivate);
 
     cout << "=== Initialisation du réseau ===" << endl;
 
     network.init();
 
+    cout << "=== Apprentissage ===" << endl;
+
+    network.batchLearning(inputData, outputData, nbreData, nbreLearn);
+
+    cout << "=== Test ===" << endl;
+
+    for(int i = 0; i < nbreTest; i++){
+        network.reset();
+        network.setInput(inputTest[i]);
+        network.calculate();
+        int a = maximum(network.getOutput(), 10);
+        cout << a << " - " << outputTest[i] << endl; 
+    }
+
     cout << endl;
+}
+
+int maximum(double* tab, int n){
+    int result = 0;
+    for(int j = 0; j < n; j++){
+        if(tab[result] < tab[j]){
+            result = j;
+        }
+    }
+    return result;
 }
