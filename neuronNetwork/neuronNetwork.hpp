@@ -43,6 +43,7 @@ class NeuronNetwork {
 
     void resetOutput();
     void resetBackPropagation();
+    void resetGradient();
 
     void initNextNode();
     void initPreviousNode();

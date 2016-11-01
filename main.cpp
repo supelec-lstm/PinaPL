@@ -21,6 +21,9 @@ double sigmoid(double x);
 double sigmoidDerivate(double x);
 double relu(double x);
 double reluDerivate(double x);
+double tangh(double x);
+double tanghDerivate(double x);
+
 double randomizer(double m, double M);
 int maximum(double* tab, int n);
 
@@ -53,7 +56,7 @@ int main(int argc, const char * argv[]) {
     } else {
         testMINST();
     }*/
-    //testMNIST(60000, 1, 1000);
+    //testMNIST(100, 1000, 1);
     testXOR();
     return 0;
 }
@@ -72,10 +75,7 @@ double relu(double x){
 }
 
 double reluDerivate(double x){
-    if(x > 0){
-        return 1;
-    }
-    return 0;
+    return (x > 0?1:0);
 }
 
 double sigmoid(double x){
@@ -87,8 +87,18 @@ double sigmoidDerivate(double x){
     return x*(1-x);
 }
 
+double tangh(double x){
+    double a = exp(x);
+    double b = exp(-x);
+    return (a-b)/(a+b);
+}
+
+double tanghDerivate(double x){
+    return (1 - x*x);
+}
+
 void testXOR(){
-    NeuronNetwork network(2, 1, 3, 0.3);
+    NeuronNetwork network(2, 1, 3, 1);
 
     vector<vector<bool> > relation(3);
     for(int i = 0; i < 3; i++){
@@ -108,25 +118,27 @@ void testXOR(){
         vector<double> v(5, 0);
         weight[i] = v;
     }
-    weight[0][0] = randomizer(-2, 2);
-    weight[0][1] = randomizer(-2, 2);
-    weight[1][0] = randomizer(-2, 2);
-    weight[1][1] = randomizer(-2, 2);
-    weight[2][2] = randomizer(-2, 2);
-    weight[2][3] = randomizer(-2, 2);
+    weight[0][0] = randomizer(-0.5, 0.5);
+    weight[0][1] = randomizer(-0.5, 0.5);;
+    weight[1][0] = randomizer(-0.5, 0.5);;
+    weight[1][1] = randomizer(-0.5, 0.5);;
+    weight[2][2] = randomizer(-0.5, 0.5);;
+    weight[2][3] = randomizer(-0.5, 0.5);;
     network.setWeight(weight);
 
     vector<double> bias(3, 0);
     network.setBias(bias);
-    bias[0] = randomizer(-2, 2);
-    bias[1] = randomizer(-2, 2);
-    bias[2] = randomizer(-2, 2);
+    bias[0] = 0;
+    bias[1] = 0;
+    bias[2] = 0;
 
     //vector<ActivationFunctionMain> functions(3, &sigmoid);
+    //vector<ActivationFunctionMain> functions(3, &tangh);
     vector<ActivationFunctionMain> functions(3, &relu);
     network.setActivation(functions);
 
     //vector<ActivationFunctionDerivative> functionsDerivate(3, &sigmoidDerivate);
+    //vector<ActivationFunctionDerivative> functionsDerivate(3, &tanghDerivate);
     vector<ActivationFunctionDerivative> functionsDerivate(3, &reluDerivate);
     network.setActivationDerivate(functionsDerivate);
     network.init();
@@ -135,9 +147,9 @@ void testXOR(){
     for(int i = 0; i < 4; i++){
         input[i] = new double[2];
     }
-    input[0][0] = 0; input[0][1] = 0;
-    input[1][0] = 0; input[1][1] = 1;
-    input[2][0] = 1; input[2][1] = 0;
+    input[0][0] = -1; input[0][1] = -1;
+    input[1][0] = -1; input[1][1] = 1;
+    input[2][0] = 1; input[2][1] = -1;
     input[3][0] = 1; input[3][1] = 1;
 
     double** output = static_cast<double**>(malloc(4 * sizeof(double*)));
@@ -149,7 +161,7 @@ void testXOR(){
     output[2][0] = 1;
     output[3][0] = 0;
 
-    network.batchLearning(input, output, 4, 100);
+    network.batchLearning(input, output, 4, 1000000);
 
     network.reset();
     for(int i = 0; i < 4; i++){
@@ -179,7 +191,7 @@ void testMNIST(int nbreData, int nbreLearn, int nbreTest){
     for(int i = 0; i < nbreData; i++){
         inputData[i] = new double[784];
         for(int j = 0; j < 784; j++){
-            inputData[i][j] = (double)imgLearn[i][j]/255;
+            inputData[i][j] = (imgLearn[i][j] > 0 ? 1 : 0);
         }
     }
     imgLearn = (vector<vector<int> >)0;
@@ -188,7 +200,7 @@ void testMNIST(int nbreData, int nbreLearn, int nbreTest){
     for(int i = 0; i < nbreTest; i++){
         inputTest[i] = new double[784];
         for(int j = 0; j < 784; j++){
-            inputTest[i][j] = (double)imgTest[i][j]/255;
+            inputTest[i][j] = (imgTest[i][j] > 0 ? 1 : 0);
         }
     }
     imgTest = (vector<vector<int> >)0;
@@ -241,7 +253,7 @@ void testMNIST(int nbreData, int nbreLearn, int nbreTest){
         vector<double> v(784);
         weight[i] = v;
         for(int j = 0; j < 784; j++){
-            weight[i][j] = randomizer(-0.01, 0.01);
+            weight[i][j] = randomizer(-0.1, 0.1);
         }
     }
     network.setWeight(weight);

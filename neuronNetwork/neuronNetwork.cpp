@@ -85,6 +85,7 @@ NeuronNetwork::~NeuronNetwork(){
 void NeuronNetwork::reset(){
     resetOutput();
     resetBackPropagation();
+    resetGradient();
 }
 
 void NeuronNetwork::resetOutput(){
@@ -97,10 +98,16 @@ void NeuronNetwork::resetOutput(){
 void NeuronNetwork::resetBackPropagation(){
     int n = inputCount + neuronCount;
     for(int i = 0; i < neuronCount; i++){
-        gradient[i] = 0;
+        biasDifference[i] = 0;
         for(int j = 0; j < n; j++){
             weightDifference[i][j] = 0;
         }
+    }
+}
+
+void NeuronNetwork::resetGradient(){
+    for(int i = 0; i < neuronCount; i++){
+        gradient[i] = 0;
     }
 }
 
@@ -397,6 +404,7 @@ void NeuronNetwork::stochasticLearning(double** input, double** output, int nbre
 
 void NeuronNetwork::learn(double* input, double* outputTheorical){
     resetOutput();
+    resetGradient();
     setInput(input);
     calculate();
     calculateOutputGradient(outputTheorical);
@@ -410,12 +418,12 @@ void NeuronNetwork::learn(double* input, double* outputTheorical){
             biasDifference[i] += gradient[i];
         }
     }
-    /*for(int a = 0; a < neuronCount; a++){
-        cout << gradient[a] << " ";
-    }
-    cout << endl << endl;
-    for(int a = 0; a < neuronCount + inputCount; a++){
+    /*for(int a = 0; a < neuronCount + inputCount; a++){
         cout << output[a] << " ";
+    }
+    cout << endl;
+    for(int a = 0; a < neuronCount; a++){
+        cout << gradient[a] << " ";
     }
     cout << endl << endl;
     for(int a = 0; a < neuronCount; a++){
