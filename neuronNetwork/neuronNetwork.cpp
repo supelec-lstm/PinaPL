@@ -463,8 +463,8 @@ void NeuronNetwork::applyWeight(){
     for(int i = 0; i < neuronCount; i++){
         for(int j = 0; j < n; j++){
             weight[i][j] += learningRate * weightDifference[i][j];
-            bias[i] += learningRate * biasDifference[i];
         }
+        bias[i] += learningRate * biasDifference[i];
     }
     /*for(int i = 0; i < neuronCount; i++){
         for(int j = 0; j < neuronCount + inputCount; j++){
