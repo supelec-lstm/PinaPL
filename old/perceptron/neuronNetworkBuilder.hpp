@@ -54,10 +54,10 @@ public:
     void removeNeuronsRange(unsigned long fromIndex, unsigned long toIndex);
     
     void addConnection(unsigned long fromIndex, unsigned long toIndex);
-    void addManyConnectionsToOne(unsigned long fromIndex, std::vector<unsigned long> toIndexes);
-    void addManyConnectionsToOneRange(unsigned long fromIndex, unsigned long toFirstIndex, unsigned long toLastIndex);
-    void addOneConnectionToMany(std::vector<unsigned long> fromIndexes, unsigned long toIndex);
-    void addOneConnectionToManyRange(unsigned long fromFirstIndex, unsigned long fromLastIndex, unsigned long toIndex);
+    void addOneConnectionToMany(unsigned long fromIndex, std::vector<unsigned long> toIndexes);
+    void addOneConnectionToManyRange(unsigned long fromIndex, unsigned long toFirstIndex, unsigned long toLastIndex);
+    void addManyConnectionsToOne(std::vector<unsigned long> fromIndexes, unsigned long toIndex);
+    void addManyConnectionsToOneRange(unsigned long fromFirstIndex, unsigned long fromLastIndex, unsigned long toIndex);
     void addManyConnectionsToMany(std::vector<unsigned long> fromIndexes, std::vector<unsigned long> toIndexes);
     void addManyConnectionsToManyRange(unsigned long fromFirstIndex, unsigned long fromLastIndex, unsigned long toFirstIndex, unsigned long toLastIndex);
     void removeConnection(unsigned long from, unsigned long to);
@@ -68,6 +68,7 @@ public:
     
     std::string getName();
     std::string getDate();
+    double getLearningFactor();
     Neuron getNeuron(unsigned long index);
     std::vector<Neuron> getNeurons();
     NeuronProperty getPropertiesForNeuron(unsigned long index);
@@ -78,6 +79,7 @@ public:
 
     void setName(std::string aName);
     void setDate(std::string aDate);
+    void setLearningFactor(double aLearningFactor);
     void setNeuron(Neuron neuron, unsigned long index);
     void setNeurons(std::vector<Neuron> someNeurons);
     void setPropertiesForNeuron(NeuronProperty property, unsigned long index);

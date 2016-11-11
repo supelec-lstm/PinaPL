@@ -84,10 +84,10 @@ bool Console::listIdxs() {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Command parsing methods
 
-bool Console::argumentCountCheck(int argumentCount, int desiredCount, bool errorReport) {
+bool Console::argumentCountCheck(unsigned long argumentCount, unsigned long desiredCount, bool errorReport) {
     if (argumentCount != desiredCount) {
         if (errorReport) {
-            if(desiredCount == 1) {
+            if (desiredCount == 1) {
                 cout << "Error: wrong argument count, none expected" << endl;
             } else {
                 cout << "Error: wrong argument count, " << desiredCount - 1 << " expected" << endl;
@@ -157,7 +157,7 @@ NeuronNetwork Console::networkBuilderScriptExecution(string scriptPath) {
 void Console::networkBuilderCommandExecution(vector<string> parsedInput, NeuronNetworkBuilder *builder) {
     // executes a command
 
-    int argumentCount = parsedInput.size();
+    unsigned long argumentCount = parsedInput.size();
 
     map<string,NetworkBuilderCommand> commands = {
         {"set-name", SETNAME},
@@ -173,18 +173,18 @@ void Console::networkBuilderCommandExecution(vector<string> parsedInput, NeuronN
 	switch(commands[parsedInput[0]])
     {
         case SETNAME:
-            if(argumentCountCheck(argumentCount, 2, true)) {
+            if (argumentCountCheck(argumentCount, 2, true)) {
                 builder->setName(parsedInput[1]);
             }
             break;
         case SETDATE:
-            if(argumentCountCheck(argumentCount, 2, true)) {
+            if (argumentCountCheck(argumentCount, 2, true)) {
                 builder->setDate(parsedInput[1]);
             }
             break;
         case SETDEFCOMPFUNC:
-            if(argumentCountCheck(argumentCount, 2, true)) {
-                if(parsedInput[1] == "sum") {
+            if (argumentCountCheck(argumentCount, 2, true)) {
+                if (parsedInput[1] == "sum") {
                     builder->setDefaultCompositionFunction(compositionFunctionSum);
                 } else {
                     cout << "Error: unrecognized composition function" << endl;
@@ -192,8 +192,8 @@ void Console::networkBuilderCommandExecution(vector<string> parsedInput, NeuronN
             }
             break;
         case SETDEFACTFUNC:
-            if(argumentCountCheck(argumentCount, 2, true)) {
-                if(parsedInput[1] == "sigmoid") {
+            if (argumentCountCheck(argumentCount, 2, true)) {
+                if (parsedInput[1] == "sigmoid") {
                     builder->setDefaultActivationFunction(activationFunctionSigmoid);
                 } else {
                     cout << "Error: unrecognized activation function" << endl;
@@ -201,12 +201,12 @@ void Console::networkBuilderCommandExecution(vector<string> parsedInput, NeuronN
             }
             break;
         case ADDNEURON:
-            if(argumentCountCheck(argumentCount, 2, true)) {
+            if (argumentCountCheck(argumentCount, 2, true)) {
                 builder->addNeurons(stoi(parsedInput[1]));
             }
             break;
         case SETPROPERTY:
-            if(argumentCountCheck(argumentCount, 4, true)) {
+            if (argumentCountCheck(argumentCount, 4, true)) {
                 string iOProperty = parsedInput[1];
                 int from = stoi(parsedInput[2]);
                 int to = stoi(parsedInput[3]);
@@ -223,19 +223,19 @@ void Console::networkBuilderCommandExecution(vector<string> parsedInput, NeuronN
             }
             break;
         case ADDCONNECTION:
-            if(argumentCountCheck(argumentCount, 3, true)) {
+            if (argumentCountCheck(argumentCount, 3, true)) {
                 string from = parsedInput[1];
                 string to = parsedInput[2];
                 vector<int> parsedFrom = splitStringToInt(from, "-");
                 vector<int> parsedTo = splitStringToInt(to, "-");
 
-                if(parsedFrom.size()==1 && parsedTo.size()==1) {
+                if (parsedFrom.size()==1 && parsedTo.size()==1) {
                     builder->addConnection(parsedFrom[0], parsedTo[0]);
                 } else if (parsedFrom.size()==2 && parsedTo.size()==1) {
                     cout << "many to one" << endl;
                 } else if (parsedFrom.size()==1 && parsedTo.size()==2) {
                     cout << "one to many" << endl;
-                } else if (parsedFrom.size()==2 && parsedTo.size()==2){
+                } else if (parsedFrom.size()==2 && parsedTo.size()==2) {
                     cout << "many to many" << endl;
                 } else {
                     cout << "Error: invalid arguments" << endl;
@@ -243,9 +243,9 @@ void Console::networkBuilderCommandExecution(vector<string> parsedInput, NeuronN
             }
             break;
         case BUILD:
-            if(argumentCountCheck(argumentCount, 4, true)) {
+            if (argumentCountCheck(argumentCount, 4, true)) {
                 bool randomWeights = false;
-                if(parsedInput[1] == "Y" || parsedInput[1] == "y" || parsedInput[1] == "yes") {
+                if (parsedInput[1] == "Y" || parsedInput[1] == "y" || parsedInput[1] == "yes") {
                     randomWeights = true;
                 }
                 int minWeight = stoi(parsedInput[2]);
@@ -255,7 +255,10 @@ void Console::networkBuilderCommandExecution(vector<string> parsedInput, NeuronN
                 cout << "Neuron network built" << endl;
             }
             break;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcovered-switch-default"
         default:
+#pragma clang diagnostic pop
             cout << "Error: unrecognized command" << endl;
             break;
     }
@@ -264,7 +267,7 @@ void Console::networkBuilderCommandExecution(vector<string> parsedInput, NeuronN
 void Console::commandExecution(vector<string> parsedInput) {
     // executes a command
 
-    int argumentCount = parsedInput.size();
+    unsigned long argumentCount = parsedInput.size();
 
     map<string,Command> commands = {
         {"list-saved-networks", LISTSAVEDNETWORKS},
@@ -278,17 +281,17 @@ void Console::commandExecution(vector<string> parsedInput) {
 	switch(commands[parsedInput[0]])
     {
         case LISTSAVEDNETWORKS:
-    	    if(argumentCountCheck(argumentCount, 1, true)) {
+    	    if (argumentCountCheck(argumentCount, 1, true)) {
     	        listSavedNetworks();
     	    }
       	    break;
       	case LISTSCRIPTS:
-            if(argumentCountCheck(argumentCount, 1, true)) {
+            if (argumentCountCheck(argumentCount, 1, true)) {
                 listScripts();
             }
       	    break;
       	case LISTIDXS:
-      	    if(argumentCountCheck(argumentCount, 1, true)) {
+      	    if (argumentCountCheck(argumentCount, 1, true)) {
       	        listIdxs();
       	    }
       	    break;
@@ -307,7 +310,10 @@ void Console::commandExecution(vector<string> parsedInput) {
                 NeuronNetwork network = networkBuilderInteractive();
             }
             break;
-        default:
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcovered-switch-default"
+       default:
+#pragma clang diagnostic pop
             cout << "Error: unrecognized command" << endl;
             break;
     }
@@ -354,6 +360,9 @@ void Console::interactive() {
 		getline(cin, rawInput);
 
         vector<string> parsedInput = splitString(rawInput, " ");
+        
+        if (parsedInput.size() < 1)
+            parsedInput.push_back("");
 
         if (parsedInput[0] == "exit" || parsedInput[0] == "quit") {
             goodbye();

@@ -16,7 +16,7 @@ class Neuron {
     std::vector<double> weight;
     std::vector<double> input;
     double output;
-    double biais;
+    double bias;
     compositionFunction composition;
     activationFunction activation;
 
@@ -37,8 +37,8 @@ public:
     std::vector<double> getInput() const;
     void setInput(const std::vector<double> newInput);
 
-    void setBiais(double x);
-    double getBiais();
+    void setBias(double x);
+    double getBias();
 
     double getOutput() const;
     void calculateOutput();

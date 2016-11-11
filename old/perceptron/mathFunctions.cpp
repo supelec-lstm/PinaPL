@@ -12,15 +12,15 @@ using namespace std;
 
 // Composition functions
 
-double compositionFunctionMain::sum(vector<double> x) {
-    double sum = 0;
+double compositionFunctionMain::sum(vector<double> x, double bias) {
+    double sum = bias;
     for (unsigned long i = 0; i < x.size(); i++) {
         sum += x[i];
     }
     return sum;
 }
 
-double compositionFunctionMain::dist(vector<double> x) {
+double compositionFunctionMain::dist(vector<double> x, double bias) {
     return 0;
 }
 
