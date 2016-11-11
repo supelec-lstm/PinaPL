@@ -21,8 +21,7 @@ double sigmoid(double x);
 double sigmoidDerivate(double x);
 double relu(double x);
 double reluDerivate(double x);
-double tangh(double x);
-double tanghDerivate(double x);
+double tanhDerivate(double x);
 
 double randomizer(double m, double M);
 int maximum(double* tab, int n);
@@ -56,8 +55,8 @@ int main(int argc, const char * argv[]) {
     } else {
         testMINST();
     }*/
-    //testMNIST(100, 1000, 1);
-    testXOR();
+    testMNIST(100, 1000, 10);
+    //testXOR();
     return 0;
 }
 
@@ -79,26 +78,26 @@ double reluDerivate(double x){
 }
 
 double sigmoid(double x){
-    double a = exp(-x);
-    return 1/(1+a);
+    double a = tanh(x/2);
+    return (1+a)/2;
 }
 
 double sigmoidDerivate(double x){
     return x*(1-x);
 }
 
-double tangh(double x){
+/*double tangh(double x){
     double a = exp(x);
     double b = exp(-x);
     return (a-b)/(a+b);
-}
+}*/
 
-double tanghDerivate(double x){
+double tanhDerivate(double x){
     return (1 - x*x);
 }
 
 void testXOR(){
-    NeuronNetwork network(2, 1, 3, 1);
+    NeuronNetwork network(2, 1, 3, 0.01);
 
     vector<vector<bool> > relation(3);
     for(int i = 0; i < 3; i++){
@@ -147,9 +146,9 @@ void testXOR(){
     for(int i = 0; i < 4; i++){
         input[i] = new double[2];
     }
-    input[0][0] = -1; input[0][1] = -1;
-    input[1][0] = -1; input[1][1] = 1;
-    input[2][0] = 1; input[2][1] = -1;
+    input[0][0] = 0; input[0][1] = 0;
+    input[1][0] = 0; input[1][1] = 1;
+    input[2][0] = 1; input[2][1] = 0;
     input[3][0] = 1; input[3][1] = 1;
 
     double** output = static_cast<double**>(malloc(4 * sizeof(double*)));
@@ -161,7 +160,7 @@ void testXOR(){
     output[2][0] = 1;
     output[3][0] = 0;
 
-    network.batchLearning(input, output, 4, 1000000);
+    network.batchLearning(input, output, 4, 1000);
 
     network.reset();
     for(int i = 0; i < 4; i++){
@@ -225,13 +224,13 @@ void testMNIST(int nbreData, int nbreLearn, int nbreTest){
 
     cout << "=== Création du réseau ===" << endl;
 
-    NeuronNetwork network(784, 10, 20, 0.3);
+    NeuronNetwork network(784, 10, 10, 0.3);
 
     cout << "=== Matrice de relation ===" << endl;
 
-    vector<vector<bool> > relation(20);
-    for(int i = 0; i < 20; i++){
-        vector<bool> v(804, false);
+    vector<vector<bool> > relation(10);
+    for(int i = 0; i < 10; i++){
+        vector<bool> v(794, false);
         relation[i] = v;
     }
     for(int i = 0; i < 10; i++){
@@ -239,38 +238,33 @@ void testMNIST(int nbreData, int nbreLearn, int nbreTest){
             relation[i][j] = true;
         }
     }
-    for(int i = 10; i < 20; i++){
-        for(int j = 784; j < 794; j++){
-            relation[i][j] = true;
-        }
-    }
     network.setRelation(relation);
 
     cout << "=== Création des poids ===" << endl;
 
-    vector<vector<double> > weight(20);
-    for(int i = 0; i < 20; i++){
-        vector<double> v(784);
+    vector<vector<double> > weight(10);
+    for(int i = 0; i < 10; i++){
+        vector<double> v(794);
         weight[i] = v;
-        for(int j = 0; j < 784; j++){
-            weight[i][j] = randomizer(-0.1, 0.1);
+        for(int j = 0; j < 794; j++){
+            weight[i][j] = 0.01;//randomizer(-1, 1);
         }
     }
     network.setWeight(weight);
 
     cout << "=== Création des biais ===" << endl;
 
-    vector<double> bias(20, 0);
+    vector<double> bias(10, 0);
     network.setBias(bias);
 
     cout << "=== Création des fonctions d'activation ===" << endl;
 
-    vector<ActivationFunctionMain> functions(20, &sigmoid);
+    vector<ActivationFunctionMain> functions(10, &sigmoid);
     network.setActivation(functions);
 
     cout << "=== Création des dérivées ===" << endl;
 
-    vector<ActivationFunctionDerivative> functionsDerivate(20, &sigmoidDerivate);
+    vector<ActivationFunctionDerivative> functionsDerivate(10, &sigmoidDerivate);
     network.setActivationDerivate(functionsDerivate);
 
     cout << "=== Initialisation du réseau ===" << endl;
@@ -288,7 +282,10 @@ void testMNIST(int nbreData, int nbreLearn, int nbreTest){
         network.setInput(inputTest[i]);
         network.calculate();
         int a = maximum(network.getOutput(), 10);
-        cout << a << " - " << outputTest[i] << endl; 
+        for(int i = 0; i < 10; i++){
+            cout << network.getOutput()[i] << " ";
+        }
+        cout << " - " << a << " - " << outputTest[i] << endl;
     }
 
     cout << endl;
