@@ -30,12 +30,12 @@ NeuronNetwork::NeuronNetwork(int nbin, int nbout, int nbtot, double learning){
 
     // Vector and matrice defining the network
 
-    relation = static_cast<bool**>(malloc(neuronCount * sizeof(bool*)));
+    relation = new bool*[neuronCount];
     for(int i = 0; i < neuronCount; i++){
         relation[i] = new bool[inputCount + neuronCount];
     }
 
-    weight = static_cast<double**>(malloc(neuronCount * sizeof(double*)));
+    weight = new double*[neuronCount];
     for(int i = 0; i < neuronCount; i++){
         weight[i] = new double[inputCount + neuronCount];
     }
@@ -47,7 +47,7 @@ NeuronNetwork::NeuronNetwork(int nbin, int nbout, int nbtot, double learning){
 
     gradient = new double[neuronCount];
 
-    weightDifference = static_cast<double**>(malloc(neuronCount * sizeof(double*)));
+    weightDifference = new double*[neuronCount];
     for(int i = 0; i < neuronCount; i++){
         weightDifference[i] = new double[inputCount + neuronCount];
     }
@@ -122,7 +122,7 @@ void NeuronNetwork::init(){
 }
 
 void NeuronNetwork::initNextNode(){
-    nextNode = static_cast<int**>(malloc(neuronCount * sizeof(int*)));
+    nextNode = new int*[neuronCount];
     nextCount = new int[neuronCount];
 
     for(int i = 0; i < neuronCount; i++){
@@ -147,7 +147,7 @@ void NeuronNetwork::initNextNode(){
 }
 
 void NeuronNetwork::initPreviousNode(){
-    previousNode = static_cast<int**>(malloc(neuronCount * sizeof(int*)));
+    previousNode = new int*[neuronCount];
     previousCount = new int[neuronCount];
 
     int n = inputCount + neuronCount;
@@ -208,7 +208,7 @@ void NeuronNetwork::initNextNeighbor(){
     }
 
     nextNeighborTurnCount = result.size();
-    nextNeighbor = static_cast<int**>(malloc(nextNeighborTurnCount * sizeof(int*)));
+    nextNeighbor = new int*[nextNeighborTurnCount];
     nextNeighborCount = new int[nextNeighborTurnCount];
 
     for(int i = 0; i < nextNeighborTurnCount; i++){
@@ -245,7 +245,7 @@ void NeuronNetwork::initPreviousNeighbor(){
     }
 
     previousNeighborTurnCount = result.size();
-    previousNeighbor = static_cast<int**>(malloc(previousNeighborTurnCount * sizeof(int*)));
+    previousNeighbor = new int*[previousNeighborTurnCount];
     previousNeighborCount = new int[previousNeighborTurnCount];
 
     for(int i = 0; i < previousNeighborTurnCount; i++){

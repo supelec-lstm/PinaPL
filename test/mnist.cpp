@@ -10,7 +10,7 @@
 #include "../perceptron/mathFunctions.hpp"
 #include "../idxParser/idxParser.hpp"
 
-#define LOG
+#define NLOG
 
 #ifdef LOG
 #define PRINT_LOG(title) cout << "=== " << title << " ===" << endl;
@@ -24,8 +24,8 @@ Mnist::Mnist(){
 
     // Données à modifier
 
-    nbreData = 100;
-    nbreLearn = 10;
+    nbreData = 10000;
+    nbreLearn = 1;
     nbreTest = 200;
 
     learningRate = 0.3;
@@ -92,7 +92,7 @@ double** Mnist::inputConverter(string path, int nbre){
     IdxParser parser;
     vector<vector<int> > data = parser.importMNISTImages(path);
 
-    double** input = static_cast<double**>(malloc(nbre * sizeof(double*)));
+    double** input = new double*[nbre];
     for(int i = 0; i < nbre; i++){
         input[i] = new double[784];
         for(int j = 0; j < 784; j++){
@@ -106,7 +106,7 @@ double** Mnist::outputConverter(string path, int nbre){
     IdxParser parser;
     vector<int> data = parser.importMNISTLabels(path);
 
-    double** output = static_cast<double**>(malloc(nbre * sizeof(double*)));
+    double** output = new double*[nbre];
     for(int i = 0; i < nbre; i++){
         output[i] = new double[10];
         for(int j = 0; j < 10; j++){
