@@ -440,7 +440,7 @@ void NeuronNetwork::stochasticLearning(double** input, double** output, int nbre
 
 void NeuronNetwork::learn(double* input, double* outputTheorical){
     PRINT_LOG("Apprentissage")
-    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
+    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     resetOutput();
     resetGradient();
     setInput(input);
@@ -449,14 +449,41 @@ void NeuronNetwork::learn(double* input, double* outputTheorical){
     for(int i = 1; i < previousNeighborTurnCount; i++){
         calculateGradient(previousNeighbor[i], previousNeighborCount[i]);
     }
+    PRINT_LOG("Gradients")
+    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     for(int i = 0; i < neuronCount; i++){
         for(int j = 0; j < previousCount[i]; j++){
             int k = previousNode[i][j];
             weightDifference[i][k] += gradient[i] * output[k];
+            #ifdef LOG
+            std::cout << gradient[i] << " ";
+            #endif
             biasDifference[i] += gradient[i];
         }
+        #ifdef LOG
+        std::cout << endl;
+        #endif
+    }
+    #ifdef LOG
+    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    PRINT_LOG("Tableau de variation des poids")
+    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
+    for(int i = 0; i < neuronCount; i++){
+        for(int j = 0; j < neuronCount; j++){
+            std::cout << weightDifference[i][j] << " ";
+        }
+        std::cout << endl;
     }
     PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    PRINT_LOG("Tableau de variation des biais")
+    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
+    for(int i = 0; i < neuronCount; i++){
+        std::cout << biasDifference[i] << " ";
+    }
+    std::cout << endl;
+    #endif
+    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 }
 
 void NeuronNetwork::calculateOutputGradient(double* outputTheorical){
