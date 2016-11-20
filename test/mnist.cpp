@@ -10,10 +10,10 @@
 #include "../perceptron/mathFunctions.hpp"
 #include "../idxParser/idxParser.hpp"
 
-#define NLOG
+#define LOG
 
 #ifdef LOG
-#define PRINT_LOG(title) cout << "=== " << title << " ===" << endl;
+#define PRINT_LOG(title) cout << "mnist.cpp             " << title << endl;
 #else
 #define PRINT_LOG(title)
 #endif
@@ -53,32 +53,46 @@ Mnist::Mnist(){
     outputTest = outputConverter("./test/MNIST/t10k-labels-idx1-ubyte.gz", nbreTest);
 
     PRINT_LOG("Création du réseau")
+    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     network = new NeuronNetwork(784, 10, nbreTotalNeuron, learningRate);
+    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 
-    PRINT_LOG("Matrice de relation")
+    PRINT_LOG("Création de la matrice de relation")
+    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     setRelation();
+    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 
     PRINT_LOG("Création des poids")
+    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     setWeight();
+    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 
     PRINT_LOG("Création des biais")
+    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     setBias();
+    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 
     PRINT_LOG("Création des fonctions")
+    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     setFunctions();
+    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 
     PRINT_LOG("Initialisation du réseau")
+    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     network->init();
+    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 }
 
 void Mnist::learn(){
-    PRINT_LOG("Apprentissage")
+    PRINT_LOG("Apprentissage par batch")
+    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     network->batchLearning(inputData, outputData, 4, nbreLearn);
+    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 }
 
 void Mnist::test(){
     PRINT_LOG("Test")
-
+    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     for(int i = 0; i < nbreTest; i++){
         network->reset();
         network->setInput(inputTest[i]);
@@ -93,9 +107,11 @@ void Mnist::test(){
         int b = maximum(outputTest[i]);
         cout << b << " - " << a << endl;
     }
+    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 }
 
 double** Mnist::inputConverter(string path, int nbre){
+    PRINT_LOG("Conversion des entrées")
     IdxParser parser;
     vector<vector<int> > data = parser.importMNISTImages(path);
 
@@ -110,6 +126,7 @@ double** Mnist::inputConverter(string path, int nbre){
 }
 
 double** Mnist::outputConverter(string path, int nbre){
+    PRINT_LOG("Conversion des sorties")
     IdxParser parser;
     vector<int> data = parser.importMNISTLabels(path);
 

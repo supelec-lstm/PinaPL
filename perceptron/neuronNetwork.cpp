@@ -10,13 +10,20 @@
 
 #include "neuronNetwork.hpp"
 
+#define LOG
+
+#ifdef LOG
+#define PRINT_LOG(title) cout << "neuronNetwork.cpp     " << title << endl;
+#else
+#define PRINT_LOG(title)
+#endif
 
 using namespace std;
 
 // Initialization
 
 NeuronNetwork::NeuronNetwork(int nbin, int nbout, int nbtot, double learning){
-
+    PRINT_LOG("Instantiation d'un nouveau réseau")
     // Main information
 
     inputCount = nbin;
@@ -83,12 +90,16 @@ NeuronNetwork::~NeuronNetwork(){
 }
 
 void NeuronNetwork::reset(){
+    PRINT_LOG("Reset d'un réseau")
+    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     resetOutput();
     resetBackPropagation();
     resetGradient();
+    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 }
 
 void NeuronNetwork::resetOutput(){
+    PRINT_LOG("Reset des sorties")
     int n = inputCount + neuronCount;
     for(int i = 0; i < n; i++){
         output[i] = 0;
@@ -96,6 +107,7 @@ void NeuronNetwork::resetOutput(){
 }
 
 void NeuronNetwork::resetBackPropagation(){
+    PRINT_LOG("Reset des paramètres de backpropagation")
     int n = inputCount + neuronCount;
     for(int i = 0; i < neuronCount; i++){
         biasDifference[i] = 0;
@@ -106,6 +118,7 @@ void NeuronNetwork::resetBackPropagation(){
 }
 
 void NeuronNetwork::resetGradient(){
+    PRINT_LOG("Reset du gradient")
     for(int i = 0; i < neuronCount; i++){
         gradient[i] = 0;
     }
@@ -114,14 +127,17 @@ void NeuronNetwork::resetGradient(){
 // We define here matrices and vectors which permit to do less calculation during the running
 
 void NeuronNetwork::init(){
-
+    PRINT_LOG("Initialisation des tableaux de calcul")
+    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     initNextNode();
     initPreviousNode();
     initNextNeighbor();
     initPreviousNeighbor();
+    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 }
 
 void NeuronNetwork::initNextNode(){
+    PRINT_LOG("Initialisation du tableau des prochains noeuds")
     nextNode = new int*[neuronCount];
     nextCount = new int[neuronCount];
 
@@ -132,7 +148,7 @@ void NeuronNetwork::initNextNode(){
     for(int i = 0; i < neuronCount; i++){
         for(int j = 0; j < neuronCount; j++){
             if(relation[j][i + inputCount]){
-                nextCount[i]++;  
+                nextCount[i]++;
             }
         };
         nextNode[i] = new int[nextCount[i]];
@@ -147,6 +163,7 @@ void NeuronNetwork::initNextNode(){
 }
 
 void NeuronNetwork::initPreviousNode(){
+    PRINT_LOG("Initialisation du tableau de précèdents noeuds")
     previousNode = new int*[neuronCount];
     previousCount = new int[neuronCount];
 
@@ -159,7 +176,7 @@ void NeuronNetwork::initPreviousNode(){
     for(int i = 0; i < neuronCount; i++){
         for(int j = 0; j < n; j++){
             if(relation[i][j]){
-                previousCount[i]++;  
+                previousCount[i]++;
             }
         }
         previousNode[i] = new int[previousCount[i]];
@@ -174,6 +191,7 @@ void NeuronNetwork::initPreviousNode(){
 }
 
 void NeuronNetwork::initNextNeighbor(){
+    PRINT_LOG("Initialisation du tableau de prochains voisins")
     vector<int*> result;
     vector<int> resultCount;
     bool* neighbor = new bool[neuronCount];
@@ -218,6 +236,7 @@ void NeuronNetwork::initNextNeighbor(){
 }
 
 void NeuronNetwork::initPreviousNeighbor(){
+    PRINT_LOG("Initialisation du tableau de précèdents voisins")
     vector<int*> result;
     vector<int> resultCount;
     bool* neighbor = new bool[neuronCount];
@@ -267,7 +286,7 @@ int NeuronNetwork::newNextNeighbor(bool* voisin){
                     n++;
                     result[nextNode[i][j]] = true;
                 }
-                
+
             }
         }
     }
@@ -303,6 +322,7 @@ int NeuronNetwork::newPreviousNeighbor(bool* voisin){
 // Getters and setters
 
 void NeuronNetwork::setRelation(vector<vector<bool> > relationArg){
+    PRINT_LOG("Paramétrage des relations")
     int n = neuronCount + inputCount;
     for(int i = 0; i < neuronCount; i++){
         for(int j = 0; j < n; j++){
@@ -312,6 +332,7 @@ void NeuronNetwork::setRelation(vector<vector<bool> > relationArg){
 }
 
 void NeuronNetwork::setWeight(vector<vector<double> > weightArg){
+    PRINT_LOG("Paramétrage des poids à partir d'un tableau de poids")
     int n = neuronCount + inputCount;
     for(int i = 0; i < neuronCount; i++){
         for(int j = 0; j < n; j++){
@@ -321,30 +342,35 @@ void NeuronNetwork::setWeight(vector<vector<double> > weightArg){
 }
 
 void NeuronNetwork::setBias(vector<double> biasArg){
+    PRINT_LOG("Paramétrage des biais")
     for(int i = 0; i < neuronCount; i++){
         bias[i] = biasArg[i];
     }
 }
 
 void NeuronNetwork::setActivation(vector<ActivationFunctionMain> functionsArg){
+    PRINT_LOG("Paramétrage des fonctions d'activation")
     for(int i = 0; i < neuronCount; i++){
         functions[i] = functionsArg[i];
     }
 }
 
 void NeuronNetwork::setActivationDerivate(vector<ActivationFunctionDerivative> functionsArg){
+    PRINT_LOG("Paramétrage des dérivées des fonctions d'activation")
     for(int i = 0; i < neuronCount; i++){
         functionsDerivative[i] = functionsArg[i];
     }
 }
 
 void NeuronNetwork::setInput(double* inputArg){
+    PRINT_LOG("Paramétrage de l'entrée")
     for(int i = 0; i < inputCount; i++){
         output[i] = inputArg[i];
     }
 }
 
 double* NeuronNetwork::getOutput(){
+    //PRINT_LOG("Obtention de la sortie")
     double* result = new double[outputCount];
     int i = 0, j = neuronCount + inputCount - outputCount;
     while(i < outputCount){
@@ -358,12 +384,16 @@ double* NeuronNetwork::getOutput(){
 // Calculate from the input
 
 void NeuronNetwork::calculate(){
+    PRINT_LOG("Calcul de la sortie, à partir de l'entrée")
+    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     for(int i = 0; i < nextNeighborTurnCount; i++){
         calculateOutput(nextNeighbor[i], nextNeighborCount[i]);
     }
+    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 }
 
 void NeuronNetwork::calculateOutput(int* neighbor, int neighborCount){
+    PRINT_LOG("Une étape du calcul des sorties")
     double* comp = new double[neighborCount];
     for(int i = 0; i < neighborCount; i++){
         int k = neighbor[i];
@@ -383,6 +413,8 @@ void NeuronNetwork::calculateOutput(int* neighbor, int neighborCount){
 // Make a learning
 
 void NeuronNetwork::batchLearning(double** input, double** output, int nbreData, int nbreLearning){
+    PRINT_LOG("Apprentissage par batch")
+    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     for(int k = 0; k < nbreLearning; k++){
         reset();
         for(int i = 0; i < nbreData; i++){
@@ -390,9 +422,12 @@ void NeuronNetwork::batchLearning(double** input, double** output, int nbreData,
         }
         applyWeight();
     }
+    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 }
 
 void NeuronNetwork::stochasticLearning(double** input, double** output, int nbreData, int nbreLearning){
+    PRINT_LOG("Apprentissage stochastique")
+    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     for(int k = 0; k < nbreLearning; k++){
         reset();
         for(int i = 0; i < nbreData; i++){
@@ -400,9 +435,12 @@ void NeuronNetwork::stochasticLearning(double** input, double** output, int nbre
             applyWeight();
         }
     }
+    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 }
 
 void NeuronNetwork::learn(double* input, double* outputTheorical){
+    PRINT_LOG("Apprentissage")
+    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     resetOutput();
     resetGradient();
     setInput(input);
@@ -418,9 +456,11 @@ void NeuronNetwork::learn(double* input, double* outputTheorical){
             biasDifference[i] += gradient[i];
         }
     }
+    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 }
 
 void NeuronNetwork::calculateOutputGradient(double* outputTheorical){
+    PRINT_LOG("Calcul du gradient de sortie")
     int i = 0;
     int j = neuronCount + inputCount - outputCount;
     int k = neuronCount - outputCount;
@@ -434,6 +474,7 @@ void NeuronNetwork::calculateOutputGradient(double* outputTheorical){
 }
 
 void NeuronNetwork::calculateGradient(int* neighbor, int neighborCount){
+    PRINT_LOG("Calcul du gradient")
     double* error = new double[neighborCount];
     for(int i = 0; i < neighborCount; i++){
         int k = neighbor[i];
@@ -452,6 +493,7 @@ void NeuronNetwork::calculateGradient(int* neighbor, int neighborCount){
 }
 
 void NeuronNetwork::applyWeight(){
+    PRINT_LOG("Paramétrage des poids & du biais à partir de la différence des poids et du learning rate")
     int n = neuronCount + inputCount;
     for(int i = 0; i < neuronCount; i++){
         for(int j = 0; j < n; j++){
