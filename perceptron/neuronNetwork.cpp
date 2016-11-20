@@ -440,7 +440,7 @@ void NeuronNetwork::stochasticLearning(double** input, double** output, int nbre
 
 void NeuronNetwork::learn(double* input, double* outputTheorical){
     PRINT_LOG("Apprentissage")
-    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
+    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     resetOutput();
     resetGradient();
     setInput(input);
@@ -456,7 +456,7 @@ void NeuronNetwork::learn(double* input, double* outputTheorical){
             biasDifference[i] += gradient[i];
         }
     }
-    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 }
 
 void NeuronNetwork::calculateOutputGradient(double* outputTheorical){
