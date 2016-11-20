@@ -22,7 +22,7 @@ int main(int argc, const char *argv[]) {
     srand(time(NULL));
     /*vector<string> stringedArgv = vector<string>(unsigned(argc));
     bool log = isArgumentPresent("--log", stringedArgv);
-    
+
     for (int i = 0; i < argc; i++) {
         unsigned long length = strlen(argv[i]);
         string argument;
