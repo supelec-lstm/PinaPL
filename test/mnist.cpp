@@ -10,7 +10,8 @@
 #include "../perceptron/mathFunctions.hpp"
 #include "../idxParser/idxParser.hpp"
 
-#define LOG
+#define NLOG
+#define GRAPH
 
 #ifdef LOG
 #define PRINT_LOG(title) cout << "mnist.cpp             " << title << endl;
@@ -164,6 +165,8 @@ void Mnist::setRelation(){
         n1 += nbreNeuron[k-1];
         n2 += nbreNeuron[k];
     }
+
+    // Logging fuction
     #ifdef LOG
     for(int i = 0; i < nbreTotalNeuron; i++){
       for(int j = 0;j < nbreTotalNeuron; j++){
@@ -177,6 +180,29 @@ void Mnist::setRelation(){
       std::cout << std::endl;
     }
     #endif
+
+    // We create dot code
+    #ifdef GRAPH
+      std::cout << "digraph MNIST {" << std::endl;
+      for(int j = 0; j < 784; j++ ){
+        std::cout << "input"<< j << " [shape=point];" << std::endl;
+      }
+
+      for(int i = 0; i < nbreTotalNeuron; i++){
+        for(int j = 0; j < 784; j++ ){
+          if(relation[i][j] == true){
+            std::cout << "input"<< j << " -> neuron" << i << ";" << std::endl;
+          }
+        }
+        for(int j = 0;j < nbreTotalNeuron; j++){
+          if(relation[i][j+784] == true){
+            std::cout << "neuron" << j << " -> neuron"<< i << ";"<< std::endl;
+          }
+        }
+      }
+    std::cout << "}" << std::endl;
+    #endif
+
     network->setRelation(relation);
 }
 

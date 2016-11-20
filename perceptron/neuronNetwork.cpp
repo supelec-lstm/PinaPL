@@ -10,7 +10,7 @@
 
 #include "neuronNetwork.hpp"
 
-#define LOG
+#define NLOG
 
 #ifdef LOG
 #define PRINT_LOG(title) cout << "neuronNetwork.cpp     " << title << endl;
