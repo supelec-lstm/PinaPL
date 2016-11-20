@@ -10,8 +10,8 @@
 #include "../perceptron/mathFunctions.hpp"
 #include "../idxParser/idxParser.hpp"
 
-#define NLOG
-#define GRAPH
+#define LOG
+#define NGRAPH
 
 #ifdef LOG
 #define PRINT_LOG(title) cout << "mnist.cpp             " << title << endl;

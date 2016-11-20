@@ -10,7 +10,7 @@
 
 #include "neuronNetwork.hpp"
 
-#define NLOG
+#define LOG
 
 #ifdef LOG
 #define PRINT_LOG(title) cout << "neuronNetwork.cpp     " << title << endl;
@@ -474,6 +474,12 @@ void NeuronNetwork::learn(double* input, double* outputTheorical){
         }
         std::cout << endl;
     }
+    PRINT_LOG("Outputs")
+    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
+    for(int i = 0; i < neuronCount + inputCount; i++){
+        std::cout << output[i] << " ";
+    }
+    std::cout << endl;
     PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
     PRINT_LOG("Tableau de variation des biais")
     PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
