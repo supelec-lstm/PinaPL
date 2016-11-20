@@ -24,17 +24,18 @@ Mnist::Mnist(){
 
     // Données à modifier
 
-    nbreData = 100;
+    nbreData = 10;
     nbreLearn = 10;
-    nbreTest = 200;
+    nbreTest = 20;
 
     learningRate = 0.3;
     function = SIGMOID;
 
-    nbreLayout = 2;
+    nbreLayout = 3;
     nbreNeuron = new int[nbreLayout];
     nbreNeuron[0] = 10;
     nbreNeuron[1] = 10;
+    nbreNeuron[2] = 10;
 
      // Données à ne pas modifier
 
@@ -82,7 +83,11 @@ void Mnist::test(){
         network->reset();
         network->setInput(inputTest[i]);
         network->calculate();
+        std::cout << " ------------ " << std::endl;
         int a = maximum(network->getOutput());
+        for(int j = 0; j < 10; j++){
+          cout << network->getOutput()[j] << " - " << outputTest[i][j] << endl;
+        }
         int b = maximum(outputTest[i]);
         cout << b << " - " << a << endl;
     }
@@ -139,6 +144,19 @@ void Mnist::setRelation(){
         n1 += nbreNeuron[k-1];
         n2 += nbreNeuron[k];
     }
+    #ifdef LOG
+    for(int i = 0; i < nbreTotalNeuron; i++){
+      for(int j = 0;j < nbreTotalNeuron; j++){
+        if(relation[i][j+784] == true){
+          std::cout << "1 ";
+        }
+        else{
+          std::cout << "0 ";
+        }
+      }
+      std::cout << std::endl;
+    }
+    #endif
     network->setRelation(relation);
 }
 
@@ -149,7 +167,10 @@ void Mnist::setWeight(){
         weight[i] = v;
     }
     for(int i = 0; i < nbreTotalNeuron; i++){
-        for(int j = 0; j < 784 + nbreTotalNeuron; j++){
+        for(int j = 0; j < 784 ; j++){
+            weight[i][j] = randomizer(-1/784, 1/784);
+        }
+        for(int j = 784; j < nbreTotalNeuron; j++){
             weight[i][j] = randomizer(-0.1, 0.1);
         }
     }
