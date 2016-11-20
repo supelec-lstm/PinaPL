@@ -90,7 +90,7 @@ NeuronNetwork::~NeuronNetwork(){
 }
 
 void NeuronNetwork::reset(){
-    PRINT_LOG("Reset d'un réseau")
+    PRINT_LOG("Reset des paramètres de calcul du réseau")
     PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     resetOutput();
     resetBackPropagation();

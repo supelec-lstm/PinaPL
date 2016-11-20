@@ -93,6 +93,7 @@ void Mnist::learn(){
 void Mnist::test(){
     PRINT_LOG("Test")
     PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
+    PRINT_LOG("Attendu - Obtenu")
     for(int i = 0; i < nbreTest; i++){
         network->reset();
         network->setInput(inputTest[i]);
@@ -100,7 +101,7 @@ void Mnist::test(){
         #ifdef LOG
         std::cout << " ------------ " << std::endl;
         for(int j = 0; j < 10; j++){
-          cout << network->getOutput()[j] << " - " << outputTest[i][j] << endl;
+          cout << outputTest[i][j] << " - " << network->getOutput()[j] << endl;
         }
         #endif
         int a = maximum(network->getOutput());
