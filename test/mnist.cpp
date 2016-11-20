@@ -97,7 +97,7 @@ double** Mnist::inputConverter(string path, int nbre){
     IdxParser parser;
     vector<vector<int> > data = parser.importMNISTImages(path);
 
-    double** input = static_cast<double**>(malloc(nbre * sizeof(double*)));
+    double** input = new double*[nbre];
     for(int i = 0; i < nbre; i++){
         input[i] = new double[784];
         for(int j = 0; j < 784; j++){
@@ -111,7 +111,7 @@ double** Mnist::outputConverter(string path, int nbre){
     IdxParser parser;
     vector<int> data = parser.importMNISTLabels(path);
 
-    double** output = static_cast<double**>(malloc(nbre * sizeof(double*)));
+    double** output = new double*[nbre];
     for(int i = 0; i < nbre; i++){
         output[i] = new double[10];
         for(int j = 0; j < 10; j++){

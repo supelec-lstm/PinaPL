@@ -82,7 +82,7 @@ void Xor::test(){
 }
 
 double** Xor::inputConverter(){
-    double** input = static_cast<double**>(malloc(4 * sizeof(double*)));
+    double** input = new double*[4];
     for(int i = 0; i < 4; i++){
         input[i] = new double[2];
     }
@@ -94,7 +94,7 @@ double** Xor::inputConverter(){
 }
 
 double** Xor::outputConverter(){
-    double** output = static_cast<double**>(malloc(4 * sizeof(double*)));
+    double** output = new double*[4];
     for(int i = 0; i < 4; i++){
         output[i] = new double[2];
     }
