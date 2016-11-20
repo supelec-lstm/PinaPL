@@ -10,7 +10,7 @@
 #include "../perceptron/mathFunctions.hpp"
 #include "../idxParser/idxParser.hpp"
 
-#define LOG
+#define NLOG
 
 #ifdef LOG
 #define PRINT_LOG(title) cout << "=== " << title << " ===" << endl;
@@ -83,11 +83,13 @@ void Mnist::test(){
         network->reset();
         network->setInput(inputTest[i]);
         network->calculate();
+        #ifdef LOG
         std::cout << " ------------ " << std::endl;
-        int a = maximum(network->getOutput());
         for(int j = 0; j < 10; j++){
           cout << network->getOutput()[j] << " - " << outputTest[i][j] << endl;
         }
+        #endif
+        int a = maximum(network->getOutput());
         int b = maximum(outputTest[i]);
         cout << b << " - " << a << endl;
     }
