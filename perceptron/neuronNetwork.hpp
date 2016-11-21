@@ -3,8 +3,8 @@
 //  PinaPL
 //
 
-#ifndef DEF_NETWORK
-#define DEF_NETWORK
+#ifndef DEF_PERCEPTRON_NETWORK
+#define DEF_PERCEPTRON_NETWORK
 
 #include <string>
 #include <vector>

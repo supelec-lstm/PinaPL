@@ -25,7 +25,7 @@ Mnist::Mnist(){
 
     // Données à modifier
 
-    nbreData = 100;
+    nbreData = 10000;
     nbreLearn = 10;
     nbreTest = 20;
 
@@ -99,12 +99,10 @@ void Mnist::test(){
         network->reset();
         network->setInput(inputTest[i]);
         network->calculate();
-        #ifdef LOG
         std::cout << " ------------ " << std::endl;
         for(int j = 0; j < 10; j++){
           cout << outputTest[i][j] << " - " << network->getOutput()[j] << endl;
         }
-        #endif
         int a = maximum(network->getOutput());
         int b = maximum(outputTest[i]);
         cout << b << " - " << a << endl;

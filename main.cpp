@@ -40,9 +40,5 @@ int main(int argc, const char *argv[]) {
         console.goodbye();
     } else {
     }*/
-    //testMNIST();
-    Mnist test;
-    test.learn();
-    test.test();
     return 0;
 }
