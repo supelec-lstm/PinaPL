@@ -10,7 +10,7 @@
 
 #include "neuronNetwork.hpp"
 
-#define LOG
+#define NLOG
 
 #ifdef LOG
 #define PRINT_LOG(title) cout << "neuronNetwork.cpp     " << title << endl;
@@ -389,12 +389,20 @@ void NeuronNetwork::calculate(){
     for(int i = 0; i < nextNeighborTurnCount; i++){
         calculateOutput(nextNeighbor[i], nextNeighborCount[i]);
     }
+    PRINT_LOG("Output")
+    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
+    #ifdef LOG
+    for(int i = inputCount; i < neuronCount + inputCount; i++){
+        std::cout << output[i] << " ";
+    }
+    std::cout << endl;
+    #endif
+    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
     PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 }
 
 void NeuronNetwork::calculateOutput(int* neighbor, int neighborCount){
     PRINT_LOG("Une étape du calcul des sorties")
-    double* comp = new double[neighborCount];
     for(int i = 0; i < neighborCount; i++){
         int k = neighbor[i];
         int n = previousCount[k];
@@ -403,35 +411,32 @@ void NeuronNetwork::calculateOutput(int* neighbor, int neighborCount){
             int a = previousNode[k][j];
             s += weight[k][a] * output[a];
         }
-        comp[i] = s + bias[k];
-    }
-    for(int i = 0; i < neighborCount; i++){
-        output[neighbor[i] + inputCount] = (functions[neighbor[i]])(comp[i]);
+        output[k + inputCount] = (functions[k])(s + bias[k]);
     }
 }
 
 // Make a learning
 
-void NeuronNetwork::batchLearning(double** input, double** output, int nbreData, int nbreLearning){
+void NeuronNetwork::batchLearning(double** input, double** outputTheorical, int nbreData, int nbreLearning){
     PRINT_LOG("Apprentissage par batch")
     PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     for(int k = 0; k < nbreLearning; k++){
         reset();
         for(int i = 0; i < nbreData; i++){
-            learn(input[i], output[i]);
+            learn(input[i], outputTheorical[i]);
         }
         applyWeight();
     }
     PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 }
 
-void NeuronNetwork::stochasticLearning(double** input, double** output, int nbreData, int nbreLearning){
+void NeuronNetwork::stochasticLearning(double** input, double** outputTheorical, int nbreData, int nbreLearning){
     PRINT_LOG("Apprentissage stochastique")
     PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     for(int k = 0; k < nbreLearning; k++){
         reset();
         for(int i = 0; i < nbreData; i++){
-            learn(input[i], output[i]);
+            learn(input[i], outputTheorical[i]);
             applyWeight();
         }
     }
@@ -455,32 +460,25 @@ void NeuronNetwork::learn(double* input, double* outputTheorical){
         for(int j = 0; j < previousCount[i]; j++){
             int k = previousNode[i][j];
             weightDifference[i][k] += gradient[i] * output[k];
-            #ifdef LOG
-            std::cout << gradient[i] << " ";
-            #endif
             biasDifference[i] += gradient[i];
         }
         #ifdef LOG
-        std::cout << endl;
+        std::cout << gradient[i] << " ";
         #endif
     }
+    #ifdef LOG
+    std::cout << endl;
+    #endif
     #ifdef LOG
     PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
     PRINT_LOG("Tableau de variation des poids")
     PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     for(int i = 0; i < neuronCount; i++){
-        for(int j = 0; j < neuronCount; j++){
+        for(int j = 0; j < neuronCount + inputCount; j++){
             std::cout << weightDifference[i][j] << " ";
         }
         std::cout << endl;
     }
-    PRINT_LOG("Outputs")
-    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
-    for(int i = 0; i < neuronCount + inputCount; i++){
-        std::cout << output[i] << " ";
-    }
-    std::cout << endl;
-    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
     PRINT_LOG("Tableau de variation des biais")
     PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     for(int i = 0; i < neuronCount; i++){
@@ -521,7 +519,8 @@ void NeuronNetwork::calculateGradient(int* neighbor, int neighborCount){
         error[i] = s;
     }
     for(int i = 0; i < neighborCount; i++){
-        gradient[neighbor[i]] = (functionsDerivative[i])(output[neighbor[i] + inputCount]) * error[i];
+        int k = neighbor[i];
+        gradient[k] = (functionsDerivative[k])(output[k + inputCount]) * error[i];
     }
 }
 

@@ -10,7 +10,7 @@
 #include "../perceptron/mathFunctions.hpp"
 #include "../idxParser/idxParser.hpp"
 
-#define LOG
+#define NLOG
 #define NGRAPH
 
 #ifdef LOG
@@ -25,7 +25,7 @@ Mnist::Mnist(){
 
     // Données à modifier
 
-    nbreData = 10;
+    nbreData = 100;
     nbreLearn = 10;
     nbreTest = 20;
 
@@ -121,7 +121,7 @@ double** Mnist::inputConverter(string path, int nbre){
     for(int i = 0; i < nbre; i++){
         input[i] = new double[784];
         for(int j = 0; j < 784; j++){
-            input[i][j] = data[i][j]/255;
+            input[i][j] = ((double)data[i][j])/255;
         }
     }
     return input;
@@ -214,9 +214,9 @@ void Mnist::setWeight(){
     }
     for(int i = 0; i < nbreTotalNeuron; i++){
         for(int j = 0; j < 784 ; j++){
-            weight[i][j] = randomizer(-1/784, 1/784);
+            weight[i][j] = randomizer(-1.0/784, 1.0/784);
         }
-        for(int j = 784; j < nbreTotalNeuron; j++){
+        for(int j = 784; j < 784 + nbreTotalNeuron; j++){
             weight[i][j] = randomizer(-0.1, 0.1);
         }
     }
