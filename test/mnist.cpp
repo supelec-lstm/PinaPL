@@ -34,9 +34,9 @@ Mnist::Mnist(){
     batchSize = 50; // taille des batchs
     #endif
     #ifdef NBATCH
-    nbreData = 6000;
-    nbreLearn = 1;
-    nbreTest = 10;
+    nbreData = 60000;
+    nbreLearn = 2;
+    nbreTest = 10000;
     #endif
 
     learningRate = 0.3;
@@ -121,18 +121,21 @@ void Mnist::test(){
         //network->reset();
         network->setInput(inputTest[i]);
         network->calculate();
+        /*
         std::cout << " ------------ " << std::endl;
-        /*for(int j = 0; j < 10; j++){
+        for(int j = 0; j < 10; j++){
           cout << outputTest[i][j] << " - " << network->getOutput()[j] << endl;
         }*/
         int a = maximum(network->getOutput());
         int b = maximum(outputTest[i]);
-        cout << b << " - " << a << endl;
+
+        // cout << b << " - " << a << endl;
+
         if(a == b){
             n++;
         }
     }
-    cout << n*100.0/nbreTest;
+    cout << "Test error rate :" << 100 - n*100.0/nbreTest << endl;
     PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 }
 
