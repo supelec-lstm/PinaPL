@@ -22,6 +22,6 @@ clang++ -std=c++11 -c test/mnist.cpp -o mnist.o
 # -lz option is necessary to interact with .gz files (IDX parser)
 # -Weverything option shows all warnings
 # -std=c++11 option forces c++11 compatibility
-clang++ -std=c++11 -lz -o testBuild main.cpp perceptronMathFunctions.o perceptronNeuronNetwork.o idxParser.o test.o
+clang++ -std=c++11 -lz -o testBuild main.cpp perceptronMathFunctions.o perceptronNeuronNetwork.o idxParser.o test.o mnist.o
 # cleaning object files
 rm *.o
