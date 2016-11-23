@@ -30,6 +30,7 @@ class Mnist : public Test{
     int nbreTest;
     int batchSize;
 
+    int nbreInput;
     int nbreTotalNeuron;
     int nbreLayout;
     int* nbreNeuron;

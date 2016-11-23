@@ -12,7 +12,7 @@
 
 #define NBATCH
 
-#define LOG
+#define NLOG
 #define NGRAPH
 
 #ifdef LOG
@@ -28,25 +28,28 @@ Mnist::Mnist(){
     // Données à modifier
 
     #ifdef BATCH
-    nbreData = 5000; // nombre de données à importer de la base d'apprentissage
+    nbreData = 50000; // nombre de données à importer de la base d'apprentissage
     nbreLearn = 100; // nombre de batch learnings avec les données ci-dessus
-    nbreTest = 10; // nombre de données à importer de la base de test
+    nbreTest = 1000; // nombre de données à importer de la base de test
     batchSize = 50; // taille des batchs
     #endif
     #ifdef NBATCH
-    nbreData = 5000;
-    nbreLearn = 10;
-    nbreTest = 10;
+    nbreData = 6000;
+    nbreLearn = 5;
+    nbreTest = 1000;
     #endif
 
     learningRate = 0.3;
-    function = SIGMOID;
+    function = ARCTAN;
 
-    nbreLayout = 1;
+    nbreLayout = 2;
     nbreNeuron = new int[nbreLayout];
     nbreNeuron[0] = 10;
+    nbreNeuron[1] = 10;
 
      // Données à ne pas modifier
+
+    nbreInput = 785;
 
     nbreTotalNeuron = 0;
     for(int i = 0; i < nbreLayout; i++){
@@ -65,7 +68,7 @@ Mnist::Mnist(){
 
     PRINT_LOG("Création du réseau")
     PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
-    network = new NeuronNetwork(784, 10, nbreTotalNeuron, learningRate);
+    network = new NeuronNetwork(nbreInput, 10, nbreTotalNeuron, learningRate);
     PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 
     PRINT_LOG("Création de la matrice de relation")
@@ -113,18 +116,23 @@ void Mnist::test(){
     PRINT_LOG("Test")
     PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     PRINT_LOG("Attendu - Obtenu")
+    int n = 0;
     for(int i = 0; i < nbreTest; i++){
         //network->reset();
         network->setInput(inputTest[i]);
         network->calculate();
         std::cout << " ------------ " << std::endl;
-        for(int j = 0; j < 10; j++){
+        /*for(int j = 0; j < 10; j++){
           cout << outputTest[i][j] << " - " << network->getOutput()[j] << endl;
-        }
+        }*/
         int a = maximum(network->getOutput());
         int b = maximum(outputTest[i]);
         cout << b << " - " << a << endl;
+        if(a == b){
+            n++;
+        }
     }
+    cout << n*100.0/nbreTest;
     PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 }
 
@@ -136,8 +144,9 @@ double** Mnist::inputConverter(string path, int nbre){
 
     double** input = new double*[nbre];
     for(int i = 0; i < nbre; i++){
-        input[i] = new double[784];
-        for(int j = 0; j < 784; j++){
+        input[i] = new double[nbreInput];
+        input[i][0] = 1;
+        for(int j = 1; j < nbreInput; j++){
             double singleData = ((double)data[i][j])/255 - 0.5;
             input[i][j] = singleData;
             //PRINT_LOG(singleData)
@@ -166,15 +175,18 @@ double** Mnist::outputConverter(string path, int nbre){
 void Mnist::setRelation(){
     vector<vector<bool> > relation(nbreTotalNeuron);
     for(int i = 0; i < nbreTotalNeuron; i++){
-        vector<bool> v(784 + nbreTotalNeuron, false);
+        vector<bool> v(nbreInput + nbreTotalNeuron, false);
         relation[i] = v;
     }
+    for(int i = 0; i < nbreTotalNeuron; i++){
+        relation[i][0] = true;
+    }
     for(int i = 0; i < nbreNeuron[0]; i++){
-        for(int j = 0; j < 784; j++){
+        for(int j = 1; j < nbreInput; j++){
             relation[i][j] = true;
         }
     }
-    int n1 = 784;
+    int n1 = nbreInput;
     int n2 = nbreNeuron[0];
     for(int k = 1; k < nbreLayout; k++){
         for(int i = 0; i < nbreNeuron[k]; i++){
@@ -190,7 +202,7 @@ void Mnist::setRelation(){
     /*
     #ifdef LOG
     for(int i = 0; i < nbreTotalNeuron; i++){
-      for(int j = 0;j < nbreTotalNeuron +784; j++){
+      for(int j = 0;j < nbreTotalNeuron +nbreInput; j++){
         if(relation[i][j] == true){
           std::cout << "1 ";
         }
@@ -206,18 +218,18 @@ void Mnist::setRelation(){
     // We create dot code
     #ifdef GRAPH
       std::cout << "digraph MNIST {" << std::endl;
-      for(int j = 0; j < 784; j++ ){
+      for(int j = 0; j < nbreInput; j++ ){
         std::cout << "input"<< j << " [shape=point];" << std::endl;
       }
 
       for(int i = 0; i < nbreTotalNeuron; i++){
-        for(int j = 0; j < 784; j++ ){
+        for(int j = 0; j < nbreInput; j++ ){
           if(relation[i][j] == true){
             std::cout << "input"<< j << " -> neuron" << i << ";" << std::endl;
           }
         }
         for(int j = 0;j < nbreTotalNeuron; j++){
-          if(relation[i][j+784] == true){
+          if(relation[i][j+nbreInput] == true){
             std::cout << "neuron" << j << " -> neuron"<< i << ";"<< std::endl;
           }
         }
@@ -231,14 +243,14 @@ void Mnist::setRelation(){
 void Mnist::setWeight(){
     vector<vector<double> > weight(nbreTotalNeuron);
     for(int i = 0; i < nbreTotalNeuron; i++){
-        vector<double> v(784 + nbreTotalNeuron, 0);
+        vector<double> v(nbreInput + nbreTotalNeuron, 0);
         weight[i] = v;
     }
     for(int i = 0; i < nbreTotalNeuron; i++){
-        for(int j = 0; j < 784 ; j++){
+        for(int j = 0; j < nbreInput ; j++){
             weight[i][j] = randomizer(-0.1, 0.1);
         }
-        for(int j = 784; j < 784 + nbreTotalNeuron; j++){
+        for(int j = nbreInput; j < nbreInput + nbreTotalNeuron; j++){
             weight[i][j] = randomizer(-0.1, 0.1);
         }
     }
