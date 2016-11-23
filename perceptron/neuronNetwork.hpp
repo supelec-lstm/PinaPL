@@ -76,8 +76,8 @@ public:
 
     void calculate();
 
-    void stochasticLearning(double** input, double** output, int nbreData, int nbreLearning);
-    void batchLearning(double** input, double** output, int nbreData, int nbreLearning);
+    void stochasticLearning(double** input, int inputSize, double** outputTheorical, int nbreLearning);
+    void batchLearning(double** input, int inputSize, double** outputTheorical, int nbreData, int nbreLearning);
 };
 
 

@@ -28,6 +28,7 @@ class Mnist : public Test{
     int nbreLearn;
     int nbreData;
     int nbreTest;
+    int batchSize;
 
     int nbreTotalNeuron;
     int nbreLayout;

@@ -10,7 +10,7 @@
 #include "../perceptron/mathFunctions.hpp"
 #include "../idxParser/idxParser.hpp"
 
-#define NLOG
+#define LOG
 #define NGRAPH
 
 #ifdef LOG
@@ -25,18 +25,18 @@ Mnist::Mnist(){
 
     // Données à modifier
 
-    nbreData = 10000;
-    nbreLearn = 10;
-    nbreTest = 20;
 
-    learningRate = 0.3;
+    nbreData = 2000; // nombre de données à importer de la base d'apprentissage
+    nbreLearn = 10; // nombre de batch learnings avec les données ci-dessus
+    nbreTest = 10; // nombre de données à importer de la base de test
+    batchSize = 20; // taille des batchs
+
+    learningRate = 0.1;
     function = SIGMOID;
 
-    nbreLayout = 3;
+    nbreLayout = 1;
     nbreNeuron = new int[nbreLayout];
     nbreNeuron[0] = 10;
-    nbreNeuron[1] = 10;
-    nbreNeuron[2] = 10;
 
      // Données à ne pas modifier
 
@@ -49,9 +49,11 @@ Mnist::Mnist(){
     inputData = inputConverter("./test/MNIST/train-images-idx3-ubyte.gz", nbreData);
     inputTest = inputConverter("./test/MNIST/t10k-images-idx3-ubyte.gz", nbreTest);
 
+
     PRINT_LOG("Importation des sorties")
     outputData = outputConverter("./test/MNIST/train-labels-idx1-ubyte.gz", nbreData);
     outputTest = outputConverter("./test/MNIST/t10k-labels-idx1-ubyte.gz", nbreTest);
+
 
     PRINT_LOG("Création du réseau")
     PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
@@ -85,9 +87,9 @@ Mnist::Mnist(){
 }
 
 void Mnist::learn(){
-    PRINT_LOG("Apprentissage par batch")
+    PRINT_LOG("Apprentissage stochastique")
     PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
-    network->batchLearning(inputData, outputData, 4, nbreLearn);
+    network->stochasticLearning(inputData, nbreData, outputData, nbreLearn);
     PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 }
 
@@ -96,7 +98,7 @@ void Mnist::test(){
     PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     PRINT_LOG("Attendu - Obtenu")
     for(int i = 0; i < nbreTest; i++){
-        network->reset();
+        //network->reset();
         network->setInput(inputTest[i]);
         network->calculate();
         std::cout << " ------------ " << std::endl;
@@ -112,6 +114,7 @@ void Mnist::test(){
 
 double** Mnist::inputConverter(string path, int nbre){
     PRINT_LOG("Conversion des entrées")
+    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     IdxParser parser;
     vector<vector<int> > data = parser.importMNISTImages(path);
 
@@ -119,10 +122,13 @@ double** Mnist::inputConverter(string path, int nbre){
     for(int i = 0; i < nbre; i++){
         input[i] = new double[784];
         for(int j = 0; j < 784; j++){
-            input[i][j] = ((double)data[i][j])/255;
+            double singleData = ((double)data[i][j])/255 - 0.5;
+            input[i][j] = singleData;
+            //PRINT_LOG(singleData)
         }
     }
     return input;
+    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 }
 
 double** Mnist::outputConverter(string path, int nbre){
@@ -165,10 +171,11 @@ void Mnist::setRelation(){
     }
 
     // Logging fuction
+    /*
     #ifdef LOG
     for(int i = 0; i < nbreTotalNeuron; i++){
-      for(int j = 0;j < nbreTotalNeuron; j++){
-        if(relation[i][j+784] == true){
+      for(int j = 0;j < nbreTotalNeuron +784; j++){
+        if(relation[i][j] == true){
           std::cout << "1 ";
         }
         else{
@@ -179,6 +186,7 @@ void Mnist::setRelation(){
     }
     #endif
 
+    */
     // We create dot code
     #ifdef GRAPH
       std::cout << "digraph MNIST {" << std::endl;
@@ -212,12 +220,26 @@ void Mnist::setWeight(){
     }
     for(int i = 0; i < nbreTotalNeuron; i++){
         for(int j = 0; j < 784 ; j++){
-            weight[i][j] = randomizer(-1.0/784, 1.0/784);
-        }
-        for(int j = 784; j < 784 + nbreTotalNeuron; j++){
             weight[i][j] = randomizer(-0.1, 0.1);
         }
+        for(int j = 784; j < 784 + nbreTotalNeuron; j++){
+            //weight[i][j] = randomizer(-0.1, 0.1);
+            weight[i][j] = 0.0;
+        }
     }
+
+    // Logging fuction
+    /*
+    #ifdef LOG
+    for(int i = 0; i < nbreTotalNeuron; i++){
+      for(int j = 0;j < nbreTotalNeuron +784; j++){
+        std::cout << weight[i][j];
+      }
+      std::cout << std::endl;
+    }
+    #endif
+    */
+
     network->setWeight(weight);
 }
 
