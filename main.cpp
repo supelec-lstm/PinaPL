@@ -46,6 +46,5 @@ int main(int argc, const char *argv[]) {
     test.learn();
     test.test();
 
-
     return 0;
 }

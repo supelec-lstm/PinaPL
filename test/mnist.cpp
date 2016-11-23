@@ -35,12 +35,12 @@ Mnist::Mnist(){
     #endif
     #ifdef NBATCH
     nbreData = 6000;
-    nbreLearn = 5;
-    nbreTest = 1000;
+    nbreLearn = 1;
+    nbreTest = 10;
     #endif
 
     learningRate = 0.3;
-    function = ARCTAN;
+    function = SIGMOID;
 
     nbreLayout = 2;
     nbreNeuron = new int[nbreLayout];
