@@ -10,6 +10,8 @@
 #include "../perceptron/mathFunctions.hpp"
 #include "../idxParser/idxParser.hpp"
 
+#define NBATCH
+
 #define LOG
 #define NGRAPH
 
@@ -25,13 +27,19 @@ Mnist::Mnist(){
 
     // Données à modifier
 
-
-    nbreData = 2000; // nombre de données à importer de la base d'apprentissage
-    nbreLearn = 10; // nombre de batch learnings avec les données ci-dessus
+    #ifdef BATCH
+    nbreData = 5000; // nombre de données à importer de la base d'apprentissage
+    nbreLearn = 100; // nombre de batch learnings avec les données ci-dessus
     nbreTest = 10; // nombre de données à importer de la base de test
-    batchSize = 20; // taille des batchs
+    batchSize = 50; // taille des batchs
+    #endif
+    #ifdef NBATCH
+    nbreData = 5000;
+    nbreLearn = 10;
+    nbreTest = 10;
+    #endif
 
-    learningRate = 0.1;
+    learningRate = 0.3;
     function = SIGMOID;
 
     nbreLayout = 1;
@@ -87,10 +95,18 @@ Mnist::Mnist(){
 }
 
 void Mnist::learn(){
+    #ifdef NBATCH
     PRINT_LOG("Apprentissage stochastique")
     PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     network->stochasticLearning(inputData, nbreData, outputData, nbreLearn);
     PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    #endif
+    #ifdef BATCH
+    PRINT_LOG("Apprentissage par batch")
+    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
+    network->batchLearning(inputData, nbreData, outputData, batchSize, nbreLearn);
+    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    #endif
 }
 
 void Mnist::test(){
@@ -223,23 +239,9 @@ void Mnist::setWeight(){
             weight[i][j] = randomizer(-0.1, 0.1);
         }
         for(int j = 784; j < 784 + nbreTotalNeuron; j++){
-            //weight[i][j] = randomizer(-0.1, 0.1);
-            weight[i][j] = 0.0;
+            weight[i][j] = randomizer(-0.1, 0.1);
         }
     }
-
-    // Logging fuction
-    /*
-    #ifdef LOG
-    for(int i = 0; i < nbreTotalNeuron; i++){
-      for(int j = 0;j < nbreTotalNeuron +784; j++){
-        std::cout << weight[i][j];
-      }
-      std::cout << std::endl;
-    }
-    #endif
-    */
-
     network->setWeight(weight);
 }
 

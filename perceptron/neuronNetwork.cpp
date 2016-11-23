@@ -338,18 +338,6 @@ void NeuronNetwork::setWeight(vector<vector<double> > weightArg){
             weight[i][j] = weightArg[i][j];
         }
     }
-
-    /*
-    #ifdef LOG
-    for(int i = 0; i < neuronCount; i++){
-      for(int j = 0;j < neuronCount + inputCount; j++){
-        std::cout << weight[i][j];
-      }
-      std::cout << std::endl;
-    }
-    #endif
-    */
-
 }
 
 void NeuronNetwork::setBias(vector<double> biasArg){
@@ -377,15 +365,6 @@ void NeuronNetwork::setInput(double* inputArg){
     PRINT_LOG("Paramétrage de l'entrée")
     for(int i = 0; i < inputCount; i++){
         output[i] = inputArg[i];
-
-    /*
-    #ifdef LOG
-    for(int i = 0; i < inputCount; i++){
-        std::cout << output[i];
-    }
-    #endif
-    */
-
     }
 }
 
@@ -411,14 +390,6 @@ void NeuronNetwork::calculate(){
     }
     PRINT_LOG("Output")
     PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
-    /*
-    #ifdef LOG
-    for(int i = inputCount; i < neuronCount + inputCount; i++){
-        std::cout << output[i] << " ";
-    }
-    std::cout << endl;
-    #endif
-    */
     PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
     PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 }
@@ -452,15 +423,6 @@ void NeuronNetwork::batchLearning(double** input, int inputSize, double** output
         for(int i = 0; i < batchSize; i++){
             learn(input[i+k*batchSize], outputTheorical[i+k*batchSize]);
         }
-
-        /*
-        #ifdef LOG
-        for(int i = 0; i < batchSize; i++){
-            std::cout << output[i];
-        }
-        #endif
-        */
-
         applyWeight();
     }
     PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
@@ -496,20 +458,10 @@ void NeuronNetwork::learn(double* input, double* outputTheorical){
         for(int j = 0; j < previousCount[i]; j++){
             int k = previousNode[i][j];
             weightDifference[i][k] += gradient[i] * output[k];
-            biasDifference[i] += gradient[i];
+            //biasDifference[i] += gradient[i];
         }
-        /*
-        #ifdef LOG
-        std::cout << gradient[i] << " ";
-        #endif
-        */
     }
 
-    /*
-    #ifdef LOG
-    std::cout << endl;
-    #endif
-    */
     /*
     #ifdef LOG
     PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
