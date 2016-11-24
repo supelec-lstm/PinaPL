@@ -1,0 +1,37 @@
+{
+    "meta": {
+        "name": "dummyNetwork",
+        "date": "YYYY-MM-DD",
+        "nbin": 2,
+        "nbout": 2,
+        "ntot": 4 }
+
+    "neurons": {
+        "0": {
+            "inputs": [],
+            "composition":"SUM",
+            "activation":"HEA",
+            "bias":0 },
+        "1": {
+            "inputs": [],
+            "composition":"SUM",
+            "activation":"SIG",
+            "bias":0.1 },
+        "2": {
+            "inputs": [
+                { "neighbour": 0, "weight": 0.5},
+                { "neighbour": 1, "weight": -0.5} ],
+            "composition":"SUM",
+            "activation":"HEA",
+            "bias":0 },
+        "3": {
+            "inputs": [
+                { "neighbour": 0, "weight": -0.5},
+                { "neighbour": 1, "weight": 0.5} ],
+            "composition":"SUM",
+            "activation":"TAN",
+            "bias":0 }
+    }
+}
+
+
