@@ -27,7 +27,7 @@ Mnist::Mnist(){
 
     // Données à modifier
 
-    #ifdef BATCH
+    #ifdef BATCH // batch
     nbreData = 10; // nombre d'entrées à importer de la base d'apprentissage
     batchSize = 1; // taille des batchs
 
@@ -36,7 +36,7 @@ Mnist::Mnist(){
     nbreTest = 10; // nombre de données à importer de la base de test
 
     #endif
-    #ifdef NBATCH
+    #ifdef NBATCH // stochastique
     nbreData = 60000; // nombre d'entrées à importer de la base d'apprentissage
 
     nbreLearn = 1; // nombre d'apprentissages effectués par entrée
