@@ -28,15 +28,20 @@ Mnist::Mnist(){
     // Données à modifier
 
     #ifdef BATCH
-    nbreData = 50000; // nombre de données à importer de la base d'apprentissage
-    nbreLearn = 100; // nombre de batch learnings avec les données ci-dessus
-    nbreTest = 1000; // nombre de données à importer de la base de test
-    batchSize = 50; // taille des batchs
+    nbreData = 10; // nombre d'entrées à importer de la base d'apprentissage
+    batchSize = 1; // taille des batchs
+
+    nbreLearn = 1; // nombre d'apprentissages effectués par batch
+
+    nbreTest = 10; // nombre de données à importer de la base de test
+
     #endif
     #ifdef NBATCH
-    nbreData = 60000;
-    nbreLearn = 2;
-    nbreTest = 10000;
+    nbreData = 60000; // nombre d'entrées à importer de la base d'apprentissage
+
+    nbreLearn = 1; // nombre d'apprentissages effectués par entrée
+
+    nbreTest = 10000; // nombre de données à importer de la base de test
     #endif
 
     learningRate = 0.3;
@@ -44,8 +49,8 @@ Mnist::Mnist(){
 
     nbreLayout = 2;
     nbreNeuron = new int[nbreLayout];
-    nbreNeuron[0] = 10;
-    nbreNeuron[1] = 10;
+    nbreNeuron[0] = 300;
+    nbreNeuron[1] = 300;
 
      // Données à ne pas modifier
 
@@ -118,7 +123,7 @@ void Mnist::test(){
     PRINT_LOG("Attendu - Obtenu")
     int n = 0;
     for(int i = 0; i < nbreTest; i++){
-        //network->reset();
+        network->reset();
         network->setInput(inputTest[i]);
         network->calculate();
         /*
@@ -135,7 +140,7 @@ void Mnist::test(){
             n++;
         }
     }
-    cout << "Test error rate :" << 100 - n*100.0/nbreTest << endl;
+    cout << "Test error rate : " << 100 - n*100.0/nbreTest << endl;
     PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 }
 

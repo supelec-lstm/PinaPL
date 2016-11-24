@@ -418,12 +418,15 @@ void NeuronNetwork::batchLearning(double** input, int inputSize, double** output
     int maximumLearnings = (int) inputSize / batchSize;
     PRINT_LOG(maximumLearnings)
 
-    for(int k = 0; k < nbreLearning; k++){
+    for(int k = 0; k < maximumLearnings; k++){
         reset();
-        for(int i = 0; i < batchSize; i++){
-            learn(input[i+k*batchSize], outputTheorical[i+k*batchSize]);
-        }
-        applyWeight();
+        //for(int j = 0; j < nbreLearning; j++) {
+            for(int i = 0; i < batchSize; i++){
+                learn(input[i+k*batchSize], outputTheorical[i+k*batchSize]);
+            }
+            applyWeight();
+        //}
+
     }
     PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 }
@@ -462,7 +465,6 @@ void NeuronNetwork::learn(double* input, double* outputTheorical){
         }
     }
 
-    /*
     #ifdef LOG
     PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
     PRINT_LOG("Tableau de variation des poids")
@@ -480,7 +482,6 @@ void NeuronNetwork::learn(double* input, double* outputTheorical){
     }
     std::cout << endl;
     #endif
-    */
 
     PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
     PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
