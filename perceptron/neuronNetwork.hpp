@@ -9,20 +9,24 @@
 #include <string>
 #include <vector>
 
-typedef double (*ActivationFunctionMain) (double);
-typedef double (*ActivationFunctionDerivative) (double);
+#include "mathFunctions.hpp"
 
 class NeuronNetwork {
     bool** relation;
+    bool** relationOutput;
     double** weight;
-    double* bias;
-    ActivationFunctionMain* functions;
+    double** weightOutput;
+    ActivationFunctionMain* activationFunctions;
 
+    double* put;
+    double* input;
     double* output;
+    double* neurons;
 
     int inputCount;
     int outputCount;
     int neuronCount;
+    int putCount;
 
     int** nextNode;
     int* nextCount;
@@ -37,8 +41,7 @@ class NeuronNetwork {
 
     double* gradient;
     double** weightDifference;
-    double* biasDifference;
-    ActivationFunctionDerivative* functionsDerivative;
+    ActivationFunctionDerivative* derivativeActivationFunctions;
     double learningRate;
 
     void resetOutput();
@@ -51,8 +54,6 @@ class NeuronNetwork {
     void initPreviousNeighbor();
 
     void calculateOutput(int* neighbor, int neighborCount);
-    int newNextNeighbor(bool* voisin);
-    int newPreviousNeighbor(bool* voisin);
 
     void calculateOutputGradient(double* outputTheorical);
     void calculateGradient(int* neighbor, int neighborCount);
@@ -67,9 +68,7 @@ public:
 
     void setRelation(std::vector<std::vector<bool> > relation);
     void setWeight(std::vector<std::vector<double> > weight);
-    void setBias(std::vector<double> bias);
-    void setActivation(std::vector<ActivationFunctionMain> functions);
-    void setActivationDerivate(std::vector<ActivationFunctionDerivative> functions);
+    void setFunctions(std::vector<activationFunctionType> functions);
     void setInput(double*);
 
     double* getOutput();

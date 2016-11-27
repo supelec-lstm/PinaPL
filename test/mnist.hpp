@@ -39,7 +39,6 @@ class Mnist : public Test{
     double** outputConverter(std::string path, int nbre);
     void setRelation();
     void setWeight();
-    void setBias();
     void setFunctions();
 
     int maximum(double* tab);
