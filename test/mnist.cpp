@@ -14,7 +14,7 @@
 #define FILE_NAME "mnist.cpp\t\t"
 #include "../log.hpp"
 
-#define BATCH
+#define NBATCH
 
 using namespace std;
 
@@ -23,23 +23,24 @@ Mnist::Mnist(){
     // Données à modifier
 
     #ifdef BATCH
-    nbreData = 5000; // nombre de données à importer de la base d'apprentissage
-    nbreLearn = 10; // nombre de batch learnings avec les données ci-dessus
-    nbreTest = 1000; // nombre de données à importer de la base de test
+    nbreData = 60000; // nombre de données à importer de la base d'apprentissage
+    nbreLearn = 1; // nombre de batch learnings avec les données ci-dessus
+    nbreTest = 10000; // nombre de données à importer de la base de test
     batchSize = 50; // taille des batchs
     #else
-    nbreData = 6000;
-    nbreLearn = 5;
-    nbreTest = 1000;
+    nbreData = 60000;
+    nbreLearn = 10;
+    nbreTest = 10000;
     #endif
 
     learningRate = 0.3;
     function = SIGMOID;
 
-    nbreLayout = 2;
+    nbreLayout = 3;
     nbreNeuron = new int[nbreLayout];
-    nbreNeuron[0] = 10;
-    nbreNeuron[1] = 10;
+    nbreNeuron[0] = 300;
+    nbreNeuron[1] = 300;
+    nbreNeuron[2] = 10;
 
      // Données à ne pas modifier
 
@@ -116,7 +117,7 @@ double** Mnist::inputConverter(string path, int nbre){
     for(int i = 0; i < nbre; i++){
         input[i] = new double[nbreInput];
         for(int j = 0; j < nbreInput; j++){
-            double singleData = ((double)data[i][j])/255;
+            double singleData = ((double)data[i][j])/255 - 0.5;
             input[i][j] = singleData;
         }
     }

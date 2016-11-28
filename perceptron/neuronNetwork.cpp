@@ -383,8 +383,6 @@ void NeuronNetwork::calculateOutput(int* neighbor, int neighborCount){
 
 void NeuronNetwork::learn(double* inputData, double* outputData){
     PRINT_BEGIN_FUNCTION("Apprentissage")
-    resetOutput();
-    resetGradient();
     setInput(inputData);
     calculate();
     calculateOutputGradient(outputData);
@@ -443,7 +441,6 @@ void NeuronNetwork::batchLearning(double** inputData, int inputSize, double** ou
     int maximumLearnings = (int)floor(inputSize / batchSize);
 
     for(int k = 0; k < maximumLearnings; k++){
-        reset();
         for(int i = 0; i < nbreLearning; i++){
             for(int j = 0; j < batchSize; j++){
                 learn(inputData[j+k*batchSize], outputData[j+k*batchSize]);
@@ -458,7 +455,6 @@ void NeuronNetwork::stochasticLearning(double** inputData, int inputSize, double
     PRINT_BEGIN_FUNCTION("Apprentissage stochastique")
     PRINT_LOG(nextNeighborTurnCount);
     for(int k = 0; k < nbreLearning; k++){
-        reset();
         for(int i = 0; i < inputSize; i++){
             learn(inputData[i], outputData[i]);
             applyWeight();
