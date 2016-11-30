@@ -54,9 +54,6 @@ Xor::Xor(){
     PRINT_LOG("Création des poids")
     setWeight();
 
-    PRINT_LOG("Création des biais")
-    setBias();
-
     PRINT_LOG("Création des fonctions")
     setFunctions();
 
@@ -66,7 +63,7 @@ Xor::Xor(){
 
 void Xor::learn(){
     PRINT_LOG("Apprentissage")
-    network->batchLearning(inputData, outputData, 4, nbreLearn);
+    //network->batchLearning(inputData, outputData, 4, nbreLearn);
 }
 
 void Xor::test(){
@@ -144,50 +141,7 @@ void Xor::setWeight(){
     network->setWeight(weight);
 }
 
-void Xor::setBias(){
-    vector<double> bias(3, 0);
-    network->setBias(bias);
-}
-
 void Xor::setFunctions(){
     vector<ActivationFunctionMain> functions(nbreTotalNeuron);
     vector<ActivationFunctionDerivative> functionsDerivate(nbreTotalNeuron);
-
-    switch(function){
-        case SIGMOID:
-            for(int i = 0; i < nbreTotalNeuron; i++){
-                functions[i] = sigmoid;
-                functionsDerivate[i] = sigmoidDerivate;
-            }
-            network->setActivation(functions);
-            network->setActivationDerivate(functionsDerivate);
-            break;
-
-        case ARCTAN:
-            for(int i = 0; i < nbreTotalNeuron; i++){
-                functions[i] = arctan;
-                functionsDerivate[i] = arctanDerivate;
-            }
-            network->setActivation(functions);
-            network->setActivationDerivate(functionsDerivate);
-            break;
-
-        case TANH:
-            for(int i = 0; i < nbreTotalNeuron; i++){
-                functions[i] = tanh;
-                functionsDerivate[i] = tanhDerivate;
-            }
-            network->setActivation(functions);
-            network->setActivationDerivate(functionsDerivate);
-            break;
-
-        case RELU:
-            for(int i = 0; i < nbreTotalNeuron; i++){
-                functions[i] = relu;
-                functionsDerivate[i] = reluDerivate;
-            }
-            network->setActivation(functions);
-            network->setActivationDerivate(functionsDerivate);
-            break;
-    }
 }

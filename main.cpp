@@ -16,6 +16,10 @@
 #include "test/mnist.hpp"
 #include "test/xor.hpp"
 
+#include "log.hpp"
+
+int tab_log = 0;
+
 using namespace std;
 
 int main(int argc, const char *argv[]) {
@@ -45,6 +49,7 @@ int main(int argc, const char *argv[]) {
     Mnist test;
     test.learn();
     test.test();
+
 
     return 0;
 }
