@@ -14,7 +14,7 @@
 #define FILE_NAME "mnist.cpp\t\t"
 #include "../log.hpp"
 
-#define BATCH
+#define NBATCH
 
 using namespace std;
 
