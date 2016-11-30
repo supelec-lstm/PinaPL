@@ -14,7 +14,7 @@
 #define FILE_NAME "mnist.cpp\t\t"
 #include "../log.hpp"
 
-#define NBATCH
+#define BATCH
 
 using namespace std;
 
@@ -26,10 +26,10 @@ Mnist::Mnist(){
     nbreData = 60000; // nombre de données à importer de la base d'apprentissage
     nbreLearn = 1; // nombre de batch learnings avec les données ci-dessus
     nbreTest = 10000; // nombre de données à importer de la base de test
-    batchSize = 50; // taille des batchs
+    batchSize = 128; // taille des batchs
     #else
     nbreData = 60000;
-    nbreLearn = 10;
+    nbreLearn = 1;
     nbreTest = 10000;
     #endif
 
