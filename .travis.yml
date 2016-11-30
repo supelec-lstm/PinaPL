@@ -1,0 +1,7 @@
+language: bash
+
+before_script:
+        - bash compileClang.sh
+
+script:
+        - testBuild
