@@ -1,4 +1,6 @@
-language: bash
+language: cpp
+
+install: make get-deps
 
 before_script:
         - bash compileClang.sh
