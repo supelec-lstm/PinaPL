@@ -18,29 +18,25 @@
 
 using namespace std;
 
-Mnist::Mnist(){
+Mnist::Mnist(int nbreData, int nbreLearn, int nbreTest, double learningRate, int nbreLayout, int nbreNeuron[]) {
 
     // Données à modifier
-
     #ifdef BATCH
-    nbreData = 60000; // nombre de données à importer de la base d'apprentissage
-    nbreLearn = 1; // nombre de batch learnings avec les données ci-dessus
-    nbreTest = 10000; // nombre de données à importer de la base de test
-    batchSize = 128; // taille des batchs
+        nbreData = 60000; // nombre de données à importer de la base d'apprentissage
+        nbreLearn = 1; // nombre de batch learnings avec les données ci-dessus
+        nbreTest = 10000; // nombre de données à importer de la base de test
+        batchSize = 128; // taille des batchs
     #else
-    nbreData = 60000;
-    nbreLearn = 1;
-    nbreTest = 10000;
+        this->nbreData = nbreData;
+        this->nbreLearn = nbreLearn;
+        this->nbreTest = nbreTest;
     #endif
 
-    learningRate = 0.3;
+    this->learningRate = learningRate;
     function = SIGMOID;
 
-    nbreLayout = 3;
-    nbreNeuron = new int[nbreLayout];
-    nbreNeuron[0] = 300;
-    nbreNeuron[1] = 300;
-    nbreNeuron[2] = 10;
+    this->nbreLayout = nbreLayout;
+    this->nbreNeuron = nbreNeuron;
 
      // Données à ne pas modifier
 
@@ -51,45 +47,45 @@ Mnist::Mnist(){
         nbreTotalNeuron += nbreNeuron[i];
     }
 
-    PRINT_LOG("Importation des entrées")
+    PRINT_LOG("Input data import")
     inputData = inputConverter("./test/MNIST/train-images-idx3-ubyte.gz", nbreData);
     inputTest = inputConverter("./test/MNIST/t10k-images-idx3-ubyte.gz", nbreTest);
 
 
-    PRINT_LOG("Importation des sorties")
+    PRINT_LOG("Output data import")
     outputData = outputConverter("./test/MNIST/train-labels-idx1-ubyte.gz", nbreData);
     outputTest = outputConverter("./test/MNIST/t10k-labels-idx1-ubyte.gz", nbreTest);
 
-    PRINT_LOG("Création du réseau")
+    PRINT_LOG("Network creation")
     network = new NeuronNetwork(nbreInput, 10, nbreTotalNeuron, learningRate);
 
-    PRINT_LOG("Création de la matrice de relation")
+    PRINT_LOG("Relation matrix creation")
     setRelation();
 
-    PRINT_LOG("Création des poids")
+    PRINT_LOG("Weights creation")
     setWeight();
 
-    PRINT_LOG("Création des fonctions")
+    PRINT_LOG("Functions creation")
     setFunctions();
 
-    PRINT_LOG("Initialisation du réseau")
+    PRINT_LOG("Network initialization")
     network->init();
 }
 
 void Mnist::learn(){
     #ifdef NBATCH
-    PRINT_LOG("Apprentissage stochastique")
+    PRINT_LOG("Stochastic learning")
     network->stochasticLearning(inputData, nbreData, outputData, nbreLearn);
     #endif
     #ifdef BATCH
-    PRINT_LOG("Apprentissage par batch")
+    PRINT_LOG("Batch learning")
     network->batchLearning(inputData, nbreData, outputData, batchSize, nbreLearn);
     #endif
 }
 
 void Mnist::test(){
     PRINT_BEGIN_FUNCTION("Tests")
-    PRINT_LOG("Attendu - Obtenu")
+    PRINT_LOG("Expected - Obtained")
     int n = 0;
     for(int i = 0; i < nbreTest; i++){
         network->reset();
@@ -109,7 +105,7 @@ void Mnist::test(){
 }
 
 double** Mnist::inputConverter(string path, int nbre){
-    PRINT_BEGIN_FUNCTION("Conversion des entrées")
+    PRINT_BEGIN_FUNCTION("Input conversion")
     IdxParser parser;
     vector<vector<int> > data = parser.importMNISTImages(path);
 
@@ -126,7 +122,7 @@ double** Mnist::inputConverter(string path, int nbre){
 }
 
 double** Mnist::outputConverter(string path, int nbre){
-    PRINT_BEGIN_FUNCTION("Conversion des sorties")
+    PRINT_BEGIN_FUNCTION("Output conversion")
     IdxParser parser;
     vector<int> data = parser.importMNISTLabels(path);
 

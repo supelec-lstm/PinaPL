@@ -21,7 +21,7 @@ using namespace std;
 // Initialization
 
 NeuronNetwork::NeuronNetwork(int nbin, int nbout, int nbtot, double learning){
-    PRINT_BEGIN_FUNCTION("Instantiation d'un nouveau réseau")
+    PRINT_BEGIN_FUNCTION("New network instantiation")
     // Main information
 
     inputCount = nbin;
@@ -77,7 +77,7 @@ NeuronNetwork::NeuronNetwork(int nbin, int nbout, int nbtot, double learning){
 }
 
 NeuronNetwork::~NeuronNetwork(){
-    PRINT_BEGIN_FUNCTION("Déallocation du réseau")
+    PRINT_BEGIN_FUNCTION("Network unallocation")
     delete(relation);
     delete(relationOutput);
     delete(weight);
@@ -101,7 +101,7 @@ NeuronNetwork::~NeuronNetwork(){
 }
 
 void NeuronNetwork::reset(){
-    PRINT_BEGIN_FUNCTION("Reset des paramètres de calcul du réseau")
+    PRINT_BEGIN_FUNCTION("Network calculus parameters reset")
     resetOutput();
     resetBackPropagation();
     resetGradient();
@@ -109,7 +109,7 @@ void NeuronNetwork::reset(){
 }
 
 void NeuronNetwork::resetOutput(){
-    PRINT_BEGIN_FUNCTION("Reset des entrées/sorties du réseau")
+    PRINT_BEGIN_FUNCTION("Network input & output reset")
     for(int i = 1; i < putCount; i++){
         put[i] = 0.0;
     }
@@ -117,7 +117,7 @@ void NeuronNetwork::resetOutput(){
 }
 
 void NeuronNetwork::resetBackPropagation(){
-    PRINT_BEGIN_FUNCTION("Reset des paramètres de backpropagation")
+    PRINT_BEGIN_FUNCTION("Backpropagation parameters reset")
     for(int i = 0; i < neuronCount; i++){
         for(int j = 0; j < putCount; j++){
             weightDifference[i][j] = 0.0;
@@ -127,7 +127,7 @@ void NeuronNetwork::resetBackPropagation(){
 }
 
 void NeuronNetwork::resetGradient(){
-    PRINT_BEGIN_FUNCTION("Reset du gradient")
+    PRINT_BEGIN_FUNCTION("Gradient reset")
     for(int i = 0; i < neuronCount; i++){
         gradient[i] = 0.0;
     }
@@ -137,7 +137,7 @@ void NeuronNetwork::resetGradient(){
 // We define here matrices and vectors which permit to do less calculation during the running
 
 void NeuronNetwork::init(){
-    PRINT_BEGIN_FUNCTION("Initialisation des tableaux de calcul")
+    PRINT_BEGIN_FUNCTION("Calculus arrays initialization")
     initNextNode();
     initPreviousNode();
     initNextNeighbor();
@@ -146,7 +146,7 @@ void NeuronNetwork::init(){
 }
 
 void NeuronNetwork::initNextNode(){
-    PRINT_BEGIN_FUNCTION("Initialisation du tableau des prochains noeuds")
+    PRINT_BEGIN_FUNCTION("Next nodes array initialization")
     nextNode = new int*[neuronCount];
     nextCount = new int[neuronCount];
 
@@ -173,7 +173,7 @@ void NeuronNetwork::initNextNode(){
 }
 
 void NeuronNetwork::initPreviousNode(){
-    PRINT_BEGIN_FUNCTION("Initialisation du tableau de précèdents noeuds")
+    PRINT_BEGIN_FUNCTION("Previous nodes array initialization")
     previousNode = new int*[neuronCount];
     previousCount = new int[neuronCount];
 
@@ -200,7 +200,7 @@ void NeuronNetwork::initPreviousNode(){
 }
 
 void NeuronNetwork::initNextNeighbor(){
-    PRINT_BEGIN_FUNCTION("Initialisation du tableau de prochains voisins")
+    PRINT_BEGIN_FUNCTION("Next neighbors array initialization")
     int* result = new int[neuronCount];
     for(int i = 0; i < neuronCount; i++){
         result[i] = 0;
@@ -243,7 +243,7 @@ void NeuronNetwork::initNextNeighbor(){
 }
 
 void NeuronNetwork::initPreviousNeighbor(){
-    PRINT_BEGIN_FUNCTION("Initialisation du tableau de précèdents voisins")
+    PRINT_BEGIN_FUNCTION("Previous neighbors array initialization")
     int* result = new int[neuronCount];
     for(int i = 0; i < neuronCount; i++){
         result[i] = -1;
@@ -293,7 +293,7 @@ void NeuronNetwork::initPreviousNeighbor(){
 // Getters and setters
 
 void NeuronNetwork::setRelation(vector<vector<bool> > relationArg){
-    PRINT_BEGIN_FUNCTION("Paramétrage des relations")
+    PRINT_BEGIN_FUNCTION("Setting relations")
     for(int i = 0; i < neuronCount; i++){
         for(int j = 1; j < putCount; j++){
             relation[i][j] = relationArg[i][j-1];
@@ -303,7 +303,7 @@ void NeuronNetwork::setRelation(vector<vector<bool> > relationArg){
 }
 
 void NeuronNetwork::setWeight(vector<vector<double> > weightArg){
-    PRINT_BEGIN_FUNCTION("Paramétrage des poids à partir d'un tableau de poids")
+    PRINT_BEGIN_FUNCTION("Setting weights from an array")
     for(int i = 0; i < neuronCount; i++){
         for(int j = 1; j < putCount; j++){
             weight[i][j] = weightArg[i][j-1];
@@ -313,7 +313,7 @@ void NeuronNetwork::setWeight(vector<vector<double> > weightArg){
 }
 
 void NeuronNetwork::setFunctions(vector<activationFunctionType> functions){
-    PRINT_BEGIN_FUNCTION("Paramétrage des fonctions à partir d'un tableau de fonctions")
+    PRINT_BEGIN_FUNCTION("Setting functions from an array")
     for(int i = 0; i < neuronCount; i++){
         switch(functions[i]){
             case SIGMOID:
@@ -341,7 +341,7 @@ void NeuronNetwork::setFunctions(vector<activationFunctionType> functions){
 }
 
 void NeuronNetwork::setInput(double* inputArg){
-    PRINT_BEGIN_FUNCTION("Paramétrage de l'entrée")
+    PRINT_BEGIN_FUNCTION("Setting input")
     for(int i = 0; i < inputCount; i++){
         input[i] = inputArg[i];
     }
@@ -349,7 +349,7 @@ void NeuronNetwork::setInput(double* inputArg){
 }
 
 double* NeuronNetwork::getOutput(){
-    PRINT_BEGIN_FUNCTION("Obtention de la sortie")
+    PRINT_BEGIN_FUNCTION("Obtaining output")
     PRINT_END_FUNCTION()
     return output;
 }
@@ -357,7 +357,7 @@ double* NeuronNetwork::getOutput(){
 // Calculate from the input
 
 void NeuronNetwork::calculate(){
-    PRINT_BEGIN_FUNCTION("Calcul de la sortie, à partir de l'entrée")
+    PRINT_BEGIN_FUNCTION("Output computing")
     for(int i = 0; i < nextNeighborTurnCount; i++){
         calculateOutput(nextNeighbor[i], nextNeighborCount[i]);
     }
@@ -365,7 +365,7 @@ void NeuronNetwork::calculate(){
 }
 
 void NeuronNetwork::calculateOutput(int* neighbor, int neighborCount){
-    PRINT_BEGIN_FUNCTION("Une étape du calcul des sorties")
+    PRINT_BEGIN_FUNCTION("One step...")
     for(int i = 0; i < neighborCount; i++){
         int k = neighbor[i];
         int n = previousCount[k];
@@ -382,7 +382,7 @@ void NeuronNetwork::calculateOutput(int* neighbor, int neighborCount){
 // Make a learning
 
 void NeuronNetwork::learn(double* inputData, double* outputData){
-    PRINT_BEGIN_FUNCTION("Apprentissage")
+    PRINT_BEGIN_FUNCTION("Learning")
     setInput(inputData);
     calculate();
     calculateOutputGradient(outputData);
@@ -399,7 +399,7 @@ void NeuronNetwork::learn(double* inputData, double* outputData){
 }
 
 void NeuronNetwork::calculateOutputGradient(double* outputData){
-    PRINT_BEGIN_FUNCTION("Calcul du gradient de sortie")
+    PRINT_BEGIN_FUNCTION("Output gradient computation")
     int n = neuronCount - outputCount;
     for(int i = 0; i < outputCount; i++){
         double e = outputData[i] - output[i];
@@ -409,7 +409,7 @@ void NeuronNetwork::calculateOutputGradient(double* outputData){
 }
 
 void NeuronNetwork::calculateGradient(int* neighbor, int neighborCount){
-    PRINT_BEGIN_FUNCTION("Calcul du gradient")
+    PRINT_BEGIN_FUNCTION("Gradient computation")
     for(int i = 0; i < neighborCount; i++){
         int k = neighbor[i];
         int n = nextCount[k];
@@ -424,7 +424,7 @@ void NeuronNetwork::calculateGradient(int* neighbor, int neighborCount){
 }
 
 void NeuronNetwork::applyWeight(){
-    PRINT_BEGIN_FUNCTION("Paramétrage des poids à partir de la différence des poids et du learning rate")
+    PRINT_BEGIN_FUNCTION("Setting weights from weight differences and learning rate")
 
     for(int i = 0; i < neuronCount; i++){
         for(int j = 0; j < putCount; j++){
@@ -436,7 +436,7 @@ void NeuronNetwork::applyWeight(){
 }
 
 void NeuronNetwork::batchLearning(double** inputData, int inputSize, double** outputData, int batchSize, int nbreLearning){
-    PRINT_BEGIN_FUNCTION("Apprentissage par batch")
+    PRINT_BEGIN_FUNCTION("Batch learning")
 
     int maximumLearnings = (int)floor(inputSize / batchSize);
 
@@ -452,7 +452,7 @@ void NeuronNetwork::batchLearning(double** inputData, int inputSize, double** ou
 }
 
 void NeuronNetwork::stochasticLearning(double** inputData, int inputSize, double** outputData, int nbreLearning){
-    PRINT_BEGIN_FUNCTION("Apprentissage stochastique")
+    PRINT_BEGIN_FUNCTION("Stochastic learning")
     PRINT_LOG(nextNeighborTurnCount);
     for(int k = 0; k < nbreLearning; k++){
         for(int i = 0; i < inputSize; i++){

@@ -44,7 +44,7 @@ class Mnist : public Test{
     int maximum(double* tab);
 
 public:
-    Mnist();
+    Mnist(int nbreData, int nbreLearn, int nbreTest, double learningRate, int nbreLayout, int nbreNeuron[]);
     void learn();
     void test();
 };
