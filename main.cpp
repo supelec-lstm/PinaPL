@@ -13,6 +13,8 @@
 
 #include "idxParser/idxParser.hpp"
 
+#include "grammar/grammar.hpp"
+
 #include "test/mnist.hpp"
 #include "test/xor.hpp"
 
@@ -45,11 +47,11 @@ int main(int argc, const char *argv[]) {
     } else {
     }*/
 
-    //testMNIST();
-    Mnist test;
-    test.learn();
-    test.test();
-
+    Grammar reb = createReber();
+    for(int i = 0; i < 100; i++){
+        reb.printWord(reb.word());
+        cout << endl;
+    }
 
     return 0;
 }
