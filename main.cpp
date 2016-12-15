@@ -11,13 +11,13 @@
 #include <string.h>
 #include <time.h>
 
-#include "idxParser/idxParser.hpp"
-
 #include "grammar/grammar.hpp"
 
-#include "test/mnist.hpp"
-#include "test/xor.hpp"
+#include "rtrl/neuronNetwork.hpp"
+#include "rtrl/mathFunctions.hpp"
 
+#define LOG
+#define FILE_NAME "main.cpp\t\t"
 #include "log.hpp"
 
 int tab_log = 0;
@@ -47,11 +47,52 @@ int main(int argc, const char *argv[]) {
     } else {
     }*/
 
-    Grammar reb = createReber();
-    for(int i = 0; i < 100; i++){
-        reb.printWord(reb.word());
-        cout << endl;
+    NeuronNetwork network(7, 7, 14, 0.3);
+
+    vector<vector<double>> weight(14);
+    for(int i = 0; i < 14; i++){
+        vector<double> w(21, 0.1);
+        weight[i] = w;
     }
+    network.setWeight(weight);
+
+    vector<ActivationFunctionMain> functions(14, &sigmoid);
+    network.setActivation(functions);
+
+    vector<ActivationFunctionDerivative> functionsDerivate(14, &sigmoidDerivate);
+    network.setActivationDerivate(functionsDerivate);
+
+    Grammar grammar = createReber();
+    vector<int> word = grammar.word();
+    int* intWord = grammar.inputWord(word);
+    int** input = new int*[1];
+    input[0] = intWord;
+    int* inputCount = new int[1];
+    inputCount[0] = word.size();
+
+    for(int i = 0; i < 100; i++){   
+        network.completeBatchLearning(input, inputCount, 1);
+    }
+
+    double* res;
+
+    network.reset();
+    network.setInput(intWord[0]);
+    network.calculate();
+    res = network.getOutput();
+    PRINT_VECTOR(res, 7)
+    network.setInput(intWord[1]);
+    network.calculate();
+    res = network.getOutput();
+    PRINT_VECTOR(res, 7)
+    network.setInput(intWord[2]);
+    network.calculate();
+    res = network.getOutput();
+    PRINT_VECTOR(res, 7)
+    network.setInput(intWord[3]);
+    network.calculate();
+    res = network.getOutput();
+    PRINT_VECTOR(res, 7)
 
     return 0;
 }

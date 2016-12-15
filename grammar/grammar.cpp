@@ -60,7 +60,8 @@ vector<int> Grammar::word(){
     return res;
 }
 
-string Grammar::stringWord(vector<int> word){
+string Grammar::stringWord(){
+	vector<int> word = this->word();
     ostringstream convert;
     for(int i = 0; i < word.size(); i++){
         convert << letters[word[i]];
@@ -68,15 +69,35 @@ string Grammar::stringWord(vector<int> word){
     return convert.str();
 }
 
-void Grammar::printWord(vector<int> word){
+void Grammar::printWord(){
+	vector<int> word = this->word();
     for(int i = 0; i < word.size(); i++){
         cout << letters[word[i]];
     }
 }
 
+int* Grammar::inputWord(){
+	vector<int> word = this->word();
+	int n = word.size();
+	int* res = new int[n];
+	for(int i = 0; i < n; i++){
+		res[i] = word[i];
+	}
+	return res;
+}
+
+int* Grammar::inputWord(vector<int> word){
+	int n = word.size();
+	int* res = new int[n];
+	for(int i = 0; i < n; i++){
+		res[i] = word[i];
+	}
+	return res;
+}
+
 Grammar createReber(){
     int nbState = 8;
-    int nbLetter = 5;
+    int nbLetter = 7;
 
     char* letters = new char[nbLetter];
     letters[0] = 'B';

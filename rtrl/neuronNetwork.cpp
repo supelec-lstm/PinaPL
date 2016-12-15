@@ -11,19 +11,15 @@
 #include "neuronNetwork.hpp"
 
 #define NLOG
-
-#ifdef LOG
-#define PRINT_LOG(title) cout << "neuronNetwork.cpp     " << title << endl;
-#else
-#define PRINT_LOG(title)
-#endif
+#define FILE_NAME "neuronNetwork.cpp\t"
+#include "../log.hpp"
 
 using namespace std;
 
 // Initialization
 
 NeuronNetwork::NeuronNetwork(int nbin, int nbout, int nbtot, double learning){
-    PRINT_LOG("Instantiation d'un nouveau réseau")
+    PRINT_BEGIN_FUNCTION("Instantiation d'un nouveau réseau")
     // Main information
 
     inputCount = nbin;
@@ -47,7 +43,6 @@ NeuronNetwork::NeuronNetwork(int nbin, int nbout, int nbtot, double learning){
         weightOutput[i] = weight[i] + inputCount;
     }
 
-    bias = new double[neuronCount];
     functions = new ActivationFunctionMain[neuronCount];
 
     // Learning
@@ -62,18 +57,16 @@ NeuronNetwork::NeuronNetwork(int nbin, int nbout, int nbtot, double learning){
         }
     }
 
-    biasDifference = new double[neuronCount];
-
     functionsDerivative = new ActivationFunctionDerivative[neuronCount];
 
     // Reset before running
 
     reset();
+    PRINT_END_FUNCTION()
 }
 
 NeuronNetwork::~NeuronNetwork(){
     delete(weight);
-    delete(bias);
     delete(functions);
 
     delete(gradient);
@@ -82,40 +75,41 @@ NeuronNetwork::~NeuronNetwork(){
 }
 
 void NeuronNetwork::reset(){
-    PRINT_LOG("Reset des paramètres de calcul du réseau")
-    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
+    PRINT_BEGIN_FUNCTION("Reset des paramètres de calcul du réseau")
     resetOutput();
     resetBackPropagation();
     resetGradient();
-    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::resetInput(){
-    PRINT_LOG("Reset des entrée")
+    PRINT_BEGIN_FUNCTION("Reset des entrée")
     for(int i = 0; i < inputCount; i++){
         put[i] = 0;
     }
+    PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::resetOutput(){
-    PRINT_LOG("Reset des sorties")
+    PRINT_BEGIN_FUNCTION("Reset des sorties")
     for(int i = 0; i < putCount; i++){
         put[i] = 0;
     }
+    PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::resetBackPropagation(){
-    PRINT_LOG("Reset des paramètres de backpropagation")
+    PRINT_BEGIN_FUNCTION("Reset des paramètres de backpropagation")
     for(int i = 0; i < neuronCount; i++){
-        biasDifference[i] = 0;
         for(int j = 0; j < putCount; j++){
             weightDifference[i][j] = 0;
         }
     }
+    PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::resetGradient(){
-    PRINT_LOG("Reset du gradient")
+    PRINT_BEGIN_FUNCTION("Reset du gradient")
     for(int i = 0; i < neuronCount; i++){
         for(int j = 0; j < putCount; j++){
             for(int k = 0; k < neuronCount; k++){
@@ -123,52 +117,42 @@ void NeuronNetwork::resetGradient(){
             }
         }
     }
-}
-
-// We define here matrices and vectors which permit to do less calculation during the running
-
-void NeuronNetwork::init(){
-    PRINT_LOG("Initialisation des tableaux de calcul")
-    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
-    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    PRINT_END_FUNCTION()
 }
 
 // Getters and setters
 
 void NeuronNetwork::setWeight(vector<vector<double> > weightArg){
-    PRINT_LOG("Paramétrage des poids à partir d'un tableau de poids")
+    PRINT_BEGIN_FUNCTION("Paramétrage des poids à partir d'un tableau de poids")
     for(int i = 0; i < neuronCount; i++){
         for(int j = 0; j < putCount; j++){
             weight[i][j] = weightArg[i][j];
         }
     }
-}
-
-void NeuronNetwork::setBias(vector<double> biasArg){
-    PRINT_LOG("Paramétrage des biais")
-    for(int i = 0; i < neuronCount; i++){
-        bias[i] = biasArg[i];
-    }
+    PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::setActivation(vector<ActivationFunctionMain> functionsArg){
-    PRINT_LOG("Paramétrage des fonctions d'activation")
+    PRINT_BEGIN_FUNCTION("Paramétrage des fonctions d'activation")
     for(int i = 0; i < neuronCount; i++){
         functions[i] = functionsArg[i];
     }
+    PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::setActivationDerivate(vector<ActivationFunctionDerivative> functionsArg){
-    PRINT_LOG("Paramétrage des dérivées des fonctions d'activation")
+    PRINT_BEGIN_FUNCTION("Paramétrage des dérivées des fonctions d'activation")
     for(int i = 0; i < neuronCount; i++){
         functionsDerivative[i] = functionsArg[i];
     }
+    PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::setInput(int& inputArg){
-    PRINT_LOG("Paramétrage de l'entrée")
+    PRINT_BEGIN_FUNCTION("Paramétrage de l'entrée")
     resetInput();
     put[inputArg] = 1;
+    PRINT_END_FUNCTION()
 }
 
 double* NeuronNetwork::getOutput(){
@@ -178,23 +162,21 @@ double* NeuronNetwork::getOutput(){
 // Calculate from the input
 
 void NeuronNetwork::calculate(){
-    PRINT_LOG("Calcul de la sortie, à partir de l'entrée")
-    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
+    PRINT_BEGIN_FUNCTION("Calcul de la sortie, à partir de l'entrée")
     double* comp = new double[neuronCount];
     for(int i = 0; i < neuronCount; i++){
         for(int j = 0; j < putCount; j++){
             comp[i] += weight[i][j] * put[j];
         }
-        comp[i] += bias[i];
     }
     for(int i = 0; i < neuronCount; i++){
         neurons[i] = (functions[i])(comp[i]);
     }
-    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::calculateGradient(int& outputData){
-    PRINT_LOG("Calcul du gradient")
+    PRINT_BEGIN_FUNCTION("Calcul du gradient")
 
     //Calcul des dérivées
     double* derivative = new double[neuronCount];
@@ -231,79 +213,62 @@ void NeuronNetwork::calculateGradient(int& outputData){
         }
     }
 
-    //Calcul des différences de biais
-    for(int i = 0; i < neuronCount; i++){
-        double* inter = new double[neuronCount];
-        for(int k = 0; k < neuronCount; k++){
-            for(int l = 0; l < neuronCount; l++){
-                inter[k] += weight[k][l] * biasGradient[i][l];
-            }
-            if(k == i){
-                inter[k] += 1;
-            }
-        }
-        for(int k = 0; k < neuronCount; k++){
-            biasGradient[i][k] = derivative[k] * inter[k];
-        }
-        for(int k = 0; k < outputCount; k++){
-            biasDifference[i] += error[k] * biasGradient[i][n+k];
-        }
-    }
+    PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::applyWeight(){
-    PRINT_LOG("Paramétrage des poids & du biais à partir de la différence des poids et du learning rate")
+    PRINT_BEGIN_FUNCTION("Paramétrage des poids à partir de la différence des poids et du learning rate")
     for(int i = 0; i < neuronCount; i++){
         for(int j = 0; j < putCount; j++){
             weight[i][j] += learningRate * weightDifference[i][j];
         }
-        bias[i] += learningRate * biasDifference[i];
     }
     resetBackPropagation();
+    PRINT_END_FUNCTION()
 }
 
 // Make a learning
 
 void NeuronNetwork::learn(int& inputData, int& outputData){
-    PRINT_LOG("Apprentissage")
-    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
+    PRINT_BEGIN_FUNCTION("Apprentissage")
     setInput(inputData);
     calculate();
     calculateGradient(outputData);
+    PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::batchLearning(int* inputData, int n){
-    PRINT_LOG("Apprentissage par batch")
-    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
-    reset();
+    PRINT_BEGIN_FUNCTION("Apprentissage des mots par batch")
     for(int i = 0; i < n-1; i++){
         learn(inputData[i], inputData[i+1]);
     }
     applyWeight();
-    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::stochasticLearning(int* inputData, int n){
-    PRINT_LOG("Apprentissage stochastique")
-    PRINT_LOG("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
-    reset();
+    PRINT_BEGIN_FUNCTION("Apprentissage des mots en stochastique")
     for(int i = 0; i < n-1; i++){
         learn(inputData[i], inputData[i+1]);
         applyWeight();
     }
-    PRINT_LOG("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+    PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::completeBatchLearning(int** inputData, int* inputDataCount, int n){
+    PRINT_BEGIN_FUNCTION("Apprentissage par batch")
     reset();
     for(int i = 0; i < n; i++){
         batchLearning(inputData[i], inputDataCount[i]);
     }
+    PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::completeStochasticLearning(int** inputData, int* inputDataCount, int n){
+    PRINT_BEGIN_FUNCTION("Apprentissage stochastique")
     reset();
     for(int i = 0; i < n; i++){
         batchLearning(inputData[i], inputDataCount[i]);
     }
+    PRINT_END_FUNCTION()
 }

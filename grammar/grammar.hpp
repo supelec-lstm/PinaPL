@@ -26,8 +26,10 @@ public:
 	int newLetter();
 	std::vector<int> word();
 
-	std::string stringWord(std::vector<int> word);
-    void printWord(std::vector<int> word);
+	std::string stringWord();
+    void printWord();
+    int* inputWord();
+    int* inputWord(std::vector<int> word);
 };
 
 Grammar createReber();

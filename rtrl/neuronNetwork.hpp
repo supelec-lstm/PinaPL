@@ -15,7 +15,6 @@ typedef double (*ActivationFunctionDerivative) (double);
 class NeuronNetwork {
     double** weight;
     double** weightOutput;
-    double* bias;
     ActivationFunctionMain* functions;
 
     double* put;
@@ -29,8 +28,6 @@ class NeuronNetwork {
 
     double*** gradient;
     double** weightDifference;
-    double** biasGradient;
-    double* biasDifference;
     ActivationFunctionDerivative* functionsDerivative;
     double learningRate;
 
@@ -50,10 +47,8 @@ public:
     NeuronNetwork(int nbin, int nbout, int nbtot, double learning);
     ~NeuronNetwork();
     void reset();
-    void init();
 
     void setWeight(std::vector<std::vector<double> > weight);
-    void setBias(std::vector<double> bias);
     void setActivation(std::vector<ActivationFunctionMain> functions);
     void setActivationDerivate(std::vector<ActivationFunctionDerivative> functions);
     void setInput(int& inputArg);
