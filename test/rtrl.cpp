@@ -76,24 +76,20 @@ void Rtrl::test(){
     int* inputTestCount = new int[nbreTest];       // Will contain word sizes
     int score = 0;
     for(int i = 0; i < nbreTest; i++){
-        // Generating test word
 
-        vector<int> testWord = grammar.word(); // Generate a test word
+        vector<int> testWord = new vector<int>;
         int* intTestWord = grammar.inputWord(testWord); //Convert it
-        inputTest[i] = intTestWord;
-        int testWordSize = testWord.size();
-        inputTestCount[i] = testWordSize;
-
-        // Running the tests
-
+        // Cleaning
+        grammar.reset();
         network->reset();
-        for(int j = 0; j < testWordSize; j++){
-            network->setInput(inputTest[i][j]);
+        // Running the network and the grammar
+        while(!grammar.isWordFinished){
+            testWord.push_back(grammar.newLetter());
+            int* probabilities = grammar.getProba();
+            network->setInput(testWord.back());
             network->calculate();
-            result = network->getOutput();
-        }
-
-        // TO COMPLETE
+            double* result = network->getOutput();
+            //TODO : compare results and probabilities
         }
     }
 }
