@@ -6,27 +6,30 @@
 
 class Grammar{
 
-	int stateCount;
+    int stateCount;
 
-	int state;
-	char* letters;
+    int state;
+    char* letters;
 
-	int** nextState;
-	int** weight;
-	int** nextLetter;
-	int* nextSize;
+    int** nextState;
+    int** weight;
+    int** nextLetter;
+    int* nextSize;
 
-	int random(int* proba, int n);
+    int random(int* proba, int n);
 
 public:
 
-	Grammar(int nbState, int** nextStateData, int* nextSizeData, int** weightData, int** nextLetterData, char* lettersData);
-	~Grammar();
-	void reset();
-	int newLetter();
-	std::vector<int> word();
+    Grammar(int nbState, int** nextStateData, int* nextSizeData, int** weightData, int** nextLetterData, char* lettersData);
+    ~Grammar();
+    void reset();
+    int newLetter();
+    std::vector<int> word();
+    int getState();
+    bool isWordFinished();
+    int* getProba();
 
-	std::string stringWord();
+    std::string stringWord();
     void printWord();
     int* inputWord();
     int* inputWord(std::vector<int> word);

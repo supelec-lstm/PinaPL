@@ -54,14 +54,14 @@ int Grammar::newLetter(){
 vector<int> Grammar::word(){
     vector<int> res;
     reset();
-    while(state != stateCount - 1){
+    while(nextSize(state) != 0){
         res.push_back(newLetter());
     }
     return res;
 }
 
 string Grammar::stringWord(){
-	vector<int> word = this->word();
+    vector<int> word = this->word();
     ostringstream convert;
     for(int i = 0; i < word.size(); i++){
         convert << letters[word[i]];
@@ -70,7 +70,7 @@ string Grammar::stringWord(){
 }
 
 void Grammar::printWord(){
-	vector<int> word = this->word();
+    vector<int> word = this->word();
     for(int i = 0; i < word.size(); i++){
         cout << letters[word[i]];
     }
@@ -93,6 +93,27 @@ int* Grammar::inputWord(vector<int> word){
 		res[i] = word[i];
 	}
 	return res;
+}
+
+int Grammar::getState(){
+    return state;
+}
+
+bool Grammar::isWordFinished(){
+    return (nextSize[state] = 0);
+}
+
+int* Grammar::getProba(){
+    int nextCount = nextSize[state];
+    int* probabilities = new int*[nbState];
+    for(i=0;i<nbState;i++){
+        probabilities[i]=0;
+    }
+    for(i=0;i<nextCount;i++){
+        int next = nextState[state][i];
+        probabilities[next]=weight[state][i]
+    }
+    return probabilities;
 }
 
 Grammar createReber(){
