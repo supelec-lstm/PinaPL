@@ -72,19 +72,30 @@ void Rtrl::learn(){
 void Rtrl::test(){
     PRINT_BEGIN_FUNCTION("Tests")
     PRINT_LOG("Attendu - Obtenu")
-    int n = 0;
+    int** inputTest = new int*[nbreTest];      // Will contain test words
+    int* inputTestCount = new int[nbreTest];       // Will contain word sizes
+    int score = 0;
     for(int i = 0; i < nbreTest; i++){
+        // Generating test word
+
+        vector<int> testWord = grammar.word(); // Generate a test word
+        int* intTestWord = grammar.inputWord(testWord); //Convert it
+        inputTest[i] = intTestWord;
+        int testWordSize = testWord.size();
+        inputTestCount[i] = testWordSize;
+
+        // Running the tests
+
         network->reset();
-        network->setInput(inputTest[i]);
-        network->calculate();
-        int a = maximum(network->getOutput());
-        int b = maximum(outputTest[i]);
-        if(a == b){
-            n++;
+        for(int j = 0; j < testWordSize; j++){
+            network->setInput(inputTest[i][j]);
+            network->calculate();
+            result = network->getOutput();
+        }
+
         // TO COMPLETE
         }
     }
-    cout << (n*100.0/nbreTest) << endl;
 }
 
 void Rtrl::setRelation(){

@@ -15,7 +15,7 @@
 #include "../rtrl/neuronNetwork.hpp"
 #include "../rtrl/mathFunctions.hpp"
 
-class Mnist : public Test{
+class Rtrl : public Test{
 
     double learningRate;
     activationFunctionType function;
@@ -30,6 +30,9 @@ class Mnist : public Test{
 
     int nbreInput;
     int nbreTotalNeuron;
+
+    int** inputTest;
+    int* inputTestCount;
 
     void setRelation();
     void setWeight();
