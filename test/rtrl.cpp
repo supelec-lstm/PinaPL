@@ -10,6 +10,8 @@
 #include "../rtrl/neuronNetwork.hpp"
 #include "../rtrl/mathFunctions.hpp"
 
+#include "../grammar/grammar.hpp"
+
 #define LOG
 #define FILE_NAME "rtrl.cpp\t\t"
 #include "../log.hpp"
@@ -31,6 +33,7 @@ Rtrl::Rtrl(){
     //nbreLearn = 1;
     #endif
 
+    nbreTest = 10;
     learningRate = 0.3;
     function = SIGMOID;
 
@@ -64,7 +67,7 @@ void Rtrl::learn(){
     #ifdef NBATCH
     PRINT_LOG("Apprentissage stochastique")
     generateLearningSet();
-    network->completestochasticLearning(inputData, inputDataCount, nbreWords);
+    network->completeStochasticLearning(inputData, inputDataCount, nbreWords);
     #endif
     //#ifdef BATCH
     //PRINT_LOG("Apprentissage par batch")
@@ -77,7 +80,7 @@ void Rtrl::generateLearningSet(){
     for(int i  =0; i < nbreWords; i++){
         word = grammar.word();
         int* intWord = grammar.inputWord(word);
-        inputData[i] = intword;
+        inputData[i] = intWord;
         inputDataCount[i] = word.size();
     }
 }
@@ -88,12 +91,13 @@ void Rtrl::test(){
     int** inputTest = new int*[nbreTest];      // Will contain test words
     int* inputTestCount = new int[nbreTest];       // Will contain word sizes
     int score = 0;
+    vector<int> testWord;
     for(int i = 0; i < nbreTest; i++){
 
         grammar.reset();
         network->reset();
         // Running the network and the grammar
-        while(!grammar.isWordFinished){
+        while(!grammar.isWordFinished()){
             testWord.push_back(grammar.newLetter());
             int* probabilities = grammar.getProba();
             network->setInput(testWord.back());
@@ -101,6 +105,7 @@ void Rtrl::test(){
             double* result = network->getOutput();
             //TODO : compare results and probabilities
         }
+        testWord.clear();
     }
 }
 
@@ -133,7 +138,7 @@ void Rtrl::setFunctions(){
     vector<activationFunctionType> functions(nbreTotalNeuron, function);
     network->setFunctions(functions); // ?
 }
-
+/*
 void Rtrl::readFile(string fileName){
     ifstream fileStream(fileName);
     string word[];
@@ -149,7 +154,7 @@ void Rtrl::readFile(string fileName){
         // TODO : convert string into usable word
     }
 }
-
+*/
 int Rtrl::maximum(double* tab){
     int res = 0;
     for(int i = 1; i < nbreInput; i++){

@@ -11,6 +11,7 @@
 #include <string.h>
 #include <math.h>
 
+#include "../grammar/grammar.hpp"
 #include "test.hpp"
 #include "../rtrl/neuronNetwork.hpp"
 #include "../rtrl/mathFunctions.hpp"
@@ -20,7 +21,8 @@ class Rtrl : public Test{
     double learningRate;
     activationFunctionType function;
     NeuronNetwork* network;
-    double** inputData;
+    int** inputData;
+    int* inputDataCount;
     double** outputData;
     double** outputTest;
 
@@ -30,6 +32,7 @@ class Rtrl : public Test{
 
     int nbreInput;
     int nbreTotalNeuron;
+    int nbreTest;
 
     int** inputTest;
     int* inputTestCount;
@@ -38,10 +41,11 @@ class Rtrl : public Test{
     void setWeight();
     void setFunctions();
     void generateLearningSet();
-    void readFile(string fileName);
+    //void readFile(string fileName);
 
     int maximum(double* tab);
 
+    Grammar grammar;
 public:
     Rtrl();
     void learn();
