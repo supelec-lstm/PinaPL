@@ -54,7 +54,7 @@ int Grammar::newLetter(){
 vector<int> Grammar::word(){
     vector<int> res;
     reset();
-    while(nextSize(state) != 0){
+    while(nextSize[state] != 0){
         res.push_back(newLetter());
     }
     return res;
@@ -105,13 +105,13 @@ bool Grammar::isWordFinished(){
 
 int* Grammar::getProba(){
     int nextCount = nextSize[state];
-    int* probabilities = new int*[nbState];
-    for(i=0;i<nbState;i++){
+    int* probabilities = new int[stateCount];
+    for(int i=0;i<stateCount;i++){
         probabilities[i]=0;
     }
-    for(i=0;i<nextCount;i++){
+    for(int i=0;i<nextCount;i++){
         int next = nextState[state][i];
-        probabilities[next]=weight[state][i]
+        probabilities[next]=weight[state][i];
     }
     return probabilities;
 }

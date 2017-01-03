@@ -97,6 +97,6 @@ int main(int argc, const char *argv[]) {
     PRINT_VECTOR(res, 7)
     */
     Rtrl test = Rtrl();
-    test.learn;
+    test.learn();
     return 0;
 }
