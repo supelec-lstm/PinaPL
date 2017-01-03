@@ -14,7 +14,7 @@
 #define FILE_NAME "rtrl.cpp\t\t"
 #include "../log.hpp"
 
-#define BATCH
+#define NBATCH
 
 using namespace std;
 
@@ -36,9 +36,9 @@ Rtrl::Rtrl(){
 
     // Données à ne pas modifier
 
-    nbreInput = 8;
+    nbreInput = 7;
 
-    nbreTotalNeuron = 24;
+    nbreTotalNeuron = 14;
     PRINT_LOG("Importation des entrées")
 
     PRINT_LOG("Création du réseau")
@@ -66,10 +66,10 @@ void Rtrl::learn(){
     generateLearningSet();
     network->completestochasticLearning(inputData, inputDataCount, nbreWords);
     #endif
-    #ifdef BATCH
-    PRINT_LOG("Apprentissage par batch")
-    network->completebatchLearning(inputData, inputDataCount, nbreWords);
-    #endif
+    //#ifdef BATCH
+    //PRINT_LOG("Apprentissage par batch")
+    //network->completebatchLearning(inputData, inputDataCount, nbreWords);
+    //#endif
 }
 
 void Rtrl::generateLearningSet(){
@@ -80,6 +80,7 @@ void Rtrl::generateLearningSet(){
         inputData[i] = intword;
         inputDataCount[i] = word.size();
     }
+}
 
 void Rtrl::test(){
     PRINT_BEGIN_FUNCTION("Tests")
@@ -111,7 +112,7 @@ void Rtrl::setRelation(){
         vector<bool> v(nbreInput + nbreTotalNeuron, false);
         relation[i] = v;
         for(int j = 0; j < nbreInput + nbreTotalNeuron; j++){
-            relation[i][j]=true // TO CHECK
+            relation[i][j]=true; // TO CHECK
         }
     }
 }

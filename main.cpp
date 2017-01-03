@@ -16,6 +16,8 @@
 #include "rtrl/neuronNetwork.hpp"
 #include "rtrl/mathFunctions.hpp"
 
+#include "test/rtrl.hpp"
+
 #define LOG
 #define FILE_NAME "main.cpp\t\t"
 #include "log.hpp"
@@ -46,7 +48,7 @@ int main(int argc, const char *argv[]) {
         console.goodbye();
     } else {
     }*/
-
+    /*
     NeuronNetwork network(7, 7, 14, 0.3);
 
     vector<vector<double>> weight(14);
@@ -93,6 +95,8 @@ int main(int argc, const char *argv[]) {
     network.calculate();
     res = network.getOutput();
     PRINT_VECTOR(res, 7)
-
+    */
+    Rtrl test = Rtrl();
+    test.learn;
     return 0;
 }

@@ -24,9 +24,9 @@ class Rtrl : public Test{
     double** outputData;
     double** outputTest;
 
-    int nbreLearn;
+    //int nbreLearn;
     int nbreWords;
-    int batchSize;
+    //int batchSize;
 
     int nbreInput;
     int nbreTotalNeuron;
@@ -38,6 +38,7 @@ class Rtrl : public Test{
     void setWeight();
     void setFunctions();
     void generateLearningSet();
+    void readFile(string fileName);
 
     int maximum(double* tab);
 
