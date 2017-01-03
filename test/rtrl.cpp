@@ -24,11 +24,11 @@ Rtrl::Rtrl(){
 
     #ifdef BATCH
     nbreWords = 60000; // nombre de données à importer de la base d'apprentissage
-//    nbreLearn = 1; // nombre de batch learnings avec les données ci-dessus
-//    batchSize = 128; // taille des batchs
+    //nbreLearn = 1; // nombre de batch learnings avec les données ci-dessus
+    //batchSize = 128; // taille des batchs
     #else
     nbreWords = 60000;
-//    nbreLearn = 1;
+    //nbreLearn = 1;
     #endif
 
     learningRate = 0.3;
@@ -36,9 +36,9 @@ Rtrl::Rtrl(){
 
     // Données à ne pas modifier
 
-    nbreInput = 26;
+    nbreInput = 8;
 
-    nbreTotalNeuron = 0;
+    nbreTotalNeuron = 24;
     PRINT_LOG("Importation des entrées")
 
     PRINT_LOG("Création du réseau")
@@ -135,18 +135,14 @@ void Rtrl::setFunctions(){
 
 void Rtrl::readFile(string fileName){
     ifstream fileStream(fileName);
-
     string word[];
-    if(fileStream)
-    {
+    if(fileStream){
         cout << "While opening a file an error is encountered" << endl;
     }
-    else
-    {
+    else{
         cout << "File is successfully opened" << endl;
     }
-    while(!fileStream.eof())
-    {
+    while(!fileStream.eof()){
         fileStream >> word;
         cout << word << endl;
         // TODO : convert string into usable word
