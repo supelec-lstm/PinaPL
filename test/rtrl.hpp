@@ -42,7 +42,7 @@ class Rtrl : public Test{
     int maximum(double* tab);
 
 public:
-    Mnist();
+    Rtrl();
     void learn();
     void test();
 };

@@ -20,49 +20,50 @@ using namespace std;
 
 Rtrl::Rtrl(){
 
-      // Données à modifier
+    // Données à modifier
 
-      #ifdef BATCH
-      nbreWords = 60000; // nombre de données à importer de la base d'apprentissage
-      nbreLearn = 1; // nombre de batch learnings avec les données ci-dessus
-      batchSize = 128; // taille des batchs
-      #else
-      nbreWords = 60000;
-      nbreLearn = 1;
-      #endif
+    #ifdef BATCH
+    nbreWords = 60000; // nombre de données à importer de la base d'apprentissage
+//    nbreLearn = 1; // nombre de batch learnings avec les données ci-dessus
+//    batchSize = 128; // taille des batchs
+    #else
+    nbreWords = 60000;
+//    nbreLearn = 1;
+    #endif
 
-      learningRate = 0.3;
-      function = SIGMOID;
+    learningRate = 0.3;
+    function = SIGMOID;
 
-      // Données à ne pas modifier
+    // Données à ne pas modifier
 
-     nbreInput = 26;
+    nbreInput = 26;
 
-     nbreTotalNeuron = 0;
-     PRINT_LOG("Importation des entrées")
+    nbreTotalNeuron = 0;
+    PRINT_LOG("Importation des entrées")
 
-     PRINT_LOG("Création du réseau")
-     network = new NeuronNetwork(nbreInput, nbreInput, nbreTotalNeuron, learningRate);
+    PRINT_LOG("Création du réseau")
+    network = new NeuronNetwork(nbreInput, nbreInput, nbreTotalNeuron, learningRate);
 
-     PRINT_LOG("Création de la matrice de relation")
-     setRelation();
+    PRINT_LOG("Création de la matrice de relation")
+    setRelation();
 
-     PRINT_LOG("Création des poids")
-     setWeight();
+    PRINT_LOG("Création des poids")
+    setWeight();
 
-     PRINT_LOG("Création des fonctions")
-     setFunctions();
+    PRINT_LOG("Création des fonctions")
+    setFunctions();
 
-     PRINT_LOG("Initialisation du réseau")
-     network->init();
+    PRINT_LOG("Initialisation du réseau")
+    network->init();
 
-     PRINT_LOG("Création de la grammaire")
-     Grammar grammar = createReber();
+    PRINT_LOG("Création de la grammaire")
+    Grammar grammar = createReber();
 }
 
 void Rtrl::learn(){
     #ifdef NBATCH
     PRINT_LOG("Apprentissage stochastique")
+    generateLearningSet();
     network->completestochasticLearning(inputData, inputDataCount, nbreWords);
     #endif
     #ifdef BATCH
@@ -152,7 +153,7 @@ void Rtrl::readFile(string fileName){
     }
 }
 
-int Mnist::maximum(double* tab){
+int Rtrl::maximum(double* tab){
     int res = 0;
     for(int i = 1; i < nbreInput; i++){
         if(tab[i] > tab[res]){
