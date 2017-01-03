@@ -37,6 +37,7 @@ class Rtrl : public Test{
     void setRelation();
     void setWeight();
     void setFunctions();
+    void generateLearningSet();
 
     int maximum(double* tab);
 

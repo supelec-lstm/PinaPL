@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <map>
 #include <vector>
 #include <random>
@@ -39,8 +40,6 @@ Rtrl::Rtrl(){
 
      nbreTotalNeuron = 0;
      PRINT_LOG("Importation des entrées")
-     inputData = // TODO
-     inputDataCount = // TODO
 
      PRINT_LOG("Création du réseau")
      network = new NeuronNetwork(nbreInput, nbreInput, nbreTotalNeuron, learningRate);
@@ -56,6 +55,9 @@ Rtrl::Rtrl(){
 
      PRINT_LOG("Initialisation du réseau")
      network->init();
+
+     PRINT_LOG("Création de la grammaire")
+     Grammar grammar = createReber();
 }
 
 void Rtrl::learn(){
@@ -69,6 +71,15 @@ void Rtrl::learn(){
     #endif
 }
 
+void Rtrl::generateLearningSet(){
+    vector<int> word;
+    for(int i  =0; i < nbreWords; i++){
+        word = grammar.word();
+        int* intWord = grammar.inputWord(word);
+        inputData[i] = intword;
+        inputDataCount[i] = word.size();
+    }
+
 void Rtrl::test(){
     PRINT_BEGIN_FUNCTION("Tests")
     PRINT_LOG("Attendu - Obtenu")
@@ -77,9 +88,6 @@ void Rtrl::test(){
     int score = 0;
     for(int i = 0; i < nbreTest; i++){
 
-        vector<int> testWord = new vector<int>;
-        int* intTestWord = grammar.inputWord(testWord); //Convert it
-        // Cleaning
         grammar.reset();
         network->reset();
         // Running the network and the grammar
@@ -93,6 +101,8 @@ void Rtrl::test(){
         }
     }
 }
+
+
 
 void Rtrl::setRelation(){
     vector<vector<bool> > relation(nbreTotalNeuron);
@@ -120,6 +130,26 @@ void Rtrl::setWeight(){
 void Rtrl::setFunctions(){
     vector<activationFunctionType> functions(nbreTotalNeuron, function);
     network->setFunctions(functions); // ?
+}
+
+void Rtrl::readFile(string fileName){
+    ifstream fileStream(fileName);
+
+    string word[];
+    if(fileStream)
+    {
+        cout << "While opening a file an error is encountered" << endl;
+    }
+    else
+    {
+        cout << "File is successfully opened" << endl;
+    }
+    while(!fileStream.eof())
+    {
+        fileStream >> word;
+        cout << word << endl;
+        // TODO : convert string into usable word
+    }
 }
 
 int Mnist::maximum(double* tab){
