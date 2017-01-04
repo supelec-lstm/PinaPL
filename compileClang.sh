@@ -19,7 +19,7 @@ clang++ -std=c++11 -c grammar/grammar.cpp -o grammar.o
 # TESTS
 clang++ -std=c++11 -Ofast -c test/test.cpp -o test.o
 #clang++ -std=c++11 -Ofast -c test/mnist.cpp -o mnist.o
-clang++ -std=c++11 -c test/rtrl.cpp -o rtrl.o
+clang++ -std=c++11 -c test/rtrl.cpp -o rtrl.o -o grammar.o
 
 # linking and building
 # -lz option is necessary to interact with .gz files (IDX parser)

@@ -56,11 +56,8 @@ Rtrl::Rtrl(){
     PRINT_LOG("Création des fonctions")
     setFunctions();
 
-    PRINT_LOG("Initialisation du réseau")
-    network->init();
-
     PRINT_LOG("Création de la grammaire")
-    Grammar grammar = createReber();
+    *grammar = createReber();
 }
 
 void Rtrl::learn(){
@@ -78,8 +75,8 @@ void Rtrl::learn(){
 void Rtrl::generateLearningSet(){
     vector<int> word;
     for(int i  =0; i < nbreWords; i++){
-        word = grammar.word();
-        int* intWord = grammar.inputWord(word);
+        word = grammar->word();
+        int* intWord = grammar->inputWord(word);
         inputData[i] = intWord;
         inputDataCount[i] = word.size();
     }
@@ -94,12 +91,12 @@ void Rtrl::test(){
     vector<int> testWord;
     for(int i = 0; i < nbreTest; i++){
 
-        grammar.reset();
+        grammar->reset();
         network->reset();
         // Running the network and the grammar
-        while(!grammar.isWordFinished()){
-            testWord.push_back(grammar.newLetter());
-            int* probabilities = grammar.getProba();
+        while(!grammar->isWordFinished()){
+            testWord.push_back(grammar->newLetter());
+            int* probabilities = grammar->getProba();
             network->setInput(testWord.back());
             network->calculate();
             double* result = network->getOutput();

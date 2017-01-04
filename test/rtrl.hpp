@@ -45,7 +45,7 @@ class Rtrl : public Test{
 
     int maximum(double* tab);
 
-    Grammar grammar;
+    Grammar* grammar;
 public:
     Rtrl();
     void learn();
