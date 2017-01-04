@@ -8,6 +8,9 @@
 
 #include <string>
 #include <vector>
+#include <math.h>
+
+#include "mathFunctions.hpp"
 
 typedef double (*ActivationFunctionMain) (double);
 typedef double (*ActivationFunctionDerivative) (double);
@@ -15,7 +18,7 @@ typedef double (*ActivationFunctionDerivative) (double);
 class NeuronNetwork {
     double** weight;
     double** weightOutput;
-    ActivationFunctionMain* functions;
+    ActivationFunctionMain* activationFunctions;
 
     double* put;
     double* output;
@@ -28,7 +31,7 @@ class NeuronNetwork {
 
     double*** gradient;
     double** weightDifference;
-    ActivationFunctionDerivative* functionsDerivative;
+    ActivationFunctionDerivative* derivativeActivationFunctions;
     double learningRate;
 
     void resetInput();
@@ -49,8 +52,7 @@ public:
     void reset();
 
     void setWeight(std::vector<std::vector<double> > weight);
-    void setActivation(std::vector<ActivationFunctionMain> functions);
-    void setActivationDerivate(std::vector<ActivationFunctionDerivative> functions);
+    void setFunctions(std::vector<activationFunctionType> functions);
     void setInput(int& inputArg);
 
     double* getOutput();

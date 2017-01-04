@@ -7,8 +7,10 @@
 #include <sstream>
 #include <iostream>
 #include <stdlib.h>
+#include <math.h>
 
 #include "neuronNetwork.hpp"
+#include "mathFunctions.hpp"
 
 #define NLOG
 #define FILE_NAME "neuronNetwork.cpp\t"
@@ -43,7 +45,7 @@ NeuronNetwork::NeuronNetwork(int nbin, int nbout, int nbtot, double learning){
         weightOutput[i] = weight[i] + inputCount;
     }
 
-    functions = new ActivationFunctionMain[neuronCount];
+    activationFunctions = new ActivationFunctionMain[neuronCount];
 
     // Learning
 
@@ -57,7 +59,7 @@ NeuronNetwork::NeuronNetwork(int nbin, int nbout, int nbtot, double learning){
         }
     }
 
-    functionsDerivative = new ActivationFunctionDerivative[neuronCount];
+    derivativeActivationFunctions = new ActivationFunctionDerivative[neuronCount];
 
     // Reset before running
 
@@ -67,11 +69,11 @@ NeuronNetwork::NeuronNetwork(int nbin, int nbout, int nbtot, double learning){
 
 NeuronNetwork::~NeuronNetwork(){
     delete(weight);
-    delete(functions);
+    delete(activationFunctions);
 
     delete(gradient);
     delete(weightDifference);
-    delete(functionsDerivative);
+    delete(derivativeActivationFunctions);
 }
 
 void NeuronNetwork::reset(){
@@ -132,18 +134,30 @@ void NeuronNetwork::setWeight(vector<vector<double> > weightArg){
     PRINT_END_FUNCTION()
 }
 
-void NeuronNetwork::setActivation(vector<ActivationFunctionMain> functionsArg){
-    PRINT_BEGIN_FUNCTION("Paramétrage des fonctions d'activation")
+void NeuronNetwork::setFunctions(vector<activationFunctionType> functions){
+    PRINT_BEGIN_FUNCTION("Paramétrage des fonctions à partir d'un tableau de fonctions")
     for(int i = 0; i < neuronCount; i++){
-        functions[i] = functionsArg[i];
-    }
-    PRINT_END_FUNCTION()
-}
+        switch(functions[i]){
+            case SIGMOID:
+                activationFunctions[i] = sigmoid;
+                derivativeActivationFunctions[i] = sigmoidDerivate;
+                break;
 
-void NeuronNetwork::setActivationDerivate(vector<ActivationFunctionDerivative> functionsArg){
-    PRINT_BEGIN_FUNCTION("Paramétrage des dérivées des fonctions d'activation")
-    for(int i = 0; i < neuronCount; i++){
-        functionsDerivative[i] = functionsArg[i];
+            case ARCTAN:
+                activationFunctions[i] = arctan;
+                derivativeActivationFunctions[i] = arctanDerivate;
+                break;
+
+            case TANH:
+                activationFunctions[i] = tanh;
+                derivativeActivationFunctions[i] = tanhDerivate;
+                break;
+
+            case RELU:
+                activationFunctions[i] = relu;
+                derivativeActivationFunctions[i] = reluDerivate;
+                break;
+        }
     }
     PRINT_END_FUNCTION()
 }
@@ -170,7 +184,7 @@ void NeuronNetwork::calculate(){
         }
     }
     for(int i = 0; i < neuronCount; i++){
-        neurons[i] = (functions[i])(comp[i]);
+        neurons[i] = (activationFunctions[i])(comp[i]);
     }
     PRINT_END_FUNCTION()
 }
@@ -181,7 +195,7 @@ void NeuronNetwork::calculateGradient(int& outputData){
     //Calcul des dérivées
     double* derivative = new double[neuronCount];
     for(int i = 0; i < neuronCount; i++){
-        derivative[i] = (functionsDerivative[i])(neurons[i]);
+        derivative[i] = (derivativeActivationFunctions[i])(neurons[i]);
     }
 
     //Calcul des erreurs
