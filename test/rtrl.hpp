@@ -19,6 +19,7 @@
 class Rtrl : public Test{
 
     double learningRate;
+    double threshold;
     activationFunctionType function;
     NeuronNetwork* network;
     int** inputData;
@@ -45,7 +46,7 @@ class Rtrl : public Test{
     //void readFile(string fileName);
 
     int maximum(double* tab);
-
+    double score(double* probabilities, double* normalizedOutput);
     Grammar* grammar;
 public:
     Rtrl();

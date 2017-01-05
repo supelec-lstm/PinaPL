@@ -36,7 +36,7 @@ Rtrl::Rtrl(){
     nbreTest = 4;
     learningRate = 0.1;
     function = SIGMOID;
-
+    threshold = 0.4;
     // Données à ne pas modifier
 
     nbreInput = 7;
@@ -113,9 +113,12 @@ void Rtrl::test(){
             for(int i = 0; i < 7; i++){
                 result[i] = result[i]/m;
             }
+            //this->score+=this->score(grammar->getProba(),result);
             PRINT_LOG(grammar->getState())
-            PRINT_VECTOR(result, 7)
-            //TODO : compare results and probabilities
+            PRINT_VECTOR(grammar->getProba(),this->nbreInput)
+            PRINT_VECTOR(result, this->nbreInput)
+            PRINT_LOG(this->score(grammar->getProba(), result))
+            PRINT_LOG("-----")
         }
         testWord.clear();
     }
@@ -189,4 +192,18 @@ int Rtrl::maximum(double* tab){
         }
     }
     return res;
+}
+
+double Rtrl::score(double* probabilities, double* normalizedOutput){
+    double accuracy = 0;
+    bool* proba = new bool[this->nbreInput];
+    bool* result = new bool[this->nbreInput];
+    for(int i = 0; i< this->nbreInput; i++){
+        proba[i]=(probabilities[i]>this->threshold);
+        result[i]=(normalizedOutput[i]>this->threshold);
+        if (proba[i]==result[i]){
+            accuracy+=1;
+        }
+    }
+    return(accuracy/this->nbreInput);
 }
