@@ -4,37 +4,39 @@
 #include <vector>
 #include <string>
 
+#include "state.hpp"
+
 class Grammar{
 
     int stateCount;
+    int letterCount;
 
-    int state;
+    State** states;
+    State* actualState;
+    State* initState;
+
     char* letters;
 
-    int** nextState;
-    int** weight;
-    int** nextLetter;
-    int* nextSize;
-
-    int random(int* proba, int n);
+    std::vector<int> word;
 
 public:
 
-    Grammar(int nbState, int** nextStateData, int* nextSizeData, int** weightData, int** nextLetterData, char* lettersData);
+    Grammar(int stateCount, int letterCount, char* letters);
     ~Grammar();
+    void setState(int j, ...);
+    void setTerminated(int j);
     void reset();
     int newLetter();
-    std::vector<int> word();
-    int getState();
-    bool isWordFinished();
-    int* getProba();
 
+    void createWord();
     std::string stringWord();
     void printWord();
     int* inputWord();
-    int* inputWord(std::vector<int> word);
-};
+    int inputSize();
 
-Grammar createReber();
+    int getState();
+    double* getProba();
+    bool isTerminal();
+};
 
 #endif //DEF_GRAMMAR

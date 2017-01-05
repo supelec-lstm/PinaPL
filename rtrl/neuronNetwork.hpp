@@ -21,6 +21,7 @@ class NeuronNetwork {
     ActivationFunctionMain* activationFunctions;
 
     double* put;
+    double* input;
     double* output;
     double* neurons;
 

@@ -2,210 +2,177 @@
 #include <vector>
 #include <sstream>
 #include <iostream>
+#include <stdarg.h>
 
 #include "grammar.hpp"
+#include "state.hpp"
+
+#define NLOG
+#define FILE_NAME "grammar.cpp\t\t"
+#include "../log.hpp"
 
 using namespace std;
 
-Grammar::Grammar(int nbState, int** nextStateData, int* nextSizeData, int** weightData, int** nextLetterData, char* lettersData){
-	stateCount = nbState;
+Grammar::Grammar(int stateCount, int letterCount, char* letters){
+    PRINT_BEGIN_FUNCTION("Création de la grammaire")
+	this->stateCount = stateCount;
+    this->states = new State*[stateCount];
 
-	nextState = nextStateData;
-	weight = weightData;
-	nextLetter = nextLetterData;
+    for(int i = 0; i < stateCount; i++){
+        this->states[i] = new State(i);
+    }
 
-	letters = lettersData;
+    this->initState = this->states[0];
+    this->actualState = this->states[0];
 
-	nextSize = nextSizeData;
+    this->letterCount = letterCount;
+    this->letters = new char[letterCount];
+    for(int i = 0; i < letterCount; i++){
+        this->letters[i] = letters[i];
+    }
+    PRINT_END_FUNCTION()
 }
 
 Grammar::~Grammar(){
-	delete(nextState);
-	delete(weight);
+    PRINT_BEGIN_FUNCTION("Suppression de la grammaire")
+	delete(initState);
+	delete(actualState);
+	delete(states);
 	delete(letters);
-	delete(nextSize);
+    PRINT_END_FUNCTION()
 }
 
-int Grammar::random(int* proba, int n){
-    int s = 0;
-    for(int i = 0; i < n; i++){
-        s += proba[i];
+
+void Grammar::setState(int j, ...){
+    PRINT_BEGIN_FUNCTION("Définition des états de la grammaire")
+    va_list ap;
+    va_start(ap, j);
+
+    int n = va_arg(ap, int);
+
+    int* letters = new int[n];
+    State** states = new State*[n];
+    int* weight = new int[n];
+
+    for(int i = 0; i < n; i++) {
+        int a = va_arg(ap, int);
+        letters[i] = a;
     }
-    int a = rand()%s - proba[0];
-    int j = 0;
-    while(a >= 0){
-        j ++;
-        a -= proba[j];
+
+    for(int i = 0; i < n; i++) {
+        int a = va_arg(ap, int);
+        states[i] = this->states[a];
     }
-    return j;
+
+    for(int i = 0; i < n; i++) {
+        int a = va_arg(ap, int);
+        weight[i] = a;
+    }
+
+    va_end(ap);
+
+    this->states[j]->setSize(n);
+    this->states[j]->setData(letters, states, weight);
+    PRINT_END_FUNCTION()
+}
+
+void Grammar::setTerminated(int j){
+    PRINT_BEGIN_FUNCTION("Définition des états de sorties")
+    this->states[j]->setTerminal();
+    PRINT_END_FUNCTION()
 }
 
 void Grammar::reset(){
-	state = 0;
+    PRINT_BEGIN_FUNCTION("Reset")
+	actualState = initState;
+    word.clear();
+    PRINT_END_FUNCTION()
 }
 
 int Grammar::newLetter(){
-    int i = state;
-    int j = random(weight[i], nextSize[i]);
-    state = nextState[i][j];
-    return nextLetter[i][j];
+    PRINT_BEGIN_FUNCTION("Nouvelle lettre")
+    int c = this->actualState->newLetter(actualState);
+    this->word.push_back(c);
+    PRINT_END_FUNCTION()
+    return c;
 }
 
-vector<int> Grammar::word(){
-    vector<int> res;
+void Grammar::createWord(){
+    PRINT_BEGIN_FUNCTION("Création d'un mot")
     reset();
-    while(nextSize[state] != 0){
-        res.push_back(newLetter());
+    while(!actualState->isTerminal()){
+        int c = this->actualState->newLetter(actualState);
+        this->word.push_back(c);
     }
-    return res;
+    PRINT_END_FUNCTION()
 }
 
 string Grammar::stringWord(){
-    vector<int> word = this->word();
+    PRINT_BEGIN_FUNCTION("Recupération du mot sous forme de string")
     ostringstream convert;
-    for(int i = 0; i < word.size(); i++){
-        convert << letters[word[i]];
+    for(int i = 0; i < this->word.size(); i++){
+        convert << this->letters[this->word[i]];
     }
+    PRINT_END_FUNCTION()
     return convert.str();
 }
 
 void Grammar::printWord(){
-    vector<int> word = this->word();
-    for(int i = 0; i < word.size(); i++){
-        cout << letters[word[i]];
+    PRINT_BEGIN_FUNCTION("Affichage du mot")
+    for(int i = 0; i < this->word.size(); i++){
+        cout << this->letters[this->word[i]];
     }
+    PRINT_END_FUNCTION()
 }
 
 int* Grammar::inputWord(){
-	vector<int> word = this->word();
-	int n = word.size();
+    PRINT_BEGIN_FUNCTION("Récupération du mot sous forme de tableau")
+	int n = this->word.size();
 	int* res = new int[n];
 	for(int i = 0; i < n; i++){
-		res[i] = word[i];
+		res[i] = this->word[i];
 	}
+    PRINT_END_FUNCTION()
 	return res;
 }
 
-int* Grammar::inputWord(vector<int> word){
-	int n = word.size();
-	int* res = new int[n];
-	for(int i = 0; i < n; i++){
-		res[i] = word[i];
-	}
-	return res;
+int Grammar::inputSize(){
+    PRINT_BEGIN_FUNCTION("Récupération de la taille du mot")
+    PRINT_END_FUNCTION()
+    return this->word.size();
 }
 
 int Grammar::getState(){
-    return state;
+    PRINT_BEGIN_FUNCTION("Récupération de l'état actuelle du mot")
+    PRINT_END_FUNCTION()
+    return actualState->getId();
 }
 
-bool Grammar::isWordFinished(){
-    return (nextSize[state] = 0);
-}
+double* Grammar::getProba(){
+    PRINT_BEGIN_FUNCTION("Récupération de la répartition des probabilités de l'état actuelle")
+    int n = this->actualState->getSize();
+    int* weight = this->actualState->getWeight();
+    int* letters = this->actualState->getLetters();
 
-int* Grammar::getProba(){
-    int nextCount = nextSize[state];
-    int* probabilities = new int[stateCount];
-    for(int i=0;i<stateCount;i++){
-        probabilities[i]=0;
+    double* proba = new double[stateCount];
+    for(int i = 0; i < stateCount; i++){
+        proba[i] = 0;
     }
-    for(int i=0;i<nextCount;i++){
-        int next = nextState[state][i];
-        probabilities[next]=weight[state][i];
+
+    double s = 0;
+    for(int i = 0; i < n; i++){
+        s += weight[i];
     }
-    return probabilities;
+    for(int i = 0; i < n; i++){
+        proba[letters[i]] = weight[i]/s;
+    }
+
+    PRINT_END_FUNCTION()
+    return proba;
 }
 
-Grammar createReber(){
-    int nbState = 8;
-    int nbLetter = 7;
-
-    char* letters = new char[nbLetter];
-    letters[0] = 'B';
-    letters[1] = 'E';
-    letters[2] = 'P';
-    letters[3] = 'S';
-    letters[4] = 'T';
-    letters[5] = 'V';
-    letters[6] = 'X';
-
-    int** nextState = new int*[nbState];
-    nextState[0] = new int[1];
-    nextState[0][0] = 1;
-    nextState[1] = new int[2];
-    nextState[1][0] = 2;
-    nextState[1][1] = 4;
-    nextState[2] = new int[2];
-    nextState[2][0] = 2;
-    nextState[2][1] = 3;
-    nextState[3] = new int[2];
-    nextState[3][0] = 4;
-    nextState[3][1] = 6;
-    nextState[4] = new int[2];
-    nextState[4][0] = 4;
-    nextState[4][1] = 5;
-    nextState[5] = new int[2];
-    nextState[5][0] = 3;
-    nextState[5][1] = 6;
-    nextState[6] = new int[1];
-    nextState[6][0] = 7;
-    nextState[7] = new int[0];
-
-    int** nextLetter = new int*[nbState];
-    nextLetter[0] = new int[1];
-    nextLetter[0][0] = 0;
-    nextLetter[1] = new int[2];
-    nextLetter[1][0] = 4;
-    nextLetter[1][1] = 2;
-    nextLetter[2] = new int[2];
-    nextLetter[2][0] = 3;
-    nextLetter[2][1] = 6;
-    nextLetter[3] = new int[2];
-    nextLetter[3][0] = 6;
-    nextLetter[3][1] = 3;
-    nextLetter[4] = new int[2];
-    nextLetter[4][0] = 4;
-    nextLetter[4][1] = 5;
-    nextLetter[5] = new int[2];
-    nextLetter[5][0] = 2;
-    nextLetter[5][1] = 5;
-    nextLetter[6] = new int[1];
-    nextLetter[6][0] = 1;
-    nextLetter[7] = new int[0];
-
-    int** weight = new int*[nbState];
-    weight[0] = new int[1];
-    weight[0][0] = 1;
-    weight[1] = new int[2];
-    weight[1][0] = 1;
-    weight[1][1] = 1;
-    weight[2] = new int[2];
-    weight[2][0] = 1;
-    weight[2][1] = 1;
-    weight[3] = new int[2];
-    weight[3][0] = 1;
-    weight[3][1] = 1;
-    weight[4] = new int[2];
-    weight[4][0] = 1;
-    weight[4][1] = 1;
-    weight[5] = new int[2];
-    weight[5][0] = 1;
-    weight[5][1] = 1;
-    weight[6] = new int[1];
-    weight[6][0] = 1;
-    weight[7] = new int[0];
-
-    int* nextSize = new int[nbState];
-    nextSize[0] = 1;
-    nextSize[1] = 2;
-    nextSize[2] = 2;
-    nextSize[3] = 2;
-    nextSize[4] = 2;
-    nextSize[5] = 2;
-    nextSize[6] = 1;
-    nextSize[7] = 0;
-
-    Grammar res(nbState, nextState, nextSize, weight, nextLetter, letters);
-    return res;
+bool Grammar::isTerminal(){
+    PRINT_BEGIN_FUNCTION("Test de terminaison")
+    PRINT_END_FUNCTION()
+    return actualState->isTerminal();
 }
-

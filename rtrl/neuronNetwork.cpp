@@ -26,15 +26,18 @@ NeuronNetwork::NeuronNetwork(int nbin, int nbout, int nbtot, double learning){
 
     inputCount = nbin;
     outputCount = nbout;
-    neuronCount = nbtot;
-    putCount = nbin + nbtot;
+    neuronCount = nbtot;  // correspond à "nbreTotalNeuron" dans l'instantiation dans mnist.cpp
+    putCount = nbtot + nbin + 1;
+
     learningRate = learning;
 
     // Input/Output vector
 
-    put = new double[inputCount + neuronCount];
-    neurons = put + inputCount;
-    output = neurons + neuronCount - outputCount;
+    put = new double[putCount];
+    input = put + 1;
+    neurons = put + inputCount + 1;
+    output = put + inputCount + neuronCount + 1 - outputCount;
+    put[0] = 1;
 
     // Vector and matrice defining the network
 
@@ -42,7 +45,8 @@ NeuronNetwork::NeuronNetwork(int nbin, int nbout, int nbtot, double learning){
     weightOutput = new double*[neuronCount];
     for(int i = 0; i < neuronCount; i++){
         weight[i] = new double[putCount];
-        weightOutput[i] = weight[i] + inputCount;
+        weightOutput[i] = weight[i] + inputCount + 1;
+        weight[i][0] = 0;
     }
 
     activationFunctions = new ActivationFunctionMain[neuronCount];
@@ -282,7 +286,7 @@ void NeuronNetwork::completeStochasticLearning(int** inputData, int* inputDataCo
     PRINT_BEGIN_FUNCTION("Apprentissage stochastique")
     reset();
     for(int i = 0; i < n; i++){
-        batchLearning(inputData[i], inputDataCount[i]);
+        stochasticLearning(inputData[i], inputDataCount[i]);
     }
     PRINT_END_FUNCTION()
 }

@@ -31,15 +31,16 @@ class Rtrl : public Test{
     //int batchSize;
 
     int nbreInput;
+    int nbreLearn;
     int nbreTotalNeuron;
     int nbreTest;
 
     int** inputTest;
     int* inputTestCount;
 
-    void setRelation();
     void setWeight();
     void setFunctions();
+    void setGrammar();
     void generateLearningSet();
     //void readFile(string fileName);
 

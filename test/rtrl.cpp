@@ -21,7 +21,7 @@
 using namespace std;
 
 Rtrl::Rtrl(){
-
+    PRINT_BEGIN_FUNCTION("Initialisation du Test")
     // Données à modifier
 
     #ifdef BATCH
@@ -29,12 +29,12 @@ Rtrl::Rtrl(){
     //nbreLearn = 1; // nombre de batch learnings avec les données ci-dessus
     //batchSize = 128; // taille des batchs
     #else
-    nbreWords = 60000;
-    //nbreLearn = 1;
+    nbreWords = 10000;
+    nbreLearn = 1;
     #endif
 
-    nbreTest = 10;
-    learningRate = 0.3;
+    nbreTest = 4;
+    learningRate = 0.1;
     function = SIGMOID;
 
     // Données à ne pas modifier
@@ -42,13 +42,12 @@ Rtrl::Rtrl(){
     nbreInput = 7;
 
     nbreTotalNeuron = 14;
-    PRINT_LOG("Importation des entrées")
+
+    inputData = new int*[nbreWords];
+    inputDataCount = new int[nbreWords];
 
     PRINT_LOG("Création du réseau")
     network = new NeuronNetwork(nbreInput, nbreInput, nbreTotalNeuron, learningRate);
-
-    PRINT_LOG("Création de la matrice de relation")
-    setRelation();
 
     PRINT_LOG("Création des poids")
     setWeight();
@@ -57,66 +56,70 @@ Rtrl::Rtrl(){
     setFunctions();
 
     PRINT_LOG("Création de la grammaire")
-    *grammar = createReber();
+    setGrammar();
+
+    PRINT_LOG("Importation des entrées")
+    generateLearningSet();
+
+    PRINT_END_FUNCTION()
 }
 
 void Rtrl::learn(){
+    PRINT_BEGIN_FUNCTION("Apprentissage stochastique")
     #ifdef NBATCH
-    PRINT_LOG("Apprentissage stochastique")
-    generateLearningSet();
-    network->completeStochasticLearning(inputData, inputDataCount, nbreWords);
+    for(int i = 0; i < nbreLearn; i++){
+        network->completeStochasticLearning(inputData, inputDataCount, nbreWords);
+    }
     #endif
     //#ifdef BATCH
     //PRINT_LOG("Apprentissage par batch")
     //network->completebatchLearning(inputData, inputDataCount, nbreWords);
     //#endif
+    PRINT_END_FUNCTION()
 }
 
 void Rtrl::generateLearningSet(){
-    vector<int> word;
+    PRINT_BEGIN_FUNCTION("Génération du set d'apprentissage")
     for(int i  =0; i < nbreWords; i++){
-        word = grammar->word();
-        int* intWord = grammar->inputWord(word);
-        inputData[i] = intWord;
-        inputDataCount[i] = word.size();
+        grammar->createWord();
+        inputData[i] = grammar->inputWord();
+        inputDataCount[i] = grammar->inputSize();
     }
+    PRINT_END_FUNCTION()
 }
 
 void Rtrl::test(){
     PRINT_BEGIN_FUNCTION("Tests")
-    PRINT_LOG("Attendu - Obtenu")
+    /*PRINT_LOG("Attendu - Obtenu")
     int** inputTest = new int*[nbreTest];      // Will contain test words
     int* inputTestCount = new int[nbreTest];       // Will contain word sizes
-    int score = 0;
+    int score = 0;*/
     vector<int> testWord;
     for(int i = 0; i < nbreTest; i++){
 
         grammar->reset();
         network->reset();
-        // Running the network and the grammar
-        while(!grammar->isWordFinished()){
-            testWord.push_back(grammar->newLetter());
-            int* probabilities = grammar->getProba();
-            network->setInput(testWord.back());
+
+        //PRINT_LOG(grammar->isTerminal())
+
+        while(!grammar->isTerminal()){
+            /*testWord.push_back(grammar->newLetter());
+            double* probabilities = grammar->getProba();*/
+            int a = grammar->newLetter();
+            network->setInput(a);
             network->calculate();
             double* result = network->getOutput();
+            double m = result[maximum(result)];
+            for(int i = 0; i < 7; i++){
+                result[i] = result[i]/m;
+            }
+            PRINT_LOG(grammar->getState())
+            PRINT_VECTOR(result, 7)
             //TODO : compare results and probabilities
         }
         testWord.clear();
     }
-}
-
-
-
-void Rtrl::setRelation(){
-    vector<vector<bool> > relation(nbreTotalNeuron);
-    for(int i = 0; i < nbreTotalNeuron; i++){
-        vector<bool> v(nbreInput + nbreTotalNeuron, false);
-        relation[i] = v;
-        for(int j = 0; j < nbreInput + nbreTotalNeuron; j++){
-            relation[i][j]=true; // TO CHECK
-        }
-    }
+    PRINT_END_FUNCTION()
 }
 
 void Rtrl::setWeight(){
@@ -125,15 +128,41 @@ void Rtrl::setWeight(){
         vector<double> v(nbreInput + nbreTotalNeuron, 0);
         weight[i] = v;
         for(int j = 0; j < nbreInput + nbreTotalNeuron; j++){
-            weight[i][j] = randomizer(-0.1, 0.1);
+            weight[i][j] = randomizer(-0.5, 0.5);
         }
     }
     network->setWeight(weight);
 }
 
+void Rtrl::setGrammar(){
+    int nbreLetters = 7;
+    char* letters = new char[nbreLetters];
+    letters[0] = 'B';
+    letters[1] = 'E';
+    letters[2] = 'P';
+    letters[3] = 'S';
+    letters[4] = 'T';
+    letters[5] = 'V';
+    letters[6] = 'X';
+
+    int nbreState = 8;
+    grammar = new Grammar(nbreState, nbreLetters, letters);
+
+    grammar->setState(0, 1, 0, 1, 1);
+    grammar->setState(1, 2, 4, 2, 2, 4, 1, 1);
+    grammar->setState(2, 2, 3, 6, 2, 3, 1, 1);
+    grammar->setState(3, 2, 6, 3, 4, 6, 1, 1);
+    grammar->setState(4, 2, 4, 5, 4, 5, 1, 1);
+    grammar->setState(5, 2, 2, 5, 3, 6, 1, 1);
+    grammar->setState(6, 1, 1, 7, 1);
+    grammar->setState(7, 0);
+
+    grammar->setTerminated(7);
+}
+
 void Rtrl::setFunctions(){
     vector<activationFunctionType> functions(nbreTotalNeuron, function);
-    network->setFunctions(functions); // ?
+    network->setFunctions(functions);
 }
 /*
 void Rtrl::readFile(string fileName){
