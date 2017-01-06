@@ -1,0 +1,11 @@
+language: cpp
+dist: trusty
+
+install:
+  - sudo apt-get install clang zlib1g-dev
+
+before_script:
+        - bash compileClang.sh
+
+script:
+        - ./testBuild
