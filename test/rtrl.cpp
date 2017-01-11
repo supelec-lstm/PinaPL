@@ -29,11 +29,11 @@ Rtrl::Rtrl(){
     //nbreLearn = 1; // nombre de batch learnings avec les données ci-dessus
     //batchSize = 128; // taille des batchs
     #else
-    nbreWords = 10000;
+    nbreWords = 50000;
     nbreLearn = 1;
     #endif
 
-    nbreTest = 4;
+    nbreTest = 100;
     learningRate = 0.1;
     function = SIGMOID;
     threshold = 0.4;
@@ -91,21 +91,12 @@ void Rtrl::generateLearningSet(){
 
 void Rtrl::test(){
     PRINT_BEGIN_FUNCTION("Tests")
-    /*PRINT_LOG("Attendu - Obtenu")
-    int** inputTest = new int*[nbreTest];      // Will contain test words
-    int* inputTestCount = new int[nbreTest];       // Will contain word sizes
-    int score = 0;*/
-    vector<int> testWord;
     for(int i = 0; i < nbreTest; i++){
 
         grammar->reset();
         network->reset();
 
-        //PRINT_LOG(grammar->isTerminal())
-
         while(!grammar->isTerminal()){
-            /*testWord.push_back(grammar->newLetter());
-            double* probabilities = grammar->getProba();*/
             int a = grammar->newLetter();
             network->setInput(a);
             network->calculate();
@@ -121,17 +112,45 @@ void Rtrl::test(){
             PRINT_LOG(this->score(grammar->getProba(), result))
             PRINT_LOG("-----")
         }
-        testWord.clear();
     }
     PRINT_END_FUNCTION()
 }
 
+void Rtrl::testDouble(){
+  PRINT_BEGIN_FUNCTION("Tests")
+  int score= 0;
+  for(int i = 0; i < nbreTest; i++){
+
+    grammar->reset();
+    network->reset();
+
+    grammar->createWord();
+    grammar->inputWord();
+    int a=grammar->newLetter();
+    while(a != 1){
+      network->setInput(a);
+      network->calculate();
+      int a = grammar->newLetter();
+      }
+    network->setInput(a);
+    network->calculate();
+    double* result = network->getOutput();
+    double* theoricalResult = grammar->getProba();
+    if (this->maximum(result) == this->maximum(theoricalResult)) {
+      score++;
+    }
+  }
+  cout << score << endl;
+  PRINT_END_FUNCTION()
+}
+
+
 void Rtrl::setWeight(){
     vector<vector<double> > weight(nbreTotalNeuron);
     for(int i = 0; i < nbreTotalNeuron; i++){
-        vector<double> v(nbreInput + nbreTotalNeuron, 0);
+        vector<double> v(nbreInput + nbreTotalNeuron +1, 0);
         weight[i] = v;
-        for(int j = 0; j < nbreInput + nbreTotalNeuron; j++){
+        for(int j = 0; j < nbreInput + nbreTotalNeuron +1; j++){
             weight[i][j] = randomizer(-0.5, 0.5);
         }
     }

@@ -53,6 +53,7 @@ public:
     Rtrl();
     void learn();
     void test();
+    void testDouble();
 };
 
 #endif
