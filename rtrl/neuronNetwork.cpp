@@ -190,6 +190,8 @@ void NeuronNetwork::calculate(){
     for(int i = 0; i < neuronCount; i++){
         neurons[i] = (activationFunctions[i])(comp[i]);
     }
+    //delete comp;
+    //comp = NULL;
     PRINT_END_FUNCTION()
 }
 
@@ -211,10 +213,11 @@ void NeuronNetwork::calculateGradient(int& outputData){
     int n = neuronCount - outputCount;
 
     // Calcul des différences de poids
+    double* inter = new double[neuronCount];
     for(int i = 0; i < neuronCount; i++){
         for(int j = 0; j < putCount; j++){
-            double* inter = new double[neuronCount];
             for(int k = 0; k < neuronCount; k++){
+                inter[k]=0;
                 for(int l = 0; l < neuronCount; l++){
                     inter[k] += weight[k][l] * gradient[i][j][l];
                 }
@@ -231,6 +234,12 @@ void NeuronNetwork::calculateGradient(int& outputData){
         }
     }
 
+    delete[] inter;
+    inter = NULL;
+    delete[] derivative;
+    derivative = NULL;
+    delete[] error;
+    error = NULL;
     PRINT_END_FUNCTION()
 }
 

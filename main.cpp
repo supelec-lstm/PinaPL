@@ -98,7 +98,8 @@ int main(int argc, const char *argv[]) {
     */
     Rtrl test = Rtrl();
     test.learn();
-    test.testDouble();
+    test.test();
+    //test.testDouble();
 
     return 0;
 }

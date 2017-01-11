@@ -56,8 +56,8 @@ Rtrl::Rtrl(){
     setFunctions();
 
     PRINT_LOG("Création de la grammaire")
-    //setSimpleGrammar();
-    setDoubleGrammar();
+    setSimpleGrammar();
+    //setDoubleGrammar();
 
     PRINT_LOG("Importation des entrées")
     generateLearningSet();
@@ -91,6 +91,8 @@ void Rtrl::generateLearningSet(){
 
 void Rtrl::test(){
     PRINT_BEGIN_FUNCTION("Tests")
+    double* result;
+    double m;
     for(int i = 0; i < nbreTest; i++){
 
         grammar->reset();
@@ -100,8 +102,8 @@ void Rtrl::test(){
             int a = grammar->newLetter();
             network->setInput(a);
             network->calculate();
-            double* result = network->getOutput();
-            double m = result[maximum(result)];
+            result = network->getOutput();
+            m = result[maximum(result)];
             for(int i = 0; i < 7; i++){
                 result[i] = result[i]/m;
             }
