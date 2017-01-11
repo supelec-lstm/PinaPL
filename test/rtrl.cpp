@@ -56,7 +56,8 @@ Rtrl::Rtrl(){
     setFunctions();
 
     PRINT_LOG("Création de la grammaire")
-    setGrammar();
+    //setSimpleGrammar();
+    setDoubleGrammar();
 
     PRINT_LOG("Importation des entrées")
     generateLearningSet();
@@ -137,7 +138,7 @@ void Rtrl::setWeight(){
     network->setWeight(weight);
 }
 
-void Rtrl::setGrammar(){
+void Rtrl::setSimpleGrammar(){
     int nbreLetters = 7;
     char* letters = new char[nbreLetters];
     letters[0] = 'B';
@@ -163,47 +164,84 @@ void Rtrl::setGrammar(){
     grammar->setTerminated(7);
 }
 
+void Rtrl::setDoubleGrammar(){
+  int nbreLetters = 7;
+  char* letters = new char[nbreLetters];
+  letters[0] = 'B';
+  letters[1] = 'E';
+  letters[2] = 'P';
+  letters[3] = 'S';
+  letters[4] = 'T';
+  letters[5] = 'V';
+  letters[6] = 'X';
+
+  int nbreState = 20;
+  grammar = new Grammar(nbreState, nbreLetters, letters);
+  //grammar->setState(stateNumber,nextStateCount,(transitionLetter,nextStateNumber,probability)...);
+  grammar->setState(0, 1, 0, 1, 1);
+  grammar->setState(1, 2, 4, 2, 2, 10, 1, 1);
+  grammar->setState(2, 1, 0, 3, 1);
+  grammar->setState(3, 2, 4, 2, 4, 6, 1, 1);
+  grammar->setState(4, 2, 3, 6, 4, 5, 1, 1);
+  grammar->setState(5, 2, 6, 3, 6, 8, 1, 1);
+  grammar->setState(6, 2, 4, 5, 6, 7, 1, 1);
+  grammar->setState(7, 2, 2, 5, 5, 8, 1, 1);
+  grammar->setState(8, 1, 1, 9, 1);
+  grammar->setState(9, 1, 4, 18, 1);
+  grammar->setState(10, 1, 0, 11, 1);
+  grammar->setState(11, 2, 4, 2, 12, 14, 1, 1);
+  grammar->setState(12, 2, 3, 6, 12, 13, 1, 1);
+  grammar->setState(13, 2, 6, 3, 14, 16, 1, 1);
+  grammar->setState(14, 2, 4, 5, 14, 15, 1, 1);
+  grammar->setState(15, 2, 2, 5, 13, 16, 1, 1);
+  grammar->setState(16, 1, 1, 17, 1);
+  grammar->setState(17, 1, 2, 18, 1);
+  grammar->setState(18, 1, 1, 19, 1);
+  grammar->setState(19, 0);
+  grammar->setTerminated(19);
+}
+
 void Rtrl::setFunctions(){
-    vector<activationFunctionType> functions(nbreTotalNeuron, function);
-    network->setFunctions(functions);
+  vector<activationFunctionType> functions(nbreTotalNeuron, function);
+  network->setFunctions(functions);
 }
 /*
-void Rtrl::readFile(string fileName){
-    ifstream fileStream(fileName);
-    string word[];
-    if(fileStream){
-        cout << "While opening a file an error is encountered" << endl;
-    }
-    else{
-        cout << "File is successfully opened" << endl;
-    }
-    while(!fileStream.eof()){
-        fileStream >> word;
-        cout << word << endl;
-        // TODO : convert string into usable word
-    }
+   void Rtrl::readFile(string fileName){
+   ifstream fileStream(fileName);
+   string word[];
+   if(fileStream){
+   cout << "While opening a file an error is encountered" << endl;
+   }
+   else{
+   cout << "File is successfully opened" << endl;
+   }
+   while(!fileStream.eof()){
+   fileStream >> word;
+   cout << word << endl;
+// TODO : convert string into usable word
+}
 }
 */
 int Rtrl::maximum(double* tab){
-    int res = 0;
-    for(int i = 1; i < nbreInput; i++){
-        if(tab[i] > tab[res]){
-            res = i;
-        }
+  int res = 0;
+  for(int i = 1; i < nbreInput; i++){
+    if(tab[i] > tab[res]){
+      res = i;
     }
-    return res;
+  }
+  return res;
 }
 
 double Rtrl::score(double* probabilities, double* normalizedOutput){
-    double accuracy = 0;
-    bool* proba = new bool[this->nbreInput];
-    bool* result = new bool[this->nbreInput];
-    for(int i = 0; i< this->nbreInput; i++){
-        proba[i]=(probabilities[i]>this->threshold);
-        result[i]=(normalizedOutput[i]>this->threshold);
-        if (proba[i]==result[i]){
-            accuracy+=1;
-        }
+  double accuracy = 0;
+  bool* proba = new bool[this->nbreInput];
+  bool* result = new bool[this->nbreInput];
+  for(int i = 0; i< this->nbreInput; i++){
+    proba[i]=(probabilities[i]>this->threshold);
+    result[i]=(normalizedOutput[i]>this->threshold);
+    if (proba[i]==result[i]){
+      accuracy+=1;
     }
-    return(accuracy/this->nbreInput);
+  }
+  return(accuracy/this->nbreInput);
 }

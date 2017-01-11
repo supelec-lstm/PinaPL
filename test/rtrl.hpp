@@ -41,7 +41,8 @@ class Rtrl : public Test{
 
     void setWeight();
     void setFunctions();
-    void setGrammar();
+    void setSimpleGrammar();
+    void setDoubleGrammar();
     void generateLearningSet();
     //void readFile(string fileName);
 
