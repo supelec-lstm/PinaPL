@@ -17,11 +17,6 @@
 #include <ctype.h>
 #include <algorithm>
 
-#include "idxParser/idxParser.hpp"
-
-#include "test/mnist.hpp"
-#include "test/xor.hpp"
-
 #include "log.hpp"
 
 int tab_log = 0;
@@ -76,10 +71,10 @@ int main(int argc, char **argv) {
     std::fill_n(nbreNeuron, nbreLayout, nbreNeuronPerLayout);
     nbreNeuron[nbreNeuronPerLayout] = 10;
 
-    Mnist test = Mnist(nbreData, nbreLearn, nbreTest, learningRate, nbreLayout, nbreNeuron);
+    /*Mnist test = Mnist(nbreData, nbreLearn, nbreTest, learningRate, nbreLayout, nbreNeuron);
     test.learn();
     test.test();
-
+*/
 
     return 0;
 }
