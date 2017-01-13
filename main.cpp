@@ -10,14 +10,13 @@
 #include <random>
 #include <string.h>
 #include <time.h>
-#include <unistd.h>
-#include <getopt.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <algorithm>
 
 #include "log.hpp"
+#include "test/bptt.hpp"
 
 int tab_log = 0;
 
@@ -26,7 +25,7 @@ using namespace std;
 int main(int argc, char **argv) {
     srand(time(NULL));
 
-    int opt;
+    /*int opt;
     int nbreData  = 60000;
     int nbreLearn = 1;
     int nbreTest  = 10000;
@@ -67,14 +66,19 @@ int main(int argc, char **argv) {
         }
     }
 
-    int nbreNeuron[nbreLayout+1];
+    /*int nbreNeuron[nbreLayout+1];
     std::fill_n(nbreNeuron, nbreLayout, nbreNeuronPerLayout);
     nbreNeuron[nbreNeuronPerLayout] = 10;
 
-    /*Mnist test = Mnist(nbreData, nbreLearn, nbreTest, learningRate, nbreLayout, nbreNeuron);
+    Mnist test = Mnist(nbreData, nbreLearn, nbreTest, learningRate, nbreLayout, nbreNeuron);
     test.learn();
     test.test();
 */
+	Bptt* test = new Bptt();
+	test->learn();
+	test->test();
+
+	system("PAUSE");
 
     return 0;
 }

@@ -291,6 +291,12 @@ double** NeuronNetwork::getOutput(){
     return output;
 }
 
+double* NeuronNetwork::getOutputFold(int j) {
+	PRINT_BEGIN_FUNCTION("Obtaining output")
+	PRINT_END_FUNCTION()
+	return output[j];
+}
+
 // Calculate from the input
 
 void NeuronNetwork::calculate(int fold){
@@ -310,7 +316,8 @@ void NeuronNetwork::calculate(int fold){
     }
     else{
         for(int i = 0; i < neuronCount; i++){
-            for(int j = 0; j < previousCount[i]; j++){
+			int n = previousCount[i];
+            for(int j = 0; j < n; j++){
                 int a = previousNode[i][j];
                 if(a <= inputCount){
                     put[fold][i] += weight[i][a]*put[fold][a];
@@ -351,13 +358,31 @@ void NeuronNetwork::calculateGradient(int fold){
             gradient[fold][i] = (derivativeActivationFunctions[i])(neurons[fold][i]) * gradient[fold][i];
         }
     }
-    for(int i = 0; i < neuronCount; i++){
-        int n = previousCount[i];
-        for(int j = 0; j < n; j++){
-            int a = previousNode[i][j];
-            weightDifference[a][i] += gradient[fold][i]*put[(fold-1)%foldCount][a];
-        }
-    }
+	if (fold != 0) {
+		for (int i = 0; i < neuronCount; i++) {
+			int n = previousCount[i];
+			for (int j = 0; j < n; j++) {
+				int a = previousNode[i][j];
+				if (a <= inputCount) {
+					weightDifference[i][a] += gradient[fold][i] * put[fold][a];
+				}
+				else {
+					weightDifference[i][a] += gradient[fold][i] * put[fold-1][a];
+				}
+			}
+		}
+	}
+	else {
+		for (int i = 0; i < neuronCount; i++) {
+			int n = previousCount[i];
+			for (int j = 0; j < n; j++) {
+				int a = previousNode[i][j];
+				if (a <= inputCount) {
+					weightDifference[i][a] += gradient[fold][i] * put[fold][a];
+				}
+			}
+		}
+	}
     PRINT_END_FUNCTION()
 }
 

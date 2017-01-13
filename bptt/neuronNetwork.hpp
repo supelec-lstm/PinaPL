@@ -65,6 +65,7 @@ public:
     void setInput(int inputArg, int j);
 
     double** getOutput();
+	double* getOutputFold(int j);
 
     void calculate(int fold);
 

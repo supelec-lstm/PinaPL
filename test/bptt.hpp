@@ -40,6 +40,7 @@ class Bptt : public Test{
     int** inputTest;
     int* inputTestCount;
 
+	void setRelation();
     void setWeight();
     void setFunctions();
     void setGrammar();

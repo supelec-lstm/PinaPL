@@ -27,11 +27,11 @@ Bptt::Bptt(){
     #ifdef BATCH
     nbreFold = 5;
     nbreWords = 60000; // nombre de données à importer de la base d'apprentissage
-    //nbreLearn = 1; // nombre de batch learnings avec les données ci-dessus
+    nbreLearn = 1; // nombre de batch learnings avec les données ci-dessus
     //batchSize = 128; // taille des batchs
     #else
     nbreFold = 5;
-    nbreWords = 10000;
+    nbreWords = 100;
     nbreLearn = 1;
     #endif
 
@@ -48,16 +48,19 @@ Bptt::Bptt(){
     inputData = new int*[nbreWords];
     inputDataCount = new int[nbreWords];
 
-    PRINT_LOG("Création du réseau")
-    network = new NeuronNetwork(nbreInput, nbreInput, nbreTotalNeuron, learningRate);
+    PRINT_LOG("Creation du reseau")
+    network = new NeuronNetwork(nbreInput, nbreInput, nbreTotalNeuron, nbreFold, learningRate);
 
-    PRINT_LOG("Création des poids")
+    PRINT_LOG("Creation des poids")
     setWeight();
 
-    PRINT_LOG("Création des fonctions")
+    PRINT_LOG("Creation des fonctions")
     setFunctions();
 
-    PRINT_LOG("Création de la grammaire")
+	PRINT_LOG("Initialisation du reseau")
+	network->init();
+
+    PRINT_LOG("Creation de la grammaire")
     setGrammar();
 
     PRINT_LOG("Importation des entrées")
@@ -70,12 +73,12 @@ void Bptt::learn(){
     PRINT_BEGIN_FUNCTION("Apprentissage stochastique")
     #ifdef NBATCH
     for(int i = 0; i < nbreLearn; i++){
-        network->completeStochasticLearning(inputData, inputDataCount, nbreWords);
+        network->stochasticLearning(inputData, inputDataCount, nbreWords, nbreLearn);
     }
     #endif
     //#ifdef BATCH
     //PRINT_LOG("Apprentissage par batch")
-    //network->completebatchLearning(inputData, inputDataCount, nbreWords);
+    //network->batchLearning(inputData, inputDataCount, nbreWords);
     //#endif
     PRINT_END_FUNCTION()
 }
@@ -104,13 +107,15 @@ void Bptt::test(){
 
         //PRINT_LOG(grammar->isTerminal())
 
+		int j = 0;
+
         while(!grammar->isTerminal()){
             /*testWord.push_back(grammar->newLetter());
             double* probabilities = grammar->getProba();*/
             int a = grammar->newLetter();
-            network->setInput(a);
-            network->calculate();
-            double* result = network->getOutput();
+            network->setInput(a, j);
+            network->calculate(j);
+            double* result = network->getOutputFold(j);
             double m = result[maximum(result)];
             for(int i = 0; i < 7; i++){
                 result[i] = result[i]/m;
@@ -123,8 +128,19 @@ void Bptt::test(){
             PRINT_LOG("-----")
         }
         testWord.clear();
+
+		j = (j + 1) % this->nbreFold;
     }
     PRINT_END_FUNCTION()
+}
+
+void Bptt::setRelation() {
+	vector<vector<bool> > relation(nbreTotalNeuron);
+	for (int i = 0; i < nbreTotalNeuron; i++) {
+		vector<bool> v(nbreInput + nbreTotalNeuron + 1, true);
+		relation[i] = v;
+	}
+	network->setRelation(relation);
 }
 
 void Bptt::setWeight(){
