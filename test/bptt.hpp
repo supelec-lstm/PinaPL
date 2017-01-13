@@ -3,40 +3,52 @@
 //  PinaPL
 //
 
-#ifndef DEF_TEST_Bptt
-#define DEF_TEST_Bptt
+#ifndef DEF_TEST_BPTT
+#define DEF_TEST_BPTT
 
 #include <vector>
 #include <random>
 #include <string.h>
 #include <math.h>
 
+#include "../grammar/grammar.hpp"
 #include "test.hpp"
-#include "../Bptt/neuronNetwork.hpp"
-#include "../Bptt/mathFunctions.hpp"
+#include "../bptt/neuronNetwork.hpp"
+#include "../bptt/mathFunctions.hpp"
 
 class Bptt : public Test{
 
     double learningRate;
+    double threshold;
     activationFunctionType function;
     NeuronNetwork* network;
-    double** inputData;
+    int** inputData;
+    int* inputDataCount;
     double** outputData;
     double** outputTest;
 
-    int nbreLearn;
+    //int nbreLearn;
     int nbreWords;
-    int batchSize;
+    //int batchSize;
 
     int nbreInput;
+    int nbreLearn;
     int nbreTotalNeuron;
+    int nbreTest;
+    int nbreFold;
 
-    void setRelation();
+    int** inputTest;
+    int* inputTestCount;
+
     void setWeight();
     void setFunctions();
+    void setGrammar();
+    void generateLearningSet();
+    //void readFile(string fileName);
 
     int maximum(double* tab);
-
+    double score(double* probabilities, double* normalizedOutput);
+    Grammar* grammar;
 public:
     Bptt();
     void learn();
