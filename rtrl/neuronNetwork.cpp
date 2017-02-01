@@ -91,7 +91,7 @@ void NeuronNetwork::reset(){
 void NeuronNetwork::resetInput(){
     PRINT_BEGIN_FUNCTION("Reset des entrée")
     for(int i = 0; i < inputCount; i++){
-        put[i] = 0;
+        input[i] = 0;
     }
     PRINT_END_FUNCTION()
 }
@@ -169,7 +169,7 @@ void NeuronNetwork::setFunctions(vector<activationFunctionType> functions){
 void NeuronNetwork::setInput(int& inputArg){
     PRINT_BEGIN_FUNCTION("Paramétrage de l'entrée")
     resetInput();
-    put[inputArg] = 1;
+    input[inputArg] = 1;
     PRINT_END_FUNCTION()
 }
 

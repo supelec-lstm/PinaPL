@@ -72,7 +72,7 @@ int main(int argc, const char *argv[]) {
     int* inputCount = new int[1];
     inputCount[0] = word.size();
 
-    for(int i = 0; i < 100; i++){   
+    for(int i = 0; i < 100; i++){
         network.completeBatchLearning(input, inputCount, 1);
     }
 
@@ -98,7 +98,7 @@ int main(int argc, const char *argv[]) {
     */
     Rtrl test = Rtrl();
     test.learn();
-    test.test();
+    test.testDEBUG();
     //test.testDouble();
 
     return 0;

@@ -29,19 +29,19 @@ Rtrl::Rtrl(){
     //nbreLearn = 1; // nombre de batch learnings avec les données ci-dessus
     //batchSize = 128; // taille des batchs
     #else
-    nbreWords = 50000;
-    nbreLearn = 1;
+    nbreWords = 1;
+    nbreLearn = 5000;
     #endif
 
-    nbreTest = 100;
-    learningRate = 0.1;
+    nbreTest = 1;
+    learningRate = 0.2;
     function = SIGMOID;
-    threshold = 0.4;
+    threshold = 0.3;
     // Données à ne pas modifier
 
     nbreInput = 7;
 
-    nbreTotalNeuron = 14;
+    nbreTotalNeuron = 21;
 
     inputData = new int*[nbreWords];
     inputDataCount = new int[nbreWords];
@@ -68,6 +68,12 @@ Rtrl::Rtrl(){
 void Rtrl::learn(){
     PRINT_BEGIN_FUNCTION("Apprentissage stochastique")
     #ifdef NBATCH
+    // DEBUG
+    for(int i = 0; i < inputDataCount[0]; i++){
+        std::cout << inputData[0][i] << " " ;
+    }
+    std::cout << "starting tests" << std::endl;
+    // END-DEBUG
     for(int i = 0; i < nbreLearn; i++){
         network->completeStochasticLearning(inputData, inputDataCount, nbreWords);
     }
@@ -94,7 +100,9 @@ void Rtrl::test(){
     double* result;
     double m;
     for(int i = 0; i < nbreTest; i++){
-
+        PRINT_LOG("================================")
+        PRINT_LOG(i)
+        PRINT_LOG("================================")
         grammar->reset();
         network->reset();
 
@@ -104,9 +112,9 @@ void Rtrl::test(){
             network->calculate();
             result = network->getOutput();
             m = result[maximum(result)];
-            for(int i = 0; i < 7; i++){
+            /*for(int i = 0; i < 7; i++){
                 result[i] = result[i]/m;
-            }
+            }*/
             //this->score+=this->score(grammar->getProba(),result);
             PRINT_LOG(grammar->getState())
             PRINT_VECTOR(grammar->getProba(),this->nbreInput)
@@ -114,6 +122,31 @@ void Rtrl::test(){
             PRINT_LOG(this->score(grammar->getProba(), result))
             PRINT_LOG("-----")
         }
+    }
+    PRINT_END_FUNCTION()
+}
+
+
+void Rtrl::testDEBUG(){
+    PRINT_BEGIN_FUNCTION("Tests")
+    double* result;
+    double m;
+    grammar->reset();
+    network->reset();
+
+    for(int i = 0; i < inputDataCount[0]; i++){
+      int a = inputData[0][i];
+      network->setInput(a);
+      network->calculate();
+      result = network->getOutput();
+      m = result[maximum(result)];
+      /*for(int i = 0; i < 7; i++){
+          result[i] = result[i]/m;
+      }*/
+      //this->score+=this->score(grammar->getProba(),result);
+      PRINT_LOG(a)
+      PRINT_VECTOR(result, this->nbreInput)
+      PRINT_LOG("-----")
     }
     PRINT_END_FUNCTION()
 }
@@ -153,7 +186,7 @@ void Rtrl::setWeight(){
         vector<double> v(nbreInput + nbreTotalNeuron +1, 0);
         weight[i] = v;
         for(int j = 0; j < nbreInput + nbreTotalNeuron +1; j++){
-            weight[i][j] = randomizer(-0.5, 0.5);
+            weight[i][j] = randomizer(-1, 1);
         }
     }
     network->setWeight(weight);
