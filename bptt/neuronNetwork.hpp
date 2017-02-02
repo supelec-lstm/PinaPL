@@ -8,20 +8,18 @@
 
 #include <string>
 #include <vector>
+#include <Eigen/Dense>
 
 #include "mathFunctions.hpp"
 
 class NeuronNetwork {
-    bool** relation;
-    bool** relationOutput;
-    double** weight;
-    double** weightOutput;
+
+	Eigen::MatrixXi relation;
+	Eigen::MatrixXd weight;
+
     ActivationFunctionMain* activationFunctions;
 
-    double** put;
-    double** input;
-    double** output;
-    double** neurons;
+	Eigen::VectorXd* put;
 
     int inputCount;
     int outputCount;
@@ -29,13 +27,9 @@ class NeuronNetwork {
     int putCount;
     int foldCount;
 
-    int** nextNode;
-    int* nextCount;
-    int** previousNode;
-    int* previousCount;
-
-    double** gradient;
-    double** weightDifference;
+    Eigen::VectorXd* gradient;
+	Eigen::MatrixXd weightInverse;
+	Eigen::MatrixXd weightDifference;
     ActivationFunctionDerivative* derivativeActivationFunctions;
     double learningRate;
 
@@ -45,32 +39,31 @@ class NeuronNetwork {
     void resetBackPropagation();
     void resetGradient();
 
-    void initNextNode();
-    void initPreviousNode();
-
     void calculateOutputGradient(int outputData, int fold);
     void calculateGradient(int fold);
     void applyWeight();
-    void learn(int* inputData, int inputSize);
+
+	void allExitLearn(int* outputData);
+	void lastExitLearn(int outputData);
 
 public:
     NeuronNetwork(int nbin, int nbout, int nbtot, int nbfold, double learning);
     ~NeuronNetwork();
     void reset();
-    void init();
 
     void setRelation(std::vector<std::vector<bool> > relation);
     void setWeight(std::vector<std::vector<double> > weight);
+	void setRandomWeight();
+	void setConstantWeight(double x);
     void setFunctions(std::vector<activationFunctionType> functions);
     void setInput(int inputArg, int j);
 
-    double** getOutput();
-	double* getOutputFold(int j);
+    Eigen::VectorXd* getOutput();
+	Eigen::VectorXd getOutput(int j);
 
     void calculate(int fold);
 
-    void stochasticLearning(int** inputData, int* inputSize, int nbreInput, int nbreLearning);
-    void batchLearning(int** inputData, int* inputSize, int nbreInput, int batchSize, int nbreLearning);
+	void slipperyLearn(int* inputData, int inputSize);
 };
 
 

@@ -16,7 +16,10 @@
 #include <algorithm>
 
 #include "log.hpp"
-#include "test/bptt.hpp"
+//#include "test/bptt.hpp"
+
+#include <Eigen/Dense>
+using namespace Eigen;
 
 int tab_log = 0;
 
@@ -74,9 +77,23 @@ int main(int argc, char **argv) {
     test.learn();
     test.test();
 */
-	Bptt* test = new Bptt();
-	test->learn();
-	test->test();
+
+	//Bptt* test = new Bptt();
+	//test->learn();
+	//test->test();
+
+	int array[24];
+	for (int i = 0; i < 24; ++i) array[i] = i;
+	Map<VectorXi> m(array+1, 3);
+	cout << m << endl;
+	array[1] = 2;
+	cout << m << endl;
+
+	m[1] = 5;
+	cout << array[2];
+
+
+
 
 	system("PAUSE");
 
