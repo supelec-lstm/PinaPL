@@ -1,6 +1,8 @@
 language: cpp
+dist: trusty
 
-install: make get-deps
+install:
+  - sudo apt-get install clang zlib1g-dev eigen3
 
 before_script:
         - bash compileClang.sh
