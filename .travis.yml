@@ -2,7 +2,7 @@ language: cpp
 dist: trusty
 
 install:
-  - sudo apt-get install clang zlib1g-dev eigen3
+  - sudo apt-get install clang zlib1g-dev libeigen3-dev
 
 before_script:
         - bash compileClang.sh
