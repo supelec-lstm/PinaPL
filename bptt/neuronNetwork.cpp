@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include "neuronNetwork.hpp"
 #include "mathFunctions.hpp"
@@ -36,19 +37,23 @@ NeuronNetwork::NeuronNetwork(int inputCount, int outputCount, int neuronCount, i
 
     // Input/Output vector
 
-	this->put = new VectorXd[this->foldCount];
+	this->input = new VectorXd[this->foldCount];
+	this->output = new VectorXd[this->foldCount];
     for(int i = 0; i < this->foldCount; i++){
-		this->put[i] = VectorXd(this->putCount);
+		this->input[i] = VectorXd(this->inputCount);
+		this->output[i] = VectorXd(this->neuronCount);
     }
 
     // Vector and matrice defining the network
 
-    this->relation = MatrixXd(this->putCount, this->neuronCount);
+    this->relationRecursive = MatrixXd(this->neuronCount, this->neuronCount);
+	this->relationInput = MatrixXd(this->neuronCount, this->inputCount);
     for(int i = 0; i < this->neuronCount; i++){
-        this->relation(i, 0) = 1;
+        this->relationInput(i, 0) = 1.0;
     }
 
-	this->weight = MatrixXd(this->putCount, this->neuronCount);
+	this->weightRecursive = MatrixXd(this->neuronCount, this->neuronCount);
+	this->weightInput = MatrixXd(this->neuronCount, this->inputCount);
 
     this->activationFunctions = new ActivationFunctionMain[this->neuronCount];
 
@@ -59,8 +64,8 @@ NeuronNetwork::NeuronNetwork(int inputCount, int outputCount, int neuronCount, i
 		this->gradient[i] = VectorXd(this->neuronCount);
 	}
 
-	this->weightInverse = this->weight.block(0, this->inputCount + 1, this->neuronCount, this->neuronCount).transpose();
-	this->weightDifference = MatrixXd(this->putCount, this->neuronCount);
+	this->weightDifferenceRecursive = MatrixXd(this->neuronCount, this->neuronCount);
+	this->weightDifferenceInput = MatrixXd(this->neuronCount, this->inputCount);
 
     this->derivativeActivationFunctions = new ActivationFunctionDerivative[neuronCount];
 
@@ -72,7 +77,6 @@ NeuronNetwork::NeuronNetwork(int inputCount, int outputCount, int neuronCount, i
 
 NeuronNetwork::~NeuronNetwork(){
 	PRINT_BEGIN_FUNCTION("Network unallocation")
-	delete(this->put);
     delete(this->activationFunctions);
 
     delete(this->gradient);
@@ -91,36 +95,38 @@ void NeuronNetwork::reset(){
 void NeuronNetwork::resetInput(){
     PRINT_BEGIN_FUNCTION("Network input")
     for(int j = 0; j < this->foldCount; j++){
-		this->put[j].segment(1, this->inputCount) = VectorXd::Constant(0.0);
+		this->input[j] = VectorXd::Zero(this->inputCount);
     }
     PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::resetInput(int j){
     PRINT_BEGIN_FUNCTION("Network input")
-	this->put[j].segment(1, this->inputCount) = VectorXd::Constant(0.0);
+	this->input[j] = VectorXd::Zero(this->inputCount);
     PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::resetOutput(){
     PRINT_BEGIN_FUNCTION("Network input & output reset")
 	for (int j = 0; j < this->foldCount; j++) {
-		this->put[j] = VectorXd::Constant(0.0);
-		this->put[j](0) = 1.0;
+		this->input[j] = VectorXd::Zero(this->inputCount);
+		this->output[j] = VectorXd::Zero(this->neuronCount);
+		this->input[j](0) = 1.0;
 	}
     PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::resetBackPropagation(){
 	PRINT_BEGIN_FUNCTION("Backpropagation parameters reset")
-	weightDifference = MatrixXd::Constant(0.0);
+	weightDifferenceRecursive = MatrixXd::Zero(this->neuronCount, this->neuronCount);
+	weightDifferenceInput = MatrixXd::Zero(this->neuronCount, this->inputCount);
     PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::resetGradient(){
     PRINT_BEGIN_FUNCTION("Gradient reset")
     for(int j = 0; j < foldCount; j++){
-		gradient[j] = VectorXd::Constant(0.0);
+		this->gradient[j] = VectorXd::Zero(this->putCount);
     }
     PRINT_END_FUNCTION()
 }
@@ -129,32 +135,43 @@ void NeuronNetwork::resetGradient(){
 
 void NeuronNetwork::setRelation(vector<vector<bool> > relationArg){
     PRINT_BEGIN_FUNCTION("Setting relations")
-    for(int i = 0; i < this->neuronCount; i++){
-        for(int j = 1; j < this->putCount; j++){
-			this->relation(i, j) = relationArg[i][j-1]?1:0;
-        }
-    }
+		for (int i = 0; i < this->neuronCount; i++) {
+			for (int j = 1; j < this->inputCount; j++) {
+				this->relationInput(i, j) = relationArg[i][j - 1]?1.0:0.0;
+			}
+			for (int j = 0; j < this->neuronCount; j++) {
+				this->relationRecursive(i, j) = relationArg[i][inputCount + j - 1]?1.0 : 0.0;
+			}
+		}
     PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::setWeight(vector<vector<double> > weightArg){
     PRINT_BEGIN_FUNCTION("Setting weights from an array")
     for(int i = 0; i < this->neuronCount; i++){
-        for(int j = 1; j < this->putCount; j++){
-			this->weight(i, j) = weightArg[i][j-1];
+        for(int j = 1; j < this->inputCount; j++){
+			this->weightInput(i, j) = weightArg[i][j-1];
         }
+		for (int j = 0; j < this->neuronCount; j++) {
+			this->weightRecursive(i, j) = weightArg[i][inputCount + j - 1];
+		}
     }
     PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::setRandomWeight() {
 	PRINT_BEGIN_FUNCTION("Setting weights from an array")
-	this->weight = MatrixXd::Random();
+	this->weightRecursive = MatrixXd::Random();
+	this->weightInput = MatrixXd::Random();
 	PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::setConstantWeight(double x)
 {
+	PRINT_BEGIN_FUNCTION("Setting weights from an array")
+	this->weightRecursive = MatrixXd::Random();
+	this->weightInput = MatrixXd::Random();
+	PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::setFunctions(vector<activationFunctionType> functions){
@@ -188,7 +205,7 @@ void NeuronNetwork::setFunctions(vector<activationFunctionType> functions){
 void NeuronNetwork::setInput(int inputArg, int j){
     PRINT_BEGIN_FUNCTION("Setting input")
     this->resetInput(j);
-    this->put[j](inputArg + 1) = 1;
+    this->input[j](inputArg + 1) = 1;
     PRINT_END_FUNCTION()
 }
 
@@ -197,7 +214,7 @@ VectorXd* NeuronNetwork::getOutput(){
 	PRINT_END_FUNCTION()
 	VectorXd* result = new VectorXd[this->foldCount];
 	for (int i = 0; i < this->foldCount; i++) {
-		result[i] = this->put[i].tail(this->outputCount);
+		result[i] = this->output[i].tail(this->outputCount);
 	}
 	return result;
 }
@@ -205,17 +222,16 @@ VectorXd* NeuronNetwork::getOutput(){
 VectorXd NeuronNetwork::getOutput(int j) {
 	PRINT_BEGIN_FUNCTION("Obtaining output")
 	PRINT_END_FUNCTION()
-	return this->put[j].tail(this->outputCount);
+	return this->output[j].tail(this->outputCount);
 }
 
 // Calculate from the input
 
 void NeuronNetwork::calculate(int fold){
     PRINT_BEGIN_FUNCTION("Output computing")
-	this->put[fold].tail(this->neuronCount) = this->weight * this->put[fold-1];
-	int indiceNeuron = this->inputCount + 1;
-	for (int i = indiceNeuron; i < this->putCount; i++) {
-		this->put[fold](i) = this->activationFunctions[i - indiceNeuron](this->put[fold](i));
+	this->output[fold] = this->weightRecursive * this->output[fold-1] + this->weightInput * this->input[fold];
+	for (int i = 0; i < this->neuronCount; i++) {
+		this->output[fold](i) = this->activationFunctions[i](this->output[fold](i));
 	}
     PRINT_END_FUNCTION()
 }
@@ -224,29 +240,30 @@ void NeuronNetwork::calculate(int fold){
 
 void NeuronNetwork::calculateOutputGradient(int outputData, int fold){
 	PRINT_BEGIN_FUNCTION("Output gradient computation")
-	this->gradient[fold].tail(this->outputCount) = -(this->put[fold].tail(this->outputCount));
+	this->gradient[fold].tail(this->outputCount) = -(this->output[fold].tail(this->outputCount));
 	this->gradient[fold](this->putCount - this->outputCount + outputData) += 1.0;
     PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::calculateGradient(int fold){
     PRINT_BEGIN_FUNCTION("Gradient computation")
-	int indiceNeuron = this->inputCount + 1;
 	VectorXd derivate(this->neuronCount);
 	for (int i = 0; i < this->neuronCount; i++) {
-		derivate(i) = this->derivativeActivationFunctions[i](this->put[fold](i + indiceNeuron));
+		derivate(i) = this->derivativeActivationFunctions[i](this->output[fold](i));
 	}
 
-	this->gradient[fold] += this->weightInverse * this->gradient[fold+1];
+	this->gradient[fold] += this->weightRecursive.transpose() * this->gradient[fold+1];
 	this->gradient[fold] = this->gradient[fold].cwiseProduct(derivate);
 
-	this->weightDifference += gradient[fold] * put[fold].transpose();
+	this->weightDifferenceRecursive += gradient[fold] * output[fold].transpose();
+	this->weightDifferenceInput += gradient[fold] * input[fold].transpose();
     PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::applyWeight(){
 	PRINT_BEGIN_FUNCTION("Setting weights from weight differences and learning rate")
-		this->weight += this->weightDifference.cwiseProduct(this->relation) * this->learningRate;
+	this->weightRecursive += this->weightDifferenceRecursive.cwiseProduct(this->relationRecursive) * this->learningRate;
+	this->weightInput += this->weightDifferenceInput.cwiseProduct(this->relationInput) * this->learningRate;
     resetBackPropagation();
     PRINT_END_FUNCTION()
 }

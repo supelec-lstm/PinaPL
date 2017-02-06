@@ -9,17 +9,21 @@
 #include <string>
 #include <vector>
 #include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include "mathFunctions.hpp"
 
 class NeuronNetwork {
 
-	Eigen::MatrixXi relation;
-	Eigen::MatrixXd weight;
+	Eigen::MatrixXd relationRecursive;
+	Eigen::MatrixXd relationInput;
+	Eigen::MatrixXd weightRecursive;
+	Eigen::MatrixXd weightInput;
 
     ActivationFunctionMain* activationFunctions;
 
-	Eigen::VectorXd* put;
+	Eigen::VectorXd* input;
+	Eigen::VectorXd* output;
 
     int inputCount;
     int outputCount;
@@ -28,8 +32,8 @@ class NeuronNetwork {
     int foldCount;
 
     Eigen::VectorXd* gradient;
-	Eigen::MatrixXd weightInverse;
-	Eigen::MatrixXd weightDifference;
+	Eigen::MatrixXd weightDifferenceRecursive;
+	Eigen::MatrixXd weightDifferenceInput;
     ActivationFunctionDerivative* derivativeActivationFunctions;
     double learningRate;
 
