@@ -91,21 +91,21 @@ void NeuronNetwork::reset(){
 void NeuronNetwork::resetInput(){
     PRINT_BEGIN_FUNCTION("Network input")
     for(int j = 0; j < this->foldCount; j++){
-		this->put[j].segment(1, this->inputCount) = VectorXd::Constant(0.0);
+		this->put[j].segment(1, this->inputCount) = VectorXd::Zero(this->inputCount);
     }
     PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::resetInput(int j){
     PRINT_BEGIN_FUNCTION("Network input")
-	this->put[j].segment(1, this->inputCount) = VectorXd::Constant(0.0);
+	this->put[j].segment(1, this->inputCount) = VectorXd::Zero(this->inputCount);
     PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::resetOutput(){
     PRINT_BEGIN_FUNCTION("Network input & output reset")
 	for (int j = 0; j < this->foldCount; j++) {
-		this->put[j] = VectorXd::Constant(0.0);
+		this->put[j] = VectorXd::Zero(this->putCount);
 		this->put[j](0) = 1.0;
 	}
     PRINT_END_FUNCTION()
@@ -113,14 +113,14 @@ void NeuronNetwork::resetOutput(){
 
 void NeuronNetwork::resetBackPropagation(){
 	PRINT_BEGIN_FUNCTION("Backpropagation parameters reset")
-	weightDifference = MatrixXd::Constant(0.0);
+	weightDifference = MatrixXd::Zero(this->neuronCount, this->putCount);
     PRINT_END_FUNCTION()
 }
 
 void NeuronNetwork::resetGradient(){
     PRINT_BEGIN_FUNCTION("Gradient reset")
     for(int j = 0; j < foldCount; j++){
-		gradient[j] = VectorXd::Constant(0.0);
+		gradient[j] = VectorXd::Zero(this->neuronCount);
     }
     PRINT_END_FUNCTION()
 }

@@ -14,7 +14,7 @@
 
 class NeuronNetwork {
 
-	Eigen::MatrixXi relation;
+	Eigen::MatrixXd relation;
 	Eigen::MatrixXd weight;
 
     ActivationFunctionMain* activationFunctions;
