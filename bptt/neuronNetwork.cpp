@@ -126,7 +126,7 @@ void NeuronNetwork::resetBackPropagation(){
 void NeuronNetwork::resetGradient(){
     PRINT_BEGIN_FUNCTION("Gradient reset")
     for(int j = 0; j < foldCount; j++){
-		this->gradient[j] = VectorXd::Zero(this->putCount);
+		this->gradient[j] = VectorXd::Zero(this->neuronCount);
     }
     PRINT_END_FUNCTION()
 }
