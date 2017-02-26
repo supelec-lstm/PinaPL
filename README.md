@@ -1,5 +1,5 @@
 # PinaPL
-PinaPL Is Not A Projet Long [![Build Status](https://travis-ci.org/supelec-lstm/PinaPL.svg?branch=rtrl)](https://travis-ci.org/supelec-lstm/PinaPL)
+PinaPL Is Not A Projet Long [![Build Status](https://travis-ci.org/supelec-lstm/PinaPL.svg?branch=neuron)](https://travis-ci.org/supelec-lstm/PinaPL)
 
 ## Git Usage Guide
 Do not forget to configure and update your .gitignore to keep the repository clean from any project file.
