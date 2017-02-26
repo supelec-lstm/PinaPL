@@ -3,12 +3,17 @@
 
 # object files generation
 # PERCEPTRON
-#clang++ -std=c++11 -Ofast -c perceptron/mathFunctions.cpp -o mathFunctions.o
-#clang++ -std=c++11 -Ofast -c perceptron/neuronNetwork.cpp -o neuronNetwork.o
 
-#RTRL
-#clang++ -std=c++11 -c rtrl/mathFunctions.cpp -o mathFunctions.o
-#clang++ -std=c++11 -c rtrl/neuronNetwork.cpp -o neuronNetwork.o
+#clang++ -std=c++11 -Ofast -c perceptron/mathFunctions.cpp -o perceptronMathFunctions.o
+#clang++ -std=c++11 -Ofast -c perceptron/neuronNetwork.cpp -o perceptronNeuronNetwork.o
+
+# RTRL
+clang++ -std=c++11 -c rtrl/mathFunctions.cpp -o rtrlMathFunctions.o
+clang++ -std=c++11 -c rtrl/neuronNetwork.cpp -o rtrlNeuronNetwork.o
+
+# GRAMMAR
+clang++ -std=c++11 -c grammar/grammar.cpp -o grammar.o
+clang++ -std=c++11 -c grammar/state.cpp -o state.o
 
 #BPTT
 g++ -I /usr/local/include/Eigen -std=c++11 -c bptt/mathFunctions.cpp -o mathFunctions.o
@@ -24,6 +29,7 @@ g++ -std=c++11 -Ofast -c grammar/grammar.cpp -o grammar.o
 # TESTS
 clang++ -std=c++11 -Ofast -c test/test.cpp -o test.o
 clang++ -std=c++11 -Ofast -c test/bptt.cpp -o bptt.o
+#clang++ -std=c++11 -c test/rtrl.cpp -o rtrl.o
 #clang++ -std=c++11 -Ofast -c test/mnist.cpp -o mnist.o
 #clang++ -std=c++11 -c test/xor.cpp -o xor.o
 

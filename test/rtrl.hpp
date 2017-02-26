@@ -11,36 +11,50 @@
 #include <string.h>
 #include <math.h>
 
+#include "../grammar/grammar.hpp"
 #include "test.hpp"
 #include "../rtrl/neuronNetwork.hpp"
 #include "../rtrl/mathFunctions.hpp"
 
-class Mnist : public Test{
+class Rtrl : public Test{
 
     double learningRate;
+    double threshold;
     activationFunctionType function;
     NeuronNetwork* network;
-    double** inputData;
+    int** inputData;
+    int* inputDataCount;
     double** outputData;
     double** outputTest;
 
-    int nbreLearn;
+    //int nbreLearn;
     int nbreWords;
-    int batchSize;
+    //int batchSize;
 
     int nbreInput;
+    int nbreLearn;
     int nbreTotalNeuron;
+    int nbreTest;
 
-    void setRelation();
+    int** inputTest;
+    int* inputTestCount;
+
     void setWeight();
     void setFunctions();
+    void setSimpleGrammar();
+    void setDoubleGrammar();
+    void generateLearningSet();
+    //void readFile(string fileName);
 
     int maximum(double* tab);
-
+    double score(double* probabilities, double* normalizedOutput);
+    Grammar* grammar;
 public:
-    Mnist();
+    Rtrl();
     void learn();
     void test();
+    void testDEBUG();
+    void testDouble();
 };
 
 #endif

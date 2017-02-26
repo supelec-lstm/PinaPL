@@ -6,8 +6,8 @@
 #ifndef DEF_IDXPARSER
 #define DEF_IDXPARSER
 
-#include<vector>
-#include<zlib.h>
+#include <vector>
+#include <zlib.h>
 
 
 class IdxParser {
