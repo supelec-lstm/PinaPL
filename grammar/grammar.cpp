@@ -110,7 +110,7 @@ void Grammar::createWord(){
 string Grammar::stringWord(){
     PRINT_BEGIN_FUNCTION("Recupération du mot sous forme de string")
     ostringstream convert;
-    for(int i = 0; i < this->word.size(); i++){
+    for(int i = 0; i < (int)this->word.size(); i++){
         convert << this->letters[this->word[i]];
     }
     PRINT_END_FUNCTION()
@@ -119,7 +119,7 @@ string Grammar::stringWord(){
 
 void Grammar::printWord(){
     PRINT_BEGIN_FUNCTION("Affichage du mot")
-    for(int i = 0; i < this->word.size(); i++){
+    for(int i = 0; i < (int)this->word.size(); i++){
         cout << this->letters[this->word[i]];
     }
     PRINT_END_FUNCTION()

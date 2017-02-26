@@ -5,6 +5,8 @@
 #include <random>
 #include <string.h>
 #include <math.h>
+#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include "bptt.hpp"
 #include "../bptt/neuronNetwork.hpp"
@@ -19,73 +21,49 @@
 #define NBATCH
 
 using namespace std;
+using namespace Eigen;
 
 Bptt::Bptt(){
-    PRINT_BEGIN_FUNCTION("Initialisation du Test")
+    PRINT_BEGIN_FUNCTION("Bptt")
     // Données à modifier
 
-    #ifdef BATCH
-    nbreFold = 5;
-    nbreWords = 60000; // nombre de données à importer de la base d'apprentissage
-    nbreLearn = 1; // nombre de batch learnings avec les données ci-dessus
-    //batchSize = 128; // taille des batchs
-    #else
-    nbreFold = 5;
-    nbreWords = 100;
-    nbreLearn = 1;
-    #endif
+    this->foldCount = 5;
+	this->wordCount = 30000;
+	this->learnCount = 1;
 
-    nbreTest = 4;
-    learningRate = 0.1;
-    function = SIGMOID;
-    threshold = 0.4;
-    // Données à ne pas modifier
+	this->testCount = 4;
+	this->learningRate = 0.1;
+	this->function = SIGMOID;
+	
+    this->letterCount = 7;
+    this->hiddenCount = 7;
 
-    nbreInput = 7;
+	//Données à ne pas modifier
 
-    nbreTotalNeuron = 14;
+	this->neuronCount = this->letterCount + this->hiddenCount;
 
-    inputData = new int*[nbreWords];
-    inputDataCount = new int[nbreWords];
+    this->inputData = new int*[this->wordCount];
+    this->inputDataCount = new int[this->wordCount];
 
-    PRINT_LOG("Creation du reseau")
-    network = new NeuronNetwork(nbreInput, nbreInput, nbreTotalNeuron, nbreFold, learningRate);
+    this->network = new NeuronNetwork(this->letterCount, this->letterCount, this->neuronCount, this->foldCount, this->learningRate);
 
-    PRINT_LOG("Creation des poids")
-    setWeight();
+    this->setWeight();
+    this->setFunctions();
 
-    PRINT_LOG("Creation des fonctions")
-    setFunctions();
-
-	PRINT_LOG("Initialisation du reseau")
-	network->init();
-
-    PRINT_LOG("Creation de la grammaire")
-    setGrammar();
-
-    PRINT_LOG("Importation des entrées")
-    generateLearningSet();
-
+    this->setGrammar();
+    this->generateLearningSet();
     PRINT_END_FUNCTION()
 }
 
 void Bptt::learn(){
-    PRINT_BEGIN_FUNCTION("Apprentissage stochastique")
-    #ifdef NBATCH
-    for(int i = 0; i < nbreLearn; i++){
-        network->stochasticLearning(inputData, inputDataCount, nbreWords, nbreLearn);
-    }
-    #endif
-    //#ifdef BATCH
-    //PRINT_LOG("Apprentissage par batch")
-    //network->batchLearning(inputData, inputDataCount, nbreWords);
-    //#endif
+    PRINT_BEGIN_FUNCTION("learn")
+    this->network->learn(this->inputData, this->inputDataCount, this->wordCount, this->learnCount);
     PRINT_END_FUNCTION()
 }
 
 void Bptt::generateLearningSet(){
-    PRINT_BEGIN_FUNCTION("Génération du set d'apprentissage")
-    for(int i  =0; i < nbreWords; i++){
+    PRINT_BEGIN_FUNCTION("generateLearningSet")
+    for(int i = 0; i < wordCount; i++){
         grammar->createWord();
         inputData[i] = grammar->inputWord();
         inputDataCount[i] = grammar->inputSize();
@@ -94,28 +72,37 @@ void Bptt::generateLearningSet(){
 }
 
 void Bptt::test(){
-    PRINT_BEGIN_FUNCTION("Tests")
-    /*PRINT_LOG("Attendu - Obtenu")
-    int** inputTest = new int*[nbreTest];      // Will contain test words
-    int* inputTestCount = new int[nbreTest];       // Will contain word sizes
-    int score = 0;*/
-    vector<int> testWord;
-    for(int i = 0; i < nbreTest; i++){
+	PRINT_BEGIN_FUNCTION("test")
+	this->network->setInput(0, 0);
+	this->network->calculate(0);
+	cout << this->network->getOutput(0) << endl << endl;
 
-        grammar->reset();
-        network->reset();
+	this->network->setInput(2, 1);
+	this->network->calculate(1);
+	cout << this->network->getOutput(1) << endl << endl;
 
-        //PRINT_LOG(grammar->isTerminal())
+	this->network->setInput(4, 1);
+	this->network->calculate(1);
+	cout << this->network->getOutput(1) << endl << endl;
+
+
+	cout << this->network->getWeightInput() << endl << endl;
+	cout << this->network->getWeightRecursive() << endl << endl;
+	cout << this->network->getWeightBias() << endl << endl;
+    /*vector<int> testWord;
+    for(int i = 0; i < this->testCount; i++){
+
+        this->grammar->reset();
+        this->network->reset();
 
 		int j = 0;
 
-        while(!grammar->isTerminal()){
-            /*testWord.push_back(grammar->newLetter());
-            double* probabilities = grammar->getProba();*/
-            int a = grammar->newLetter();
-            network->setInput(a, j);
-            network->calculate(j);
-            double* result = network->getOutputFold(j);
+        while(!this->grammar->isTerminal()){
+
+            int a = this->grammar->newLetter();
+            this->network->setInput(a, j);
+            this->network->calculate(j);
+            VectorXd result = this->network->getOutput(j);
             double m = result[maximum(result)];
             for(int i = 0; i < 7; i++){
                 result[i] = result[i]/m;
@@ -130,34 +117,19 @@ void Bptt::test(){
         testWord.clear();
 
 		j = (j + 1) % this->nbreFold;
-    }
+    }*/
     PRINT_END_FUNCTION()
 }
 
-void Bptt::setRelation() {
-	vector<vector<bool> > relation(nbreTotalNeuron);
-	for (int i = 0; i < nbreTotalNeuron; i++) {
-		vector<bool> v(nbreInput + nbreTotalNeuron + 1, true);
-		relation[i] = v;
-	}
-	network->setRelation(relation);
-}
-
 void Bptt::setWeight(){
-    vector<vector<double> > weight(nbreTotalNeuron);
-    for(int i = 0; i < nbreTotalNeuron; i++){
-        vector<double> v(nbreInput + nbreTotalNeuron, 0);
-        weight[i] = v;
-        for(int j = 0; j < nbreInput + nbreTotalNeuron; j++){
-            weight[i][j] = randomizer(-0.5, 0.5);
-        }
-    }
-    network->setWeight(weight);
+	PRINT_BEGIN_FUNCTION("setWeight")
+    this->network->setRandomWeight(0.1);
+	PRINT_END_FUNCTION()
 }
 
 void Bptt::setGrammar(){
-    int nbreLetters = 7;
-    char* letters = new char[nbreLetters];
+	PRINT_BEGIN_FUNCTION("setGrammar")
+    char* letters = new char[letterCount];
     letters[0] = 'B';
     letters[1] = 'E';
     letters[2] = 'P';
@@ -166,8 +138,8 @@ void Bptt::setGrammar(){
     letters[5] = 'V';
     letters[6] = 'X';
 
-    int nbreState = 8;
-    grammar = new Grammar(nbreState, nbreLetters, letters);
+    int stateCount = 8;
+    grammar = new Grammar(stateCount, letterCount, letters);
 
     grammar->setState(0, 1, 0, 1, 1);
     grammar->setState(1, 2, 4, 2, 2, 4, 1, 1);
@@ -179,49 +151,39 @@ void Bptt::setGrammar(){
     grammar->setState(7, 0);
 
     grammar->setTerminated(7);
+	PRINT_END_FUNCTION()
 }
 
 void Bptt::setFunctions(){
-    vector<activationFunctionType> functions(nbreTotalNeuron, function);
-    network->setFunctions(functions);
+	PRINT_BEGIN_FUNCTION("setFunctions")
+    this->network->setFunctions(this->function);
+	PRINT_END_FUNCTION()
 }
-/*
-void Bptt::readFile(string fileName){
-    ifstream fileStream(fileName);
-    string word[];
-    if(fileStream){
-        cout << "While opening a file an error is encountered" << endl;
-    }
-    else{
-        cout << "File is successfully opened" << endl;
-    }
-    while(!fileStream.eof()){
-        fileStream >> word;
-        cout << word << endl;
-        // TODO : convert string into usable word
-    }
-}
-*/
+
 int Bptt::maximum(double* tab){
+	PRINT_BEGIN_FUNCTION("maximum")
     int res = 0;
-    for(int i = 1; i < nbreInput; i++){
+    for(int i = 1; i < this->letterCount; i++){
         if(tab[i] > tab[res]){
             res = i;
         }
     }
     return res;
+	PRINT_END_FUNCTION()
 }
 
 double Bptt::score(double* probabilities, double* normalizedOutput){
+	PRINT_BEGIN_FUNCTION("score")
     double accuracy = 0;
-    bool* proba = new bool[this->nbreInput];
-    bool* result = new bool[this->nbreInput];
-    for(int i = 0; i< this->nbreInput; i++){
-        proba[i]=(probabilities[i]>this->threshold);
-        result[i]=(normalizedOutput[i]>this->threshold);
+    bool* proba = new bool[this->letterCount];
+    bool* result = new bool[this->letterCount];
+    for(int i = 0; i < this->letterCount; i++){
+        proba[i]=(probabilities[i]>0.3);
+        result[i]=(normalizedOutput[i]>0.3);
         if (proba[i]==result[i]){
             accuracy+=1;
         }
     }
-    return(accuracy/this->nbreInput);
+    return(accuracy/this->letterCount);
+	PRINT_END_FUNCTION()
 }

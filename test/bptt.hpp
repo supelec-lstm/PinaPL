@@ -19,33 +19,29 @@
 class Bptt : public Test{
 
     double learningRate;
-    double threshold;
     activationFunctionType function;
+
     NeuronNetwork* network;
+
     int** inputData;
     int* inputDataCount;
-    double** outputData;
-    double** outputTest;
 
-    //int nbreLearn;
-    int nbreWords;
-    //int batchSize;
+    int wordCount;
+	int letterCount;
+	int hiddenCount;
 
-    int nbreInput;
-    int nbreLearn;
-    int nbreTotalNeuron;
-    int nbreTest;
-    int nbreFold;
+    int learnCount;
+    int neuronCount;
+    int testCount;
+    int foldCount;
 
     int** inputTest;
     int* inputTestCount;
 
-	void setRelation();
     void setWeight();
     void setFunctions();
     void setGrammar();
     void generateLearningSet();
-    //void readFile(string fileName);
 
     int maximum(double* tab);
     double score(double* probabilities, double* normalizedOutput);

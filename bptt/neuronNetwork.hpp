@@ -15,14 +15,13 @@
 
 class NeuronNetwork {
 
-	Eigen::MatrixXd relationRecursive;
-	Eigen::MatrixXd relationInput;
 	Eigen::MatrixXd weightRecursive;
 	Eigen::MatrixXd weightInput;
+	Eigen::VectorXd weightBias;
 
-    ActivationFunctionMain* activationFunctions;
+    ActivationFunctionMain activationFunctions;
 
-	Eigen::VectorXd* input;
+	int* input;
 	Eigen::VectorXd* output;
 
     int inputCount;
@@ -34,7 +33,8 @@ class NeuronNetwork {
     Eigen::VectorXd* gradient;
 	Eigen::MatrixXd weightDifferenceRecursive;
 	Eigen::MatrixXd weightDifferenceInput;
-    ActivationFunctionDerivative* derivativeActivationFunctions;
+	Eigen::VectorXd weightDifferenceBias;
+    ActivationFunctionDerivative derivativeActivationFunctions;
     double learningRate;
 
     void resetInput();
@@ -47,27 +47,31 @@ class NeuronNetwork {
     void calculateGradient(int fold);
     void applyWeight();
 
-	void allExitLearn(int* outputData);
-	void lastExitLearn(int outputData);
+	void allExitLearn(int outputData, int start);
+	void lastExitLearn(int outputData, int start);
 
 public:
     NeuronNetwork(int nbin, int nbout, int nbtot, int nbfold, double learning);
     ~NeuronNetwork();
     void reset();
 
-    void setRelation(std::vector<std::vector<bool> > relation);
     void setWeight(std::vector<std::vector<double> > weight);
-	void setRandomWeight();
+	void setRandomWeight(double amplitude);
 	void setConstantWeight(double x);
-    void setFunctions(std::vector<activationFunctionType> functions);
+    void setFunctions(activationFunctionType function);
     void setInput(int inputArg, int j);
 
     Eigen::VectorXd* getOutput();
 	Eigen::VectorXd getOutput(int j);
+	Eigen::MatrixXd getWeightRecursive();
+	Eigen::MatrixXd getWeightInput();
+	Eigen::MatrixXd getWeightBias();
 
     void calculate(int fold);
 
 	void slipperyLearn(int* inputData, int inputSize);
+	void staticLearn(int* inputData, int inputSize);
+	void learn(int** inputData, int* inputSize, int wordCount, int learnCount);
 };
 
 
